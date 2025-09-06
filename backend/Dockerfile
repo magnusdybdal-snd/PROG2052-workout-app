@@ -1,4 +1,4 @@
-FROM golang:1.25
+FROM golang:1.25.1 AS builder
 
 WORKDIR /app
 
@@ -7,6 +7,10 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main ./cmd
+RUN go build -o server ./cmd
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/server .
+COPY .env .env
 
-CMD ["./main"]
+CMD ["./server"]
