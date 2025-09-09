@@ -24,7 +24,7 @@ func newServer() http.Handler {
 }
 
 func addRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/api",func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(API_ROUTE,func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("api page"))
 	})
 	mux.HandleFunc("/about",func(w http.ResponseWriter, r *http.Request) {
@@ -58,6 +58,8 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Fprintf(os.Stderr,"Error listening and serving: %s\n", err)
 		}
+		fmt.Printf("\n")
+		log.Printf("Closing server\n")
 	}()
 
 	var wg sync.WaitGroup
