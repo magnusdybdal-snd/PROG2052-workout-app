@@ -1,23 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/internal/api"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/internal/db"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/utils"
 )
 
 func main()  {
-	utils.LoadEnv()
-	testVar := os.Getenv("TEST")
-	
-	fmt.Println("Hello Backend")
-	fmt.Println(testVar)
-
-	db.InitDB()
-
-	app := api.NewServer()
-	app.StartServer()
+	ctx := context.Background()
+	if err := api.Run(ctx,os.Stdout, os.Args); err != nil {
+		fmt.Fprintf(os.Stderr, "Server exited with error: %v\n", err)
+		os.Exit(1)
+	}
 }
