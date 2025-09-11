@@ -17,20 +17,26 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.example.workoutapp.pages.ExercisesPage
+import com.example.workoutapp.pages.HistoryPage
+import com.example.workoutapp.pages.WorkoutPage
 
+/**
+ * Hosts the bottombar for application
+ */
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
 
-    // List of items used in bottombar
+    // List of items used in NavigationBarItem
     val navItemList = listOf(
         NavItem("History", Icons.Default.DateRange),
         NavItem("Workouts", Icons.Default.PlayArrow),
         NavItem("Exercises", Icons.Default.Person)
     )
 
-    // Index for what bottombar-item is selected.
+    // Initial index for NavigationBarItem
     var selectedIndex by remember {
-        mutableIntStateOf(0)
+        mutableIntStateOf(1) // default index is Workout-page.
     }
 
     Scaffold(
@@ -57,12 +63,22 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
     }
     ) { innerPadding ->
-        ContentScreen(modifier = modifier.padding(innerPadding))
+        ContentScreen(modifier = modifier.padding(innerPadding), selectedIndex)
     }
 }
 
-
+/**
+ * Displays page(screen) based on 'bottom navigation bar'
+ * @see HistoryPage
+ * @see WorkoutPage
+ * @see ExercisesPage
+ * @param selectedIndex index changes based on what NavigationBarItem is selected.
+ */
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier){
-
+fun ContentScreen(modifier: Modifier = Modifier, selectedIndex : Int){
+    when (selectedIndex){
+        0-> HistoryPage()
+        1-> WorkoutPage()
+        2-> ExercisesPage()
+    }
 }
