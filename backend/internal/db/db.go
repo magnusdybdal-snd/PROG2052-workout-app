@@ -2,28 +2,30 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"os"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
-func InitDB() {
-	uri := os.Getenv("MONGO_URI")
-	if uri == "" {
-		log.Fatal("Set MONGO_URI env")
-		return
-	}
+func InitDB(uri string) (*mongo.Client, error) {
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {
+		return nil, err
+	}
+	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
 		panic(err)
 	}
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
- 
+	fmt.Println("Pinging the database")
+	return client, nil
 }
 
+func CloseDB(db *mongo.Client) error {
+	if err := db.Disconnect(context.TODO()); err != nil {
+		return err
+	}
+	log.Println("Successfully closed mongo db connection")
+	return nil
+}

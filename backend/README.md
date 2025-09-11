@@ -11,3 +11,11 @@ Sett opp .env fil i root:
 
 [Mongodb](https://mongodb.com)
 - database
+
+## Endpoints
+
+- /api/v1/users
+- /api/v1/users/{id}
+
+- /api/v1/exercises
+- /api/v1/exercises/{id}, GET

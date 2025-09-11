@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Host string
 	Port string
+	UriDB string 
 }
 
 func LoadConfig() *Config {
@@ -26,9 +27,16 @@ func LoadConfig() *Config {
 	if port == "" {
 		port = "8080"
 	}
+	
+	UriDb := os.Getenv("MONGO_URI")
+	if port == "" {
+		UriDb = ""
+	}
+
 
 	return &Config{
 		Host: host,
 		Port: port,
+		UriDB: UriDb,
 	}
 }

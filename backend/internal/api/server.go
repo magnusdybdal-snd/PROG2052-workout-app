@@ -11,33 +11,23 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/internal/db"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func newServer() http.Handler {
+func newServer(db *mongo.Client) http.Handler {
 	mux := http.NewServeMux()
-	addRoutes(mux)
+	addRoutes(mux,db)
 
+	middleware := newMiddleware() // top level middleware
 	var handler http.Handler = mux
-	// handler = middleware1(handler)
+	handler = middleware(handler)
 
 	return handler
 }
 
-func addRoutes(mux *http.ServeMux) {
-	mux.HandleFunc(API_ROUTE,func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("api page"))
-	})
-	mux.HandleFunc("/about",func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("about page"))
-	})
-	mux.HandleFunc("/",func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Index page"))
-	})
-	mux.HandleFunc("/admin",func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("admin page"))
-	})
-	
-}
+
 
 func Run(ctx context.Context, w io.Writer, args []string) error {
 	// Context with cancel on interupt
@@ -47,7 +37,13 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	// load .env file
 	cfg := LoadConfig()
 
-	srv := newServer()
+	// Connect to the database
+	mongoDB, err := db.InitDB(cfg.UriDB)
+	if err != nil {
+		panic(err)
+	}
+
+	srv := newServer(mongoDB)
 	httpServer := &http.Server {
 		Addr: net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler: srv,
@@ -75,5 +71,7 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 		}
 	}()
 	wg.Wait()
+
+	db.CloseDB(mongoDB)
 	return nil
 }
