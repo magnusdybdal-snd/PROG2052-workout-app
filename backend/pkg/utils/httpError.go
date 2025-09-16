@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 /**
- *  Generic error handler, which render a html with the status code
+ *  Error handler for printing to client and server
  *  @param w             - response writer
  *  @param statusCode    - Should be used with a appropiate error code
  *  @param err           - error which occurs, printed in client
