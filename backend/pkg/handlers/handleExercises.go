@@ -18,6 +18,8 @@ type Data struct {
 	} `json:"data"`
 }
 
+// TODO: Put each handler in route, NOT LIKE THIS
+
 /*
 GET  /exercises      -> get all
 GET  /exercises/{id} -> get one
@@ -27,7 +29,7 @@ func HandleExercises(db *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			getExercises(db)(w,r)
+			getExercises(db)(w, r)
 		case http.MethodPost:
 		default:
 			utils.HandleError(w,
@@ -47,32 +49,33 @@ returns all exercises in database
 func getExercises(db *mongo.Client) http.HandlerFunc {
 	log.Println("Handler: GET exercises found")
 	type Exercises struct {
-		Name string `bson:"name" json:"name"`
+		Name   string   `bson:"name" json:"name"`
+		Muscle []string `bson:"muscle" json:"muscle"`
 	}
 
 	coll := db.Database("TrainingApp").Collection("exercises")
 
 	return func(w http.ResponseWriter, r *http.Request) {
-        ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-        defer cancel()
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
 
-        cursor, err := coll.Find(ctx, bson.M{})
-        if err != nil {
-            utils.HandleError(w, http.StatusInternalServerError, err, "Failed to fetch exercises")
-            return
-        }
-        defer cursor.Close(ctx)
+		cursor, err := coll.Find(ctx, bson.M{})
+		if err != nil {
+			utils.HandleError(w, http.StatusInternalServerError, err, "Failed to fetch exercises")
+			return
+		}
+		defer cursor.Close(ctx)
 
-        var exercises []Exercises
-        if err := cursor.All(ctx, &exercises); err != nil {
-            utils.HandleError(w, http.StatusInternalServerError, err, "Failed to decode exercises")
-            return
-        }
+		var exercises []Exercises
+		if err := cursor.All(ctx, &exercises); err != nil {
+			utils.HandleError(w, http.StatusInternalServerError, err, "Failed to decode exercises")
+			return
+		}
 		if len(exercises) == 0 {
-			utils.HandleError(w,http.StatusInternalServerError, err, "no exercises found")
+			utils.HandleError(w, http.StatusInternalServerError, err, "no exercises found")
 			return
 		}
 
-        utils.Encode(w, r, http.StatusOK, exercises)
+		utils.Encode(w, r, http.StatusOK, exercises)
 	}
 }
