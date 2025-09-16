@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/internal/api"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/api"
 )
 
 func main()  {

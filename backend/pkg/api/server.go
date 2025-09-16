@@ -12,13 +12,13 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/internal/db"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func newServer(db *mongo.Client) http.Handler {
 	mux := http.NewServeMux()
-	addRoutes(mux,db)
+	addRoutes(mux, db)
 
 	middleware := newMiddleware() // top level middleware
 	var handler http.Handler = mux
@@ -26,8 +26,6 @@ func newServer(db *mongo.Client) http.Handler {
 
 	return handler
 }
-
-
 
 func Run(ctx context.Context, w io.Writer, args []string) error {
 	// Context with cancel on interupt
@@ -40,19 +38,19 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	// Connect to the database
 	mongoDB, err := db.InitDB(cfg.UriDB)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	srv := newServer(mongoDB)
-	httpServer := &http.Server {
-		Addr: net.JoinHostPort(cfg.Host, cfg.Port),
+	httpServer := &http.Server{
+		Addr:    net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler: srv,
 	}
 
 	go func() {
 		log.Printf("Listening on %s\n", httpServer.Addr)
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Fprintf(os.Stderr,"Error listening and serving: %s\n", err)
+			fmt.Fprintf(os.Stderr, "Error listening and serving: %s\n", err)
 		}
 		fmt.Printf("\n")
 		log.Printf("Closing server\n")
@@ -64,10 +62,10 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 		defer wg.Done()
 		<-ctx.Done()
 		shutDownCtx := context.Background()
-		shutDownCtx, cancel := context.WithTimeout(shutDownCtx,10 * time.Second)
+		shutDownCtx, cancel := context.WithTimeout(shutDownCtx, 10*time.Second)
 		defer cancel()
 		if err := httpServer.Shutdown(shutDownCtx); err != nil {
-			fmt.Fprintf(os.Stderr,"error shutting down http server: %s\n", err)
+			fmt.Fprintf(os.Stderr, "error shutting down http server: %s\n", err)
 		}
 	}()
 	wg.Wait()

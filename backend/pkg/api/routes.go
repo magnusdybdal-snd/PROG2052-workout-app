@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/internal/api/handlers"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/api/handlers"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 

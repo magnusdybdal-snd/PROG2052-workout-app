@@ -11,12 +11,13 @@ import (
 )
 
 func InitDB(uri string) (*mongo.Client, error) {
+	log.Println("Initlizing connection to database")
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}
 	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+		return nil,err
 	}
 	fmt.Println("Pinging the database")
 	return client, nil
