@@ -30,9 +30,8 @@ func LoadConfig() *Config {
 	
 	UriDb := os.Getenv("MONGO_URI")
 	if port == "" {
-		UriDb = ""
+		log.Fatal("MONGO_URI is required but not set")
 	}
-
 
 	return &Config{
 		Host: host,

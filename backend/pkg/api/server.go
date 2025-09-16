@@ -38,7 +38,7 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	// Connect to the database
 	mongoDB, err := db.InitDB(cfg.UriDB)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	srv := newServer(mongoDB)

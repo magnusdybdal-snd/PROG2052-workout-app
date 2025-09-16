@@ -19,3 +19,10 @@ Sett opp .env fil i root:
 
 - /api/v1/exercises
 - /api/v1/exercises/{id}, GET
+
+## Run
+Docker:
+```bash
+docker build -t backend .
+docker run -p 8000:8000 --env-file .env backend
+```

@@ -17,7 +17,7 @@ func newMiddleware() func(h http.Handler) http.Handler {
 				w.WriteHeader(http.StatusOK)
 				return
 			}
-			log.Println("cors set")
+			log.Println("Setting Cors")
 			next.ServeHTTP(w, r)
 		})
 	}
