@@ -78,7 +78,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex : Int){
     when (selectedIndex){
         0-> HistoryPage()
-        1-> WorkoutPage()
+        1-> WorkoutPage(modifier)
         2-> ExercisesPage()
     }
 }
