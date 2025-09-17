@@ -14,7 +14,14 @@ func addRoutes(mux *http.ServeMux, db *mongo.Client) {
 	})
 
 	// exercieses endpoint
-	mux.HandleFunc(EXERCISES_ROUTE,handlers.HandleExercises(db))
+	mux.HandleFunc(EXERCISES_ROUTE,handlers.GetAllExercises(db))
+
+	// TODO: remove this, only for testing
+	mux.HandleFunc("/static", handlers.HandlePng("benchPress.png"))
+
+	// Serve all the images
+	// TODO: fix the naming when opening file
+	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/gifs"))))
 
 	// TODO: fix these
 	mux.HandleFunc("/",handleHome())

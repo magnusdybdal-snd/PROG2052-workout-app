@@ -17,7 +17,7 @@ func LoadConfig() *Config {
 	err := godotenv.Load(); if err != nil {
 		log.Println("No .env file present")
 	}
-
+	
 	host := os.Getenv("HOST")
 	if host == "" {
 		host = "0.0.0.0"

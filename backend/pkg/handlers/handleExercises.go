@@ -12,50 +12,39 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type Data struct {
-	Data []struct {
-		GifUrl string `json:"gifUrl"`
-	} `json:"data"`
-}
-
-// TODO: Put each handler in route, NOT LIKE THIS
-
 /*
 GET  /exercises      -> get all
 GET  /exercises/{id} -> get one
 POST /exercises      -> create new
 */
-func HandleExercises(db *mongo.Client) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			getExercises(db)(w, r)
-		case http.MethodPost:
-		default:
-			utils.HandleError(w,
-				http.StatusMethodNotAllowed,
-				fmt.Errorf("method not allowed"),
-				ErrMsgNotAllowed)
-			return
-		}
-	}
-}
+
 
 /*
 handler for GET /exercises
-
 returns all exercises in database
 */
-func getExercises(db *mongo.Client) http.HandlerFunc {
+func GetAllExercises(db *mongo.Client) http.HandlerFunc {
 	log.Println("Handler: GET exercises found")
+
 	type Exercises struct {
-		Name   string   `bson:"name" json:"name"`
-		Muscle []string `bson:"muscle" json:"muscle"`
+		Id               string   `bson:"exerciseId" json:"exerciseId"`
+		Name             string   `bson:"name" json:"name"`
+		TargetMuscles    []string   `bson:"targetMuscles" json:"targetMuscles"`
+		BodyParts        []string   `bson:"bodyParts" json:"bodyParts"`
+		Equipments       []string   `bson:"equipments" json:"equipments"`
+		SecondaryMuscles []string   `bson:"secondaryMuscles" json:"secondaryMuscles"`
+		GifUrl           string   `bson:"gifUrl" json:"gifUrl"`
+		Instructions     []string `bson:"instructions" json:"instructions"`
 	}
 
 	coll := db.Database("TrainingApp").Collection("exercises")
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			utils.HandleError(w, http.StatusInternalServerError, fmt.Errorf("no method"), ErrMsgBadRequest)
+			return
+		}
+
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
