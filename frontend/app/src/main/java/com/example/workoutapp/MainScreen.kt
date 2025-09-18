@@ -24,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.pages.ExercisesPage
 import com.example.workoutapp.pages.HistoryPage
 import com.example.workoutapp.pages.TestPage
+import com.example.workoutapp.pages.WorkTemp
 import com.example.workoutapp.pages.WorkoutPage
 
 @Composable
@@ -75,6 +76,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { WorkoutPage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
+                                                            // "Test" to be workout name
+            composable(Routes.WORKTEMP)  { WorkTemp("Test",Modifier, navController) }
             composable(Routes.TEST)      { TestPage(navController) } // TODO remove test
         }
     }
