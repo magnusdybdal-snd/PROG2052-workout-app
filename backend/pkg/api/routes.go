@@ -21,7 +21,7 @@ func addRoutes(mux *http.ServeMux, db *mongo.Client) {
 
 	// Serve all the images
 	// TODO: fix the naming when opening file
-	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/gifs"))))
+	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/exercises"))))
 
 	// TODO: fix these
 	mux.HandleFunc("/",handleHome())

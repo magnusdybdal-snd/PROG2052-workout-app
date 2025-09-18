@@ -24,8 +24,6 @@ handler for GET /exercises
 returns all exercises in database
 */
 func GetAllExercises(db *mongo.Client) http.HandlerFunc {
-	log.Println("Handler: GET exercises found")
-
 	type Exercises struct {
 		Id               string   `bson:"exerciseId" json:"exerciseId"`
 		Name             string   `bson:"name" json:"name"`
@@ -40,6 +38,7 @@ func GetAllExercises(db *mongo.Client) http.HandlerFunc {
 	coll := db.Database("TrainingApp").Collection("exercises")
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("hello")
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusInternalServerError, fmt.Errorf("no method"), ErrMsgBadRequest)
 			return
