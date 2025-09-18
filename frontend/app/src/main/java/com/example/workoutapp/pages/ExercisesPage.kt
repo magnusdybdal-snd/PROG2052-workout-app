@@ -77,9 +77,8 @@ fun ExercisesPage(modifier: Modifier = Modifier){
                         .border(width = 2.dp, color = Color.Black),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Image TODO
                     Image(
-                        painter = painterResource(id = R.drawable.exampleworkoutimage),
+                        painter = painterResource(id = R.drawable.exampleworkoutimage), // Example image, maybe default image.
                         contentDescription = null,
                         contentScale = ContentScale.Inside
                     )
