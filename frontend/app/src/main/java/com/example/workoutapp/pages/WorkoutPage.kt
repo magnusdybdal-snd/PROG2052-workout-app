@@ -108,10 +108,13 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("My workout $i", fontSize = 20.sp)
+                        val workoutName = "Example $i"
+
+                        Text(workoutName, fontSize = 20.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { //WorkTemp(workoutName) }
+                            },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {
@@ -152,10 +155,13 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Example $i", fontSize = 20.sp)
+                        val exampleName = "Example $i"
+
+                        Text(exampleName, fontSize = 20.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { //WorkTemp(exampleName)
+                                },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {
