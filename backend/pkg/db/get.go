@@ -5,12 +5,7 @@ import (
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
-
-type Repositoty[T any] struct {
-	Coll *mongo.Collection
-}
 
 func (r *Repositoty[T]) GetAll(ctx context.Context) ([]T, error) {
 	var data []T
@@ -26,7 +21,7 @@ func (r *Repositoty[T]) GetAll(ctx context.Context) ([]T, error) {
 	defer cursor.Close(ctx)
 
 	if len(data) == 0 {
-		return nil, fmt.Errorf("no exercises found")
+		return nil, fmt.Errorf("no data found")
 	}
 
 	return data, nil

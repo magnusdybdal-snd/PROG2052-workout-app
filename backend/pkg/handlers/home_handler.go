@@ -7,7 +7,7 @@ import (
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 )
 
-func handleHome() http.HandlerFunc {
+func HandleHome() http.HandlerFunc {
 	type response struct {
 		Version   string
 		Resources []string

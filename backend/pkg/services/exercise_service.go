@@ -14,10 +14,10 @@ type ExerciseService struct {
 	Repo *db.Repositoty[domain.Exercises]
 }
 
-func (s *ExerciseService) GetAll(ctx context.Context) ([]domain.Exercises, error) {
+func (s *ExerciseService) GetAllExercises(ctx context.Context) ([]domain.Exercises, error) {
 	return s.Repo.GetAll(ctx)
 }
 
-func (s *ExerciseService) GetOne(ctx context.Context, id string) (domain.Exercises,error) {
+func (s *ExerciseService) GetOneExercise(ctx context.Context, id string) (domain.Exercises,error) {
 	return s.Repo.GetOne(ctx,bson.M{"exerciseId":id})
 }

@@ -15,6 +15,8 @@ func addRoutes(mux *http.ServeMux, db *mongo.Client) {
 	*/
 	mux.HandleFunc(EXERCISES_ROUTE,handlers.GetAllExercises(db))
 	mux.HandleFunc(EXERCISES_ID_ROUTE,handlers.GetOneExercise(db))
+	mux.HandleFunc(TEMPLATES_ROUTE, handlers.GetAllTemplates(db))
+	mux.HandleFunc(TEMPLATES_ID_ROUTE,handlers.GetOneTemplates(db))
 
 	/*
 		HTTP FILE SERVER
