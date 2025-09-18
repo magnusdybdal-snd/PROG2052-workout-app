@@ -39,7 +39,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
 
     // Initial index for NavigationBarItem
     var selectedIndex by remember {
-        mutableIntStateOf(1) // default index is Workout-page.
+        mutableIntStateOf(0) // default index is Workout-page.
     }
 
     Scaffold(
