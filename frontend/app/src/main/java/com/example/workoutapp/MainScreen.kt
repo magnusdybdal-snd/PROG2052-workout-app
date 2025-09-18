@@ -39,7 +39,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val currentDestination = backStackEntry?.destination
 
     // Show or hide the bottombar.
-    val showBottomBar = currentDestination?.isOnRoute(Routes.TEST) != true
+    val showBottomBar = navItemList.any{ item ->
+        currentDestination.isOnRoute(item.route)}
 
 
     Scaffold(
