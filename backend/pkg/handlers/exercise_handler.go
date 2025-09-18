@@ -1,4 +1,4 @@
-package exercise
+package handlers
 
 import (
 	"context"
@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	dbpkg "gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -20,10 +23,13 @@ POST /exercises      -> create new
 handler for GET /exercises
 returns all exercises in database
 */
-func GetAllExercises(database *mongo.Client) http.HandlerFunc {
-	coll := database.Database("TrainingApp").Collection("exercises")
-	repo := &ExercisesRepository{
-		Coll: coll,
+func GetAllExercises(db *mongo.Client) http.HandlerFunc {
+	coll := db.Database("TrainingApp").Collection("exercises")
+
+	serv := &services.ExerciseService {
+		Repo: &dbpkg.Repositoty[domain.Exercises] {
+			Coll: coll,
+		},
 	}
 	
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +41,7 @@ func GetAllExercises(database *mongo.Client) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := repo.GetAll(ctx)
+		data, err := serv.GetAll(ctx)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
@@ -45,11 +51,12 @@ func GetAllExercises(database *mongo.Client) http.HandlerFunc {
 	}
 }
 
-func GetOneExercise(db *mongo.Client) http.HandlerFunc {
-	coll := db.Database("TrainingApp").Collection("exercises")
-
-	repo := &ExercisesRepository{
-		Coll: coll,
+func GetOneExercise(database *mongo.Client) http.HandlerFunc {
+	coll := database.Database("TrainingApp").Collection("exercises")
+	serv := &services.ExerciseService {
+		Repo: &dbpkg.Repositoty[domain.Exercises] {
+			Coll: coll,
+		},
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +73,7 @@ func GetOneExercise(db *mongo.Client) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := repo.GetOne(ctx, id)
+		data, err := serv.GetOne(ctx, id)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return

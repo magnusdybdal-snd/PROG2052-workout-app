@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"fmt"
@@ -8,16 +8,24 @@ import (
 )
 
 func handleHome() http.HandlerFunc {
-
+	type response struct {
+		Version   string
+		Resources []string
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			w.Write([]byte("Home Handler"))
-		} else {
+		if r.Method != http.MethodGet {
 			utils.HandleError(w,
 				http.StatusMethodNotAllowed,
 				fmt.Errorf("method not allowed"),
 				"Method not allowed")
 		}
+		resp := response{
+			Version: "v1",
+			Resources: []string {
+				"hei", "hallo", "halla", 
+			},
+		}
 
+		utils.Encode(w, http.StatusOK, resp)
 	}
 }
