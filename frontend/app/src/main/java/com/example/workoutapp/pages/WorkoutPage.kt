@@ -110,10 +110,10 @@ fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("My workout $i", fontSize = 20.sp)
+                        Text("My workout $i", fontSize = 20.sp) // TODO get workout name from user data
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { navController.navigate(Routes.TEST) }, // TODO remove test
+                                onClick = { navController.navigate(Routes.WORKTEMP) },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {
@@ -154,10 +154,10 @@ fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Example $i", fontSize = 20.sp)
+                        Text("Example $i", fontSize = 20.sp) // TODO get example name from database
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { navController.navigate(Routes.WORKTEMP) },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {
