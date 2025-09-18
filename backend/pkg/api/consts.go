@@ -6,6 +6,7 @@ const (
 	VERSION = "v1"
 	API_ROUTE = "/api/" + VERSION 
 	EXERCISES_ROUTE = API_ROUTE + "/exercises"
+	EXERCISES_ID_ROUTE = EXERCISES_ROUTE + "/{exerciseId}"
 
 	MEDIA_ROUTE = API_ROUTE + "/media"
 )

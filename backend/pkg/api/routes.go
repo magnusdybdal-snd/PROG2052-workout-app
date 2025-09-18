@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/handlers"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/exercise"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -13,13 +13,15 @@ func addRoutes(mux *http.ServeMux, db *mongo.Client) {
 		w.Write([]byte("api page"))
 	})
 
-	// exercieses endpoint
-	mux.HandleFunc(EXERCISES_ROUTE,handlers.GetAllExercises(db))
+	/*
+		ENDPOINTS
+	*/
+	mux.HandleFunc(EXERCISES_ROUTE,exercise.GetAllExercises(db))
+	mux.HandleFunc(EXERCISES_ID_ROUTE,exercise.GetOneExercise(db))
 
-	// TODO: remove this, only for testing
-	mux.HandleFunc("/static", handlers.HandlePng("benchPress.png"))
-
-	// Serve all the images
+	/*
+		HTTP FILE SERVER
+	*/
 	// TODO: fix the naming when opening file
 	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/exercises"))))
 
