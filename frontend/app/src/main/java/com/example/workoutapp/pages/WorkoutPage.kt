@@ -33,12 +33,14 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.workoutapp.Routes
 
 /**
  * Displays Workout page
  */
 @Composable
-fun WorkoutPage(modifier: Modifier = Modifier){
+fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
     Column (
         modifier = modifier
             .fillMaxSize()
@@ -108,13 +110,10 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        val workoutName = "Example $i"
-
-                        Text(workoutName, fontSize = 20.sp)
+                        Text("My workout $i", fontSize = 20.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { //WorkTemp(workoutName) }
-                            },
+                                onClick = { navController.navigate(Routes.TEST) }, // TODO remove test
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {
@@ -155,13 +154,10 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        val exampleName = "Example $i"
-
-                        Text(exampleName, fontSize = 20.sp)
+                        Text("Example $i", fontSize = 20.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { //WorkTemp(exampleName)
-                                },
+                                onClick = { /*TODO*/ },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {

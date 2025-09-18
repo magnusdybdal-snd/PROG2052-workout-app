@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,19 +18,20 @@ import androidx.navigation.NavController
  * Displays History page
  */
 @Composable
-fun HistoryPage(modifier: Modifier = Modifier, navController: NavController){
+fun TestPage(navController: NavController){
     Column (
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFF5AAB38)),
+        modifier = Modifier
+            .background(Color(0xFFFFC107))
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "History Page",
+            text = "Test Page",
             fontSize = 40.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
         )
+        Button( onClick = { navController.popBackStack() }) {Text("Close page") }
     }
 }
