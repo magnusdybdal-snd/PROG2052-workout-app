@@ -38,22 +38,30 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
+    // Show or hide the bottombar.
+    val showBottomBar = currentDestination?.isOnRoute(Routes.TEST) != true
+
+
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                navItemList.forEach { item ->
-                    NavigationBarItem(
-                        selected = currentDestination.isOnRoute(item.route),
-                        onClick = {
-                            navController.navigate(item.route) {
-                                launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            }
-                        },
-                        icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) }
-                    )
+            if (showBottomBar) { // check if condition is true (show/hide bottombar)
+                NavigationBar {
+                    navItemList.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentDestination.isOnRoute(item.route),
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    launchSingleTop = true
+                                    restoreState = true
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                }
+                            },
+                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            label = { Text(item.label) }
+                        )
+                    }
                 }
             }
         }
@@ -66,7 +74,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { WorkoutPage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
-            composable(Routes.TEST)      { TestPage(Modifier, navController) } // TODO remove test
+            composable(Routes.TEST)      { TestPage(navController) } // TODO remove test
         }
     }
 }

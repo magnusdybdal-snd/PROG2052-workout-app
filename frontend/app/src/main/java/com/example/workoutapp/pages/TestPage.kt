@@ -18,11 +18,11 @@ import androidx.navigation.NavController
  * Displays History page
  */
 @Composable
-fun TestPage(modifier: Modifier = Modifier, navController: NavController){
+fun TestPage(navController: NavController){
     Column (
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFC107)),
+        modifier = Modifier
+            .background(Color(0xFFFFC107))
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -32,6 +32,6 @@ fun TestPage(modifier: Modifier = Modifier, navController: NavController){
             fontWeight = FontWeight.SemiBold,
             color = Color.White
         )
-        Button( onClick = { navController.popBackStack() }) { }
+        Button( onClick = { navController.popBackStack() }) {Text("Close page") }
     }
 }
