@@ -38,7 +38,7 @@ import com.example.workoutapp.R
  */
 @Composable
 fun ExercisesPage(modifier: Modifier = Modifier){
-    Column (
+    Column ( // Workout Header
         modifier = Modifier
             .fillMaxWidth()
             .widthIn(max = 700.dp)
@@ -48,26 +48,22 @@ fun ExercisesPage(modifier: Modifier = Modifier){
     ) {
         Text(
             modifier = Modifier
-                .padding(top = 60.dp)
-                .padding(bottom = 30.dp),
-
+                .padding(top = 80.dp)
+                .padding(bottom = 20.dp),
             text = "Workouts",
             fontSize = 50.sp,
             color = Color.Black,
-
             )
-        Column(
+        Column ( // Workout-boxes
             modifier = modifier
                 .fillMaxSize()
                 .widthIn(max = 550.dp)
-                //.background(Color.White)
                 .padding(horizontal = 20.dp)
+                .padding(bottom = 100.dp) // Padding so nothing hides under bottombar
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
             for (i in 1..29) { // TODO: update range when backend is connected
                 Row(
                     modifier = Modifier
@@ -77,13 +73,12 @@ fun ExercisesPage(modifier: Modifier = Modifier){
                         .border(width = 2.dp, color = Color.Black),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
+                    Image( // Workout image
                         painter = painterResource(id = R.drawable.exampleworkoutimage), // Example image, maybe default image.
                         contentDescription = null,
                         contentScale = ContentScale.Inside
                     )
-                    // Text
-                    Text(
+                    Text( // Workout name
                         modifier = Modifier.padding(6.dp),
                         text = "Workout $i",
                         fontSize = 20.sp
