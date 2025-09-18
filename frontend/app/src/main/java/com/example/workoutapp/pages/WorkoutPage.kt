@@ -33,12 +33,14 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.workoutapp.Routes
 
 /**
  * Displays Workout page
  */
 @Composable
-fun WorkoutPage(modifier: Modifier = Modifier){
+fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
     Column (
         modifier = modifier
             .fillMaxSize()
@@ -111,7 +113,7 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         Text("My workout $i", fontSize = 20.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { navController.navigate(Routes.TEST) }, // TODO remove test
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {

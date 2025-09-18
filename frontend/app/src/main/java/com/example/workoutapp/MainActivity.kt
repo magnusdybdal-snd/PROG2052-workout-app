@@ -11,6 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.workoutapp.pages.ExercisesPage
+import com.example.workoutapp.pages.HistoryPage
+import com.example.workoutapp.pages.WorkoutPage
 import com.example.workoutapp.ui.theme.WorkoutAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +25,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WorkoutAppTheme {
-               MainScreen()
+                val navController = rememberNavController()
+
+                MainScreen(navController = navController)
             }
         }
     }
