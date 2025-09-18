@@ -20,7 +20,8 @@ POST ONE TEMPLATE
 POST LIST TEMPLATE
 */
 
-func GetAllTemplates(db *mongo.Client) http.HandlerFunc {
+// Handles template/ and template/{templateId}
+func HandleTemplate(db *mongo.Client) http.HandlerFunc {
 	coll := db.Database("TrainingApp").Collection("templates")
 
 	serv := &services.TemplateService{
@@ -29,20 +30,41 @@ func GetAllTemplates(db *mongo.Client) http.HandlerFunc {
 		},
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
-			return
-		}
-
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := serv.GetAllTemplates(ctx)
-		if err != nil {
-			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
+		switch r.Method {
+		case http.MethodGet:
+			data, err := serv.GetAllTemplates(ctx)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
+				return
+			}
+			utils.Encode(w, http.StatusOK, data)
+
+		case http.MethodPost:
+			payload, problems, err := utils.DecodeValid[*domain.Template](r)
+			if err != nil {
+				if problems != nil {
+					utils.Encode(w, http.StatusBadRequest, problems)
+					return
+				}
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
+				return
+			}
+			id, err := serv.PostOneTemplate(context.TODO(), payload)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      id,
+				"message": "template created successfully",
+			})
+		default:
+			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
 			return
 		}
-		utils.Encode(w, http.StatusOK, data)
 	}
 }
 
@@ -72,6 +94,6 @@ func GetOneTemplates(db *mongo.Client) http.HandlerFunc {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
 		}
-		utils.Encode(w,http.StatusOK,data)
+		utils.Encode(w, http.StatusOK, data)
 	}
 }

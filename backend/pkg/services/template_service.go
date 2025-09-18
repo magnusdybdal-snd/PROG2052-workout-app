@@ -19,3 +19,7 @@ func (s *TemplateService) GetAllTemplates(ctx context.Context) ([]domain.Templat
 func (s *TemplateService) GetOneTemplate(ctx context.Context,id string) (domain.Template, error) {
 	return s.Repo.GetOne(ctx,bson.M{"templateId":id})
 }
+
+func (s *TemplateService) PostOneTemplate(ctx context.Context, payload interface{}) (string, error) {
+	return "test", nil
+}
