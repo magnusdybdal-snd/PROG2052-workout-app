@@ -51,7 +51,7 @@ fun ExercisesPage(modifier: Modifier = Modifier, navController: NavController){
             modifier = Modifier
                 .padding(top = 80.dp)
                 .padding(bottom = 20.dp),
-            text = "Workouts",
+            text = "Exercises",
             fontSize = 50.sp,
             color = Color.Black,
             )
