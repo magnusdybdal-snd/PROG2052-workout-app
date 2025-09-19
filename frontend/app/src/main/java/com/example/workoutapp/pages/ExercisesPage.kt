@@ -31,13 +31,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.workoutapp.R
 
 /**
  * Displays Exercises page
  */
 @Composable
-fun ExercisesPage(modifier: Modifier = Modifier){
+fun ExercisesPage(modifier: Modifier = Modifier, navController: NavController){
     Column ( // Workout Header
         modifier = Modifier
             .fillMaxWidth()

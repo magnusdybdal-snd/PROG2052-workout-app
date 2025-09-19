@@ -33,12 +33,14 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.workoutapp.Routes
 
 /**
  * Displays Workout page
  */
 @Composable
-fun WorkoutPage(modifier: Modifier = Modifier){
+fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
     Column (
         modifier = modifier
             .fillMaxSize()
@@ -108,10 +110,10 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("My workout $i", fontSize = 20.sp)
+                        Text("My workout $i", fontSize = 20.sp) // TODO get workout name from user data
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { navController.navigate(Routes.WORKTEMP) },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {
@@ -152,10 +154,10 @@ fun WorkoutPage(modifier: Modifier = Modifier){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Example $i", fontSize = 20.sp)
+                        Text("Example $i", fontSize = 20.sp) // TODO get example name from database
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = { navController.navigate(Routes.WORKTEMP) },
                                 shape = RoundedCornerShape(5.dp),
                                 modifier = Modifier.background(Color.White)
                             ) {

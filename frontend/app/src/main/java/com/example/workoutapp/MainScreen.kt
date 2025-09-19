@@ -1,87 +1,89 @@
+// MainScreen.kt
 package com.example.workoutapp
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.pages.ExercisesPage
 import com.example.workoutapp.pages.HistoryPage
+import com.example.workoutapp.pages.TestPage
+import com.example.workoutapp.pages.WorkTemp
 import com.example.workoutapp.pages.WorkoutPage
 
-/**
- * Hosts the bottombar for application
- */
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
 
-    // List of items used in NavigationBarItem
     val navItemList = listOf(
-        NavItem("History", Icons.Default.DateRange),
-        NavItem("Workouts", Icons.Default.PlayArrow),
-        NavItem("Exercises", Icons.Default.Person)
+        NavItem("History",   Routes.HISTORY,   Icons.Default.DateRange),
+        NavItem("Workouts",  Routes.WORKOUT,   Icons.Default.PlayArrow),
+        NavItem("Exercises", Routes.EXERCISES, Icons.Default.Person)
     )
 
-    // Initial index for NavigationBarItem
-    var selectedIndex by remember {
-        mutableIntStateOf(0) // default index is Workout-page.
-    }
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = backStackEntry?.destination
+
+    // Show or hide the bottombar.
+    val showBottomBar = navItemList.any{ item ->
+        currentDestination.isOnRoute(item.route)}
+
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            NavigationBar {
-                navItemList.forEachIndexed { index, navItem ->
-                NavigationBarItem(
-                    selected = selectedIndex == index,
-                    onClick = {
-                        selectedIndex = index
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = navItem.icon,
-                            contentDescription = navItem.label
+            if (showBottomBar) { // check if condition is true (show/hide bottombar)
+                NavigationBar {
+                    navItemList.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentDestination.isOnRoute(item.route),
+                            onClick = {
+                                navController.navigate(item.route) {
+                                    launchSingleTop = true
+                                    restoreState = true
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                }
+                            },
+                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            label = { Text(item.label) }
                         )
-                    },
-                    label = {
-                        Text(navItem.label)
                     }
-                )
+                }
             }
         }
-    }
     ) { innerPadding ->
-        ContentScreen(modifier = modifier.padding(innerPadding), selectedIndex)
+        NavHost(
+            navController = navController,
+            startDestination = Routes.WORKOUT,
+            modifier = modifier.padding(innerPadding)
+        ) {
+            composable(Routes.WORKOUT)   { WorkoutPage(Modifier, navController) }
+            composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
+            composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
+                                                            // "Test" to be workout name
+            composable(Routes.WORKTEMP)  { WorkTemp("Test",Modifier, navController) }
+            composable(Routes.TEST)      { TestPage(navController) } // TODO remove test
+        }
     }
 }
 
-/**
- * Displays page(screen) based on 'bottom navigation bar'
- * @see HistoryPage
- * @see WorkoutPage
- * @see ExercisesPage
- * @param selectedIndex index changes based on what NavigationBarItem is selected.
- */
-@Composable
-fun ContentScreen(modifier: Modifier = Modifier, selectedIndex : Int){
-    when (selectedIndex){
-        0-> HistoryPage()
-        1-> WorkoutPage(modifier)
-        2-> ExercisesPage()
-    }
+private fun NavDestination?.isOnRoute(route: String): Boolean {
+    if (this == null) return false
+    return hierarchy.any { it.route == route }
 }
