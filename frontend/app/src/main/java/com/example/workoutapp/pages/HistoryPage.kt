@@ -36,12 +36,12 @@ import androidx.navigation.NavController
  * Displays History page
  */
 @Composable
-fun HistoryPage(modifier: Modifier = Modifier) {
+fun HistoryPage(modifier: Modifier = Modifier, navController: NavController) {
     Column( // Workout Header
         modifier = Modifier
             .fillMaxWidth()
             .widthIn(max = 500.dp)
-            .padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
+            //.padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
             .background(Color.White),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -60,7 +60,7 @@ fun HistoryPage(modifier: Modifier = Modifier) {
        modifier = Modifier
            .widthIn(max = 700.dp)
            .background(Color.White)
-           .padding(bottom = 20.dp)
+           //.padding(bottom = 20.dp)
            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
 
