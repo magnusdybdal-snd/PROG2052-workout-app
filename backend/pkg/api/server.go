@@ -13,12 +13,20 @@ import (
 	"time"
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
-	"go.mongodb.org/mongo-driver/v2/mongo"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 )
 
-func newServer(db *mongo.Client) http.Handler {
+func newServer(
+	exerciseService *services.ExerciseService,
+	templateService *services.TemplateService,
+) http.Handler {
 	mux := http.NewServeMux()
-	addRoutes(mux, db)
+	addRoutes(
+		mux, 
+		exerciseService,
+		templateService,
+	)
 
 	middleware := newMiddleware() // top level middleware
 	var handler http.Handler = mux
@@ -40,8 +48,22 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	if err != nil {
 		return err
 	}
-
-	srv := newServer(mongoDB)
+	// Starting up the services
+	exerciseService := &services.ExerciseService{
+		Repo: &repository.ExerciseRepository{
+			Coll: mongoDB.Database("TrainingApp").Collection("exercises"),
+		},
+	}
+	
+	templateService := &services.TemplateService{
+		Repo: &repository.TemplateRepository{
+			Coll: mongoDB.Database("TrainingApp").Collection("templates"),
+		},
+	}
+	
+	
+	// Setting up routes and starting http server
+	srv := newServer(exerciseService,  templateService)
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler: srv,
