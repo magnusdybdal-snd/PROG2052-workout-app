@@ -10,3 +10,8 @@ type Exercises struct {
 	GifUrl           string   `bson:"gifUrl" json:"gifUrl"`
 	Instructions     []string `bson:"instructions" json:"instructions"`
 }
+
+// TODO:
+// Set up interfaces here for exercises
+// This way, services only implements this interface
+// will be easier to test afterwards
