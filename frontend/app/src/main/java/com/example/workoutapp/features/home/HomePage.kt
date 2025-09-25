@@ -5,175 +5,164 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import com.example.workoutapp.core.core_navigation.Routes
 
 /**
  * Displays Workout page
  */
 @Composable
-fun WorkTemp(workoutName: String, modifier: Modifier = Modifier, navController: NavController){
+fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
     Column (
         modifier = modifier
+            .fillMaxSize()
+            .widthIn(max = 550.dp)
+            .background(Color.White)
+            .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState()),
-    ){
-        OutlinedButton(
-            onClick = { navController.popBackStack() },
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor =  Color(0xFFE8DEF8)
-            ),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Workouts",
+            fontSize = 50.sp,
+            color = Color.Black,
+        )
+        Button(
+            onClick = {/*TODO*/ },
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
-                .padding(top = 20.dp, bottom = 40.dp)
-                .size(50.dp)
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(top = 40.dp, bottom = 15.dp)
         ) {
-            Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "content description"
+            Text(
+                text = "Start empty workout",
             )
         }
-        Column(
-            horizontalAlignment = Alignment.Start,
+        Row (
             modifier = Modifier
-                .padding(horizontal = 20.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(width = 2.dp, color = Color.Black)
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(getCurrentTimeString(), fontSize = 20.sp)
-                Button(
-                    onClick = { /*TODO*/},
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor =  Color(0xFF495D92)
-                    ),
-                ) {
-                    Text("Finish", color = Color.White)
-                }
-            }
+                .align(Alignment.Start)
+        ){
             Text(
-                workoutName,
+                text = "My workout",
                 fontSize = 30.sp,
-                modifier = Modifier.padding(vertical = 10.dp)
             )
-            Column(
-                verticalArrangement = Arrangement.spacedBy(5.dp)
+            IconButton (
+                onClick = {/*TODO*/ }
             ) {
-                for (i in 1..3) {
-                    Text("My exercise $i", fontSize = 15.sp) // TODO get exercise name from workout
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add workout"
+                )
+            }
+            IconButton (
+                onClick = {/*TODO*/ }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search workout"
+                )
+            }
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            for (i in 1..4) {
+                Box(
+                    modifier = Modifier
+                        .border(width = 2.dp, color = Color.Black)
+                        .fillMaxWidth()
+                ) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp)
-
+                            .padding(6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            "SETS",
-                            fontSize = 10.sp,
-                            modifier = Modifier
-                                .padding(end = 80.dp)
-                        )
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
-                        ){
-                            Text("KG", fontSize = 10.sp)
-                            Text("REPS", fontSize = 10.sp)
-                            Icon(
-                                Icons.Default.Check,
-                                contentDescription = "Done set"
-                            )
+                        Text("My workout $i", fontSize = 20.sp) // TODO get workout name from user data
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Button(
+                                onClick = { navController.navigate(Routes.WORKTEMP) },
+                                shape = RoundedCornerShape(5.dp),
+                                modifier = Modifier.background(Color.White)
+                            ) {
+                                Text("Start")
+                            }
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "Extra"
+                                )
+                            }
                         }
                     }
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                }
+            }
+        }
+        Text(
+            text = "Example workout",
+            fontSize = 30.sp,
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .padding(top = 40.dp)
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            for (i in 1..4) {
+                Box(
+                    modifier = Modifier
+                        .border(width = 2.dp, color = Color.Black)
+                        .fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        for (i in 1..3) {
-                            Box(
-
+                        Text("Example $i", fontSize = 20.sp) // TODO get example name from database
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Button(
+                                onClick = { navController.navigate(Routes.WORKTEMP) },
+                                shape = RoundedCornerShape(5.dp),
+                                modifier = Modifier.background(Color.White)
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp)
-
-                                ) {
-                                    Text(
-                                        "$i",
-                                        fontSize = 10.sp,
-                                        modifier = Modifier
-                                            .padding(end = 50.dp)
-                                    )
-                                    Row (
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier
-                                            //.fillMaxWidth()
-                                            .padding(horizontal = 8.dp)
-                                    ){
-                                        // TODO get kg and reps from exercise
-                                        val kg = remember { mutableStateOf("50") }
-                                        val reps = remember { mutableStateOf("10") }
-                                        TextField(
-                                            value = kg.value,
-                                            onValueChange = { kg.value = it },
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .background(Color(0xFFE8DEF8))
-                                        )
-                                        TextField(
-                                            value = reps.value,
-                                            onValueChange = { reps.value = it },
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .background(Color(0xFFE8DEF8))
-                                        )
-                                        Icon(
-                                            Icons.Default.Check,
-                                            contentDescription = "Done set"
-                                        )
-                                    }
-                                }
+                                Text("Start")
+                            }
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "Extra"
+                                )
                             }
                         }
                     }
@@ -181,10 +170,4 @@ fun WorkTemp(workoutName: String, modifier: Modifier = Modifier, navController: 
             }
         }
     }
-}
-
-fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now() // current time
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
-    return currentTime.format(formatter)
 }
