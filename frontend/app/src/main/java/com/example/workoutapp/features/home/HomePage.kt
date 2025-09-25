@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -54,6 +55,9 @@ fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
         Button(
             onClick = {/*TODO*/ },
             shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor =  Color(0xFF127067)
+            ),
             modifier = Modifier
                 .background(Color.White)
                 .fillMaxWidth()
@@ -61,6 +65,7 @@ fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
         ) {
             Text(
                 text = "Start empty workout",
+                color = Color.White
             )
         }
         Row (
@@ -110,9 +115,12 @@ fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
                             Button(
                                 onClick = { navController.navigate(Routes.WORKTEMP) },
                                 shape = RoundedCornerShape(5.dp),
-                                modifier = Modifier.background(Color.White)
+                                modifier = Modifier.background(Color.White),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor =  Color(0xFF127067)
+                                ),
                             ) {
-                                Text("Start")
+                                Text("Start", color = Color.White)
                             }
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(
@@ -154,9 +162,12 @@ fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
                             Button(
                                 onClick = { navController.navigate(Routes.WORKTEMP) },
                                 shape = RoundedCornerShape(5.dp),
-                                modifier = Modifier.background(Color.White)
+                                modifier = Modifier.background(Color.White),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor =  Color(0xFF127067)
+                                ),
                             ) {
-                                Text("Start")
+                                Text("Start", color = Color.White)
                             }
                             IconButton(onClick = { /*TODO*/ }) {
                                 Icon(
