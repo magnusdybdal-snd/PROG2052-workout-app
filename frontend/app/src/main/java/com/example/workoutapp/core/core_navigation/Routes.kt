@@ -1,9 +1,8 @@
-package com.example.workoutapp
+package com.example.workoutapp.core.core_navigation
 
 object Routes {
     const val HISTORY = "history"
     const val WORKOUT = "workout"
     const val EXERCISES = "exercises"
     const val WORKTEMP = "workTemp"
-    const val TEST = "test" // TODO remove test
 }

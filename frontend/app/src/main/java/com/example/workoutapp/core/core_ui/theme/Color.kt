@@ -1,4 +1,4 @@
-package com.example.workoutapp.ui.theme
+package com.example.workoutapp.core.core_ui.theme
 
 import androidx.compose.ui.graphics.Color
 

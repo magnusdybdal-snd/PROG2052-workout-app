@@ -1,5 +1,5 @@
 // MainScreen.kt
-package com.example.workoutapp
+package com.example.workoutapp.app
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -14,25 +14,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.workoutapp.pages.ExercisesPage
-import com.example.workoutapp.pages.HistoryPage
-import com.example.workoutapp.pages.TestPage
-import com.example.workoutapp.pages.WorkTemp
-import com.example.workoutapp.pages.WorkoutPage
+import com.example.workoutapp.core.core_navigation.NavItem
+import com.example.workoutapp.core.core_navigation.Routes
+import com.example.workoutapp.features.excercices.ExercisesPage
+import com.example.workoutapp.features.history.HistoryPage
+import com.example.workoutapp.features.home.WorkTemp
+import com.example.workoutapp.features.active_workout.WorkoutPage
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
 
     val navItemList = listOf(
-        NavItem("History",   Routes.HISTORY,   Icons.Default.DateRange),
-        NavItem("Workouts",  Routes.WORKOUT,   Icons.Default.PlayArrow),
+        NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
+        NavItem("Workouts", Routes.WORKOUT, Icons.Default.PlayArrow),
         NavItem("Exercises", Routes.EXERCISES, Icons.Default.Person)
     )
 
@@ -78,7 +78,6 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
                                                             // "Test" to be workout name
             composable(Routes.WORKTEMP)  { WorkTemp("Test",Modifier, navController) }
-            composable(Routes.TEST)      { TestPage(navController) } // TODO remove test
         }
     }
 }

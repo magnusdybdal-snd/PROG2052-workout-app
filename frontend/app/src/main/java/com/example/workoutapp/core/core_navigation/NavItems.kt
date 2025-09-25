@@ -1,10 +1,10 @@
-package com.example.workoutapp
+package com.example.workoutapp.core.core_navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Data used in navigation-bar
- * @see MainScreen
+ * @see com.example.workoutapp.app.MainScreen
  */
 data class NavItem(
     val label : String,
