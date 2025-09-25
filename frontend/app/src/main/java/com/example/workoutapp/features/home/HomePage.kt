@@ -35,7 +35,7 @@ import com.example.workoutapp.core.core_navigation.Routes
  * Displays Workout page
  */
 @Composable
-fun WorkoutPage(modifier: Modifier = Modifier, navController: NavController){
+fun HomePage(modifier: Modifier = Modifier, navController: NavController){
     Column (
         modifier = modifier
             .fillMaxSize()

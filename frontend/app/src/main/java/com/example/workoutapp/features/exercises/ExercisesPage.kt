@@ -1,4 +1,4 @@
-package com.example.workoutapp.features.excercices
+package com.example.workoutapp.features.exercises
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,13 +25,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.workoutapp.R
+import com.example.workoutapp.domain.models.Exercise
+import com.example.workoutapp.features.home.ExercisesViewModel
+import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-/**
- * Displays Exercises page
- */
 @Composable
-fun ExercisesPage(modifier: Modifier = Modifier, navController: NavController){
-    Column ( // Workout Header
+fun ExercisesPage(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    viewModel: ExercisesViewModel = koinViewModel()
+) {
+    val exercises by viewModel.exercises.collectAsStateWithLifecycle()
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .widthIn(max = 700.dp)
@@ -45,18 +53,19 @@ fun ExercisesPage(modifier: Modifier = Modifier, navController: NavController){
             text = "Exercises",
             fontSize = 50.sp,
             color = Color.Black,
-            )
-        Column ( // Workout-boxes
+        )
+
+        Column(
             modifier = modifier
                 .fillMaxSize()
                 .widthIn(max = 550.dp)
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 100.dp) // Padding so nothing hides under bottombar
+                .padding(bottom = 100.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            for (i in 1..29) { // TODO: update range when backend is connected
+            exercises.forEach { exercise: Exercise ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -65,20 +74,22 @@ fun ExercisesPage(modifier: Modifier = Modifier, navController: NavController){
                         .border(width = 2.dp, color = Color.Black),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image( // Workout image
-                        painter = painterResource(id = R.drawable.exampleworkoutimage), // Example image, maybe default image.
-                        contentDescription = null,
-                        contentScale = ContentScale.Inside
+                    Image(
+                        painter = painterResource(id = R.drawable.exampleworkoutimage),
+                        contentDescription = "Exercise image",
+                        contentScale = ContentScale.Inside,
+                        modifier = Modifier
+                            .heightIn(80.dp, 80.dp)
+                            .padding(8.dp)
                     )
-                    Text( // Workout name
-                        modifier = Modifier.padding(6.dp),
-                        text = "Workout $i",
-                        fontSize = 20.sp
 
+                    Text(
+                        modifier = Modifier.padding(6.dp),
+                        text = exercise.name,
+                        fontSize = 20.sp
                     )
                 }
             }
-
         }
     }
 }

@@ -14,7 +14,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             WorkoutAppTheme {
                 val navController = rememberNavController()
-
                 MainScreen(navController = navController)
             }
         }

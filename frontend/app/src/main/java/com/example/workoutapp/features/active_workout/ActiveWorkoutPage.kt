@@ -40,7 +40,7 @@ import java.time.format.DateTimeFormatter
  * Displays Workout page
  */
 @Composable
-fun WorkTemp(workoutName: String, modifier: Modifier = Modifier, navController: NavController){
+fun ActiveWorkoutPage(workoutName: String, modifier: Modifier = Modifier, navController: NavController){
     Column (
         modifier = modifier
             .verticalScroll(rememberScrollState()),
