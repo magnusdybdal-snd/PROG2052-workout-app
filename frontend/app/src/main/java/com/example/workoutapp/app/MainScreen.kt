@@ -24,8 +24,8 @@ import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.excercices.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
-import com.example.workoutapp.features.home.WorkTemp
-import com.example.workoutapp.features.active_workout.WorkoutPage
+import com.example.workoutapp.features.home.WorkoutPage
+import com.example.workoutapp.features.active_workout.ActWork
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -77,7 +77,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
                                                             // "Test" to be workout name
-            composable(Routes.WORKTEMP)  { WorkTemp("Test",Modifier, navController) }
+            composable(Routes.WORKTEMP)  { ActWork("Test",Modifier, navController) }
         }
     }
 }
