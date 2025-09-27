@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Your backend API host -->
+        <domain includeSubdomains="true">10.212.168.186</domain>
+    </domain-config>
+</network-security-config>

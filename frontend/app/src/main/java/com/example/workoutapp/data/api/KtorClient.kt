@@ -7,15 +7,12 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 object KtorClient {
-    val instance = HttpClient(CIO) {
+    val instance: HttpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true  // API might send extra fields
-                    prettyPrint = true
-                    isLenient = true
-                }
-            )
+            json(Json {
+                ignoreUnknownKeys = true
+                prettyPrint = false
+            })
         }
     }
 }

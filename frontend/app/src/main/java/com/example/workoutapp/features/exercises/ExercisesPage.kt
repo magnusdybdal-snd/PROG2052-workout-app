@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,71 +24,78 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.domain.models.Exercise
-import com.example.workoutapp.features.home.ExercisesViewModel
-import org.koin.androidx.compose.koinViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 
 @Composable
 fun ExercisesPage(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ExercisesViewModel = koinViewModel()
+    viewModel: ExercisesViewModel = hiltViewModel()
 ) {
-    val exercises by viewModel.exercises.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .widthIn(max = 700.dp)
-            .background(Color.White),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(top = 80.dp)
-                .padding(bottom = 20.dp),
-            text = "Exercises",
-            fontSize = 50.sp,
-            color = Color.Black,
-        )
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .widthIn(max = 550.dp)
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 100.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            exercises.forEach { exercise: Exercise ->
-                Row(
+    when {
+        state.isLoading -> LoadingStateView()
+        state.error != null -> ErrorStateView(state.error)
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 700.dp)
+                    .background(Color.White),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(80.dp, 80.dp)
-                        .padding(vertical = 6.dp)
-                        .border(width = 2.dp, color = Color.Black),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.exampleworkoutimage),
-                        contentDescription = "Exercise image",
-                        contentScale = ContentScale.Inside,
-                        modifier = Modifier
-                            .heightIn(80.dp, 80.dp)
-                            .padding(8.dp)
-                    )
+                        .padding(top = 80.dp)
+                        .padding(bottom = 20.dp),
+                    text = "Exercises",
+                    fontSize = 50.sp,
+                    color = Color.Black,
+                )
 
-                    Text(
-                        modifier = Modifier.padding(6.dp),
-                        text = exercise.name,
-                        fontSize = 20.sp
-                    )
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .widthIn(max = 550.dp)
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 100.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    state.exercises.forEach { exercise: Exercise ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(80.dp, 80.dp)
+                                .padding(vertical = 6.dp)
+                                .border(width = 2.dp, color = Color.Black),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.exampleworkoutimage),
+                                contentDescription = "Exercise image",
+                                contentScale = ContentScale.Inside,
+                                modifier = Modifier
+                                    .heightIn(80.dp, 80.dp)
+                                    .padding(8.dp)
+                            )
+
+                            Text(
+                                modifier = Modifier.padding(6.dp),
+                                text = exercise.name,
+                                fontSize = 20.sp
+                            )
+                        }
+                    }
                 }
             }
         }

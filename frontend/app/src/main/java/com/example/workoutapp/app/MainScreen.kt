@@ -39,14 +39,14 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
-    // Show or hide the bottombar.
+    // Show or hide the bottom-bar.
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
 
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) { // check if condition is true (show/hide bottombar)
+            if (showBottomBar) { // check if condition is true (show/hide bottom-bar)
                 NavigationBar {
                     navItemList.forEach { item ->
                         NavigationBarItem(

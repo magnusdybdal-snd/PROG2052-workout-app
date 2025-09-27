@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ExerciseDto(
-    @SerialName("exerciseId") val id: String,
+    @SerialName("exerciseId")
+    val exerciseId: String,
     val name: String,
     val targetMuscles: List<String>,
     val bodyParts: List<String>,
@@ -15,15 +16,3 @@ data class ExerciseDto(
     val gifUrl: String,
     val instructions: List<String>
 )
-
-fun ExerciseDto.toDomain(): Exercise {
-    return Exercise(
-        name = name,
-        equipments = equipments,
-        targetMuscles = targetMuscles,
-        bodyParts = bodyParts,
-        secondaryMuscles = secondaryMuscles,
-        gifUrl = gifUrl,
-        instructions = instructions,
-    )
-}
