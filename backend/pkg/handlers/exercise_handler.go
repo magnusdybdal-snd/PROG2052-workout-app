@@ -26,7 +26,8 @@ func GetAllExercises(serv *services.ExerciseService) http.HandlerFunc {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
 			return
 		}
-		limit := utils.ParseLimit(r,100)
+		// As of now is to provide the whole exercises list
+		limit := utils.ParseLimit(r,1500)
 
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
