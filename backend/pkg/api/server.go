@@ -48,19 +48,21 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	if err != nil {
 		return err
 	}
-	// Starting up the services
+
+	// Starting up repositories
+	exerciseRepo := &repository.ExerciseRepository{
+		Coll: mongoDB.Database("TrainingApp").Collection("exercises"),
+	}
+	templateRepo := &repository.TemplateRepository{
+		Coll: mongoDB.Database("TrainingApp").Collection("templates"),
+	}
+
+	// Starting up Services
 	exerciseService := &services.ExerciseService{
-		Repo: &repository.ExerciseRepository{
-			Coll: mongoDB.Database("TrainingApp").Collection("exercises"),
-		},
+		Repo: exerciseRepo,
 	}
 	
-	templateService := &services.TemplateService{
-		Repo: &repository.TemplateRepository{
-			Coll: mongoDB.Database("TrainingApp").Collection("templates"),
-		},
-	}
-	
+	templateService := services.NewTemplateService(templateRepo, exerciseRepo)
 	
 	// Setting up routes and starting http server
 	srv := newServer(exerciseService,  templateService)

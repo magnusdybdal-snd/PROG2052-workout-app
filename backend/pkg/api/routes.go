@@ -20,7 +20,7 @@ func addRoutes(
 	mux.Handle(EXERCISES_ID_ROUTE,handlers.GetOneExercise(exerciseService))
 
 	mux.Handle(TEMPLATES_ROUTE, handlers.HandleTemplate(templateService))
-	mux.Handle(TEMPLATES_ID_ROUTE,handlers.GetOneTemplates(templateService))
+	mux.Handle(TEMPLATES_ID_ROUTE,handlers.GetOneTemplate(templateService))
 
 	// Media
 	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/exercises"))))

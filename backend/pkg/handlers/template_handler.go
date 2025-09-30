@@ -59,7 +59,7 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 	}
 }
 
-func GetOneTemplates(serv *services.TemplateService) http.HandlerFunc {
+func GetOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
@@ -70,10 +70,12 @@ func GetOneTemplates(serv *services.TemplateService) http.HandlerFunc {
 			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
 			return
 		}
+
+		include := utils.ParseInclude(r, "exercises")
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := serv.GetOneTemplate(ctx, id)
+		data, err := serv.GetOneTemplate(ctx, id, include)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
