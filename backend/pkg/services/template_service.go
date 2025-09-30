@@ -53,6 +53,10 @@ func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include 
 	return expandedTempl,nil
 }
 
-func (s *TemplateService) PostOneTemplate(ctx context.Context, payload interface{}) (string, error) {
-	return "test", nil
+func (s *TemplateService) PostOneTemplate(ctx context.Context, payload *domain.Template) (string, error) {
+	result, err := s.RepoTempl.InsertOneTemplate(ctx, *payload)
+	if err != nil {
+		return "error", nil
+	}
+	return result, nil
 }

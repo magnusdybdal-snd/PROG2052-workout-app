@@ -42,3 +42,12 @@ func (r *TemplateRepository) GetOneTemplate(ctx context.Context, id string) (dom
 
 	return data, nil
 }
+
+func (r *TemplateRepository) InsertOneTemplate(ctx context.Context, data domain.Template) (string, error) {
+	result, err := r.Coll.InsertOne(ctx,data)
+	if err != nil {
+		return "", err
+	}
+	id := fmt.Sprintf("%s",result.InsertedID)
+	return id, nil
+}

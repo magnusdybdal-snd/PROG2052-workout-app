@@ -43,7 +43,7 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.PostOneTemplate(context.TODO(), payload)
+			id, err := serv.PostOneTemplate(ctx, payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
