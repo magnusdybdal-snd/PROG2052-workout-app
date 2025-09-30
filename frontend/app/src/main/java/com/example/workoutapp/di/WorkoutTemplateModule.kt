@@ -1,6 +1,9 @@
 package com.example.workoutapp.di
 
-import com.example.workoutapp.app.WorkoutApp_HiltComponents
+import com.example.workoutapp.data.api.ApiService
+import com.example.workoutapp.data.repositories.WorkoutTemplateRepositoryImpl
+import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
+import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,4 +16,13 @@ object WorkoutTemplateModule {
 
     @Provides
     @Singleton
+    fun provideWorkoutTemplateRepository(
+        api: ApiService
+    ): WorkoutTemplateRepository = WorkoutTemplateRepositoryImpl(api)
+
+    @Provides
+    @Singleton
+    fun provideWorkoutTemplateUseCase(
+        repo: WorkoutTemplateRepository
+    ): GetWorkoutTemplatesUseCase = GetWorkoutTemplatesUseCase(repo)
 }
