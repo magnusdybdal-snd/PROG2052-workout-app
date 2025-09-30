@@ -22,10 +22,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
-import com.example.workoutapp.features.excercices.ExercisesPage
+import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
-import com.example.workoutapp.features.home.WorkoutPage
-import com.example.workoutapp.features.active_workout.ActWork
+import com.example.workoutapp.features.home.HomePage
+import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -39,14 +39,14 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
-    // Show or hide the bottombar.
+    // Show or hide the bottom-bar.
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
 
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) { // check if condition is true (show/hide bottombar)
+            if (showBottomBar) { // check if condition is true (show/hide bottom-bar)
                 NavigationBar {
                     navItemList.forEach { item ->
                         NavigationBarItem(
@@ -73,11 +73,11 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             startDestination = Routes.WORKOUT,
             modifier = modifier.padding(innerPadding)
         ) {
-            composable(Routes.WORKOUT)   { WorkoutPage(Modifier, navController) }
+            composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
                                                             // "Test" to be workout name
-            composable(Routes.WORKTEMP)  { ActWork("Test",Modifier, navController) }
+            composable(Routes.WORKTEMP)  { ActiveWorkoutPage("Test",Modifier, navController) }
         }
     }
 }

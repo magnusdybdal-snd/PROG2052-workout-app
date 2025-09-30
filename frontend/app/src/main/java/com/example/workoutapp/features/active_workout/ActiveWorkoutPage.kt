@@ -53,7 +53,7 @@ import kotlin.time.Duration.Companion.seconds
  * Displays Workout page
  */
 @Composable
-fun ActWork(workoutName: String, modifier: Modifier = Modifier, navController: NavController){
+fun ActiveWorkoutPage(workoutName: String, modifier: Modifier = Modifier, navController: NavController){
     var isAnyChecked by remember { mutableStateOf(false) }
 
     var ticks by remember { mutableIntStateOf(5) }
