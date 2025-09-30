@@ -5,12 +5,21 @@ import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
 import javax.inject.Inject
 
+/**
+ * Implementation for the WorkoutTemplateRepository.
+ * Built by injecting the API service
+ */
 class WorkoutTemplateRepositoryImpl @Inject constructor(
     private val api: ApiService
 ): WorkoutTemplateRepository {
 
+    /**
+     * Converts the Data Transfer Object built from the API json into the
+     * domain model WorkoutTemplate (nested with TemplateExercise and Set)
+     */
     override suspend fun getWorkoutTemplates(): List<WorkoutTemplate> {
         return api.getWorkoutTemplates().map { dto ->
             WorkoutTemplate(
