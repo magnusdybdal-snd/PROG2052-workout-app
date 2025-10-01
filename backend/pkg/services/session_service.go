@@ -37,7 +37,7 @@ func (s *SessionService) GetAllSession(ctx context.Context, include bool) (inter
 			}
 			newSession.Exercises = append(newSession.Exercises, domain.ExpandedExerciseTemplate{
 				Exercise: ex,
-				Set: et.Set,
+				Set: et.Sets,
 			})
 		}
 		expandedSession = append(expandedSession, newSession)

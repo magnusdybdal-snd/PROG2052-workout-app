@@ -22,17 +22,17 @@ const (
 type Set struct {
 	Rep  int32   `bson:"rep" json:"rep"`
 	Kg   int32   `bson:"kg" json:"kg"`
-	Type TypeSet `bson:"TypeSet" json:"TypeSet"`
+	Type TypeSet `bson:"typeSet" json:"typeSet"`
 }
 
 type ExerciseIdTemplate struct {
 	ExerciseId string `bson:"exerciseId" json:"exerciseId"` // Changed in service layer to exericise
-	Set        []Set  `bson:"set" json:"set"`
+	Sets       []Set  `bson:"sets" json:"sets"`
 }
 
 type ExpandedExerciseTemplate struct {
 	Exercise Exercises `bson:"exercise" json:"exercise"`
-	Set      []Set     `bson:"set" json:"set"`
+	Set      []Set     `bson:"sets" json:"sets"`
 }
 
 // TODO:
