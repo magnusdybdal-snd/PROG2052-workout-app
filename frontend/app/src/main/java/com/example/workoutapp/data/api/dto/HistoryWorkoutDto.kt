@@ -1,5 +1,6 @@
 package com.example.workoutapp.data.api.dto
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -10,9 +11,10 @@ import kotlinx.serialization.Serializable
 data class HistoryWorkoutDto(
     val historyWorkoutId: String,
     val name: String,
+    @SerialName("exercise")
+    val exercises: List<WorkoutExerciseDto>,
+    val duration: String,
     val date: String,
-    val length: String,
-    val exercises: List<WorkoutExercise>,
     val note: String
 )
 
@@ -22,7 +24,7 @@ data class HistoryWorkoutDto(
  * TODO: Add notes later
  */
 @Serializable
-data class WorkoutExercise(
+data class WorkoutExerciseDto(
     val exercise: ExerciseDto,
     val sets: List<SetDto>
 )

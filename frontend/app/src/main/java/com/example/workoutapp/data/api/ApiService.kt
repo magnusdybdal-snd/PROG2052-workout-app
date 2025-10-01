@@ -37,6 +37,6 @@ class ApiService @Inject constructor(
         // TODO: URL needs to be changed for one with param to fetch for logged in user
         return client.get("$baseUrl/sessions?include=exercises").body()
     }
-    
+
     // More API calls like getWorkoutTemplates will be added here
 }
