@@ -6,11 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	dbpkg "gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 /*
@@ -23,25 +20,19 @@ POST /exercises      -> create new
 handler for GET /exercises
 returns all exercises in database
 */
-func GetAllExercises(db *mongo.Client) http.HandlerFunc {
-	coll := db.Database("TrainingApp").Collection("exercises")
-
-	serv := &services.ExerciseService {
-		Repo: &dbpkg.Repositoty[domain.Exercises] {
-			Coll: coll,
-		},
-	}
-	
+func GetAllExercises(serv *services.ExerciseService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
 			return
 		}
+		// As of now is to provide the whole exercises list
+		limit := utils.ParseLimit(r,1500)
 
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := serv.GetAllExercises(ctx)
+		data, err := serv.GetAllExercises(ctx,limit)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
@@ -51,14 +42,7 @@ func GetAllExercises(db *mongo.Client) http.HandlerFunc {
 	}
 }
 
-func GetOneExercise(database *mongo.Client) http.HandlerFunc {
-	coll := database.Database("TrainingApp").Collection("exercises")
-	serv := &services.ExerciseService {
-		Repo: &dbpkg.Repositoty[domain.Exercises] {
-			Coll: coll,
-		},
-	}
-
+func GetOneExercise(serv *services.ExerciseService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)

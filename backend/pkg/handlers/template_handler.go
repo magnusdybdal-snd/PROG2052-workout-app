@@ -6,11 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	dbpkg "gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 /*
@@ -21,21 +19,15 @@ POST LIST TEMPLATE
 */
 
 // Handles template/ and template/{templateId}
-func HandleTemplate(db *mongo.Client) http.HandlerFunc {
-	coll := db.Database("TrainingApp").Collection("templates")
-
-	serv := &services.TemplateService{
-		Repo: &dbpkg.Repositoty[domain.Template]{
-			Coll: coll,
-		},
-	}
+func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
 		switch r.Method {
 		case http.MethodGet:
-			data, err := serv.GetAllTemplates(ctx)
+			include := utils.ParseInclude(r,"exercises")
+			data, err := serv.GetAllTemplates(ctx, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -52,7 +44,7 @@ func HandleTemplate(db *mongo.Client) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.PostOneTemplate(context.TODO(), payload)
+			id, err := serv.PostOneTemplate(ctx, payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -68,14 +60,7 @@ func HandleTemplate(db *mongo.Client) http.HandlerFunc {
 	}
 }
 
-func GetOneTemplates(db *mongo.Client) http.HandlerFunc {
-	coll := db.Database("TrainingApp").Collection("templates")
-
-	serv := &services.TemplateService{
-		Repo: &dbpkg.Repositoty[domain.Template]{
-			Coll: coll,
-		},
-	}
+func GetOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
@@ -86,10 +71,12 @@ func GetOneTemplates(db *mongo.Client) http.HandlerFunc {
 			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
 			return
 		}
+
+		include := utils.ParseInclude(r, "exercises")
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := serv.GetOneTemplate(ctx, id)
+		data, err := serv.GetOneTemplate(ctx, id, include)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
