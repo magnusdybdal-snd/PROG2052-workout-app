@@ -29,7 +29,7 @@ class ApiService @Inject constructor(
      */
     suspend fun getWorkoutTemplates(): List<WorkoutTemplateDto> {
         // TODO: URL needs to be changed for one with param to fetch for logged in user
-        return client.get("$baseUrl/templates/tmp_001?include=exercises").body()
+        return client.get("$baseUrl/templates").body()
     }
     // More API calls like getWorkoutTemplates will be added here
 }

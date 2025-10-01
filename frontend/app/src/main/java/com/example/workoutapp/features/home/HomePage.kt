@@ -23,157 +23,176 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_navigation.Routes
+import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
  * Displays Workout page
  */
 @Composable
-fun HomePage(modifier: Modifier = Modifier, navController: NavController){
-    Column (
-        modifier = modifier
-            .fillMaxSize()
-            .widthIn(max = 550.dp)
-            .background(Color.White)
-            .padding(horizontal = 20.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Workouts",
-            fontSize = 50.sp,
-            color = Color.Black,
-        )
-        Button(
-            onClick = {/*TODO*/ },
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor =  Color(0xFF127067)
-            ),
-            modifier = Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-                .padding(top = 40.dp, bottom = 15.dp)
-        ) {
-            Text(
-                text = "Start empty workout",
-                color = Color.White
-            )
-        }
-        Row (
-            modifier = Modifier
-                .align(Alignment.Start)
-        ){
-            Text(
-                text = "My workout",
-                fontSize = 30.sp,
-            )
-            IconButton (
-                onClick = {/*TODO*/ }
+fun HomePage(modifier: Modifier = Modifier,
+             navController: NavController,
+             viewModel: WorkoutTemplatesViewModel = hiltViewModel()
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    when {
+        state.isLoading -> LoadingStateView()
+        state.error != null -> ErrorStateView(state.error)
+        else -> {
+            Column (
+                modifier = modifier
+                    .fillMaxSize()
+                    .widthIn(max = 550.dp)
+                    .background(Color.White)
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add workout"
+                Text(
+                    text = "Workouts",
+                    fontSize = 50.sp,
+                    color = Color.Black,
                 )
-            }
-            IconButton (
-                onClick = {/*TODO*/ }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search workout"
-                )
-            }
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            for (i in 1..4) {
-                Box(
+                Button(
+                    onClick = {/*TODO*/ },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor =  Color(0xFF127067)
+                    ),
                     modifier = Modifier
-                        .border(width = 2.dp, color = Color.Black)
+                        .background(Color.White)
                         .fillMaxWidth()
+                        .padding(top = 40.dp, bottom = 15.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Text(
+                        text = "Start empty workout",
+                        color = Color.White
+                    )
+                }
+                Row (
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                ){
+                    Text(
+                        text = "My workout",
+                        fontSize = 30.sp,
+                    )
+                    IconButton (
+                        onClick = {/*TODO*/ }
                     ) {
-                        Text("My workout $i", fontSize = 20.sp) // TODO get workout name from user data
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Button(
-                                onClick = { navController.navigate(Routes.WORKTEMP) },
-                                shape = RoundedCornerShape(5.dp),
-                                modifier = Modifier.background(Color.White),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor =  Color(0xFF127067)
-                                ),
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add workout"
+                        )
+                    }
+                    IconButton (
+                        onClick = {/*TODO*/ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search workout"
+                        )
+                    }
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    state.workoutTemplates.forEach { workoutTemplate: WorkoutTemplate ->
+                        Box(
+                            modifier = Modifier
+                                .border(width = 2.dp, color = Color.Black)
+                                .fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Start", color = Color.White)
-                            }
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "Extra"
-                                )
+                                Text(
+                                    text = workoutTemplate.name,
+                                    fontSize = 20.sp)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Button(
+                                        onClick = { navController.navigate(Routes.WORKTEMP) },
+                                        shape = RoundedCornerShape(5.dp),
+                                        modifier = Modifier.background(Color.White),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            containerColor =  Color(0xFF127067)
+                                        ),
+                                    ) {
+                                        Text("Start", color = Color.White)
+                                    }
+                                    IconButton(onClick = { /*TODO*/ }) {
+                                        Icon(
+                                            imageVector = Icons.Default.MoreVert,
+                                            contentDescription = "Extra"
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
-        Text(
-            text = "Example workout",
-            fontSize = 30.sp,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .padding(top = 40.dp)
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            for (i in 1..4) {
-                Box(
+                Text(
+                    text = "Example workout",
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Left,
                     modifier = Modifier
-                        .border(width = 2.dp, color = Color.Black)
-                        .fillMaxWidth()
+                        .padding(top = 40.dp)
+                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Example $i", fontSize = 20.sp) // TODO get example name from database
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Button(
-                                onClick = { navController.navigate(Routes.WORKTEMP) },
-                                shape = RoundedCornerShape(5.dp),
-                                modifier = Modifier.background(Color.White),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor =  Color(0xFF127067)
-                                ),
+                    for (i in 1..4) {
+                        Box(
+                            modifier = Modifier
+                                .border(width = 2.dp, color = Color.Black)
+                                .fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Start", color = Color.White)
-                            }
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "Extra"
-                                )
+                                Text("Example $i", fontSize = 20.sp) // TODO get example name from database
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Button(
+                                        onClick = { navController.navigate(Routes.WORKTEMP) },
+                                        shape = RoundedCornerShape(5.dp),
+                                        modifier = Modifier.background(Color.White),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            containerColor =  Color(0xFF127067)
+                                        ),
+                                    ) {
+                                        Text("Start", color = Color.White)
+                                    }
+                                    IconButton(onClick = { /*TODO*/ }) {
+                                        Icon(
+                                            imageVector = Icons.Default.MoreVert,
+                                            contentDescription = "Extra"
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
