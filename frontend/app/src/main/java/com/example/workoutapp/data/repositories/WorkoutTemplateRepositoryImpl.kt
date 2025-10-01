@@ -36,7 +36,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                             gifUrl = templateExerciseDto.exercise.gifUrl,
                             instructions = templateExerciseDto.exercise.instructions
                         ),
-                        sets = templateExerciseDto.set.map { setDto ->
+                        sets = templateExerciseDto.sets.map { setDto ->
                             Set(
                                 rep = setDto.rep,
                                 kg = setDto.kg,

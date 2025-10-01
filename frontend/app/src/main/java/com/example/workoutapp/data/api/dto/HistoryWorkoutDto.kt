@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HistoryWorkoutDto(
+    @SerialName("sessionId")
     val historyWorkoutId: String,
     val name: String,
     @SerialName("exercise")

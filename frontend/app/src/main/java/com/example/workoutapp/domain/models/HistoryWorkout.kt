@@ -27,5 +27,5 @@ data class WorkoutExercise(
     val exercise: Exercise,
     // TODO: endre i backend til "sets"
     @SerialName("set")
-    val set: List<Set>
+    val sets: List<Set>
 )
