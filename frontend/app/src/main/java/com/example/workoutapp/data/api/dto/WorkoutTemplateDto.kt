@@ -1,6 +1,5 @@
 package com.example.workoutapp.data.api.dto
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -22,15 +21,4 @@ data class WorkoutTemplateDto(
 data class TemplateExerciseDto(
     val exercise: ExerciseDto,
     val set: List<SetDto>
-)
-
-/**
- * Data transfer object for a set with rep, kg and type of set
- */
-@Serializable
-data class SetDto(
-    val rep: Int,
-    val kg: Int,
-    @SerialName("TypeSet") // TODO: Endre i backend til camelCase
-    val typeSet: Int
 )
