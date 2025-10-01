@@ -20,12 +20,14 @@ import (
 func newServer(
 	exerciseService *services.ExerciseService,
 	templateService *services.TemplateService,
+	SessionService *services.SessionService,
 ) http.Handler {
 	mux := http.NewServeMux()
 	addRoutes(
 		mux, 
 		exerciseService,
 		templateService,
+		SessionService,
 	)
 
 	middleware := newMiddleware() // top level middleware
@@ -56,6 +58,9 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	templateRepo := &repository.TemplateRepository{
 		Coll: mongoDB.Database("TrainingApp").Collection("templates"),
 	}
+	sessionRepo := &repository.SessionRepository{
+		Coll: mongoDB.Database("TrainingApp").Collection("sessions"),
+	}
 
 	// Starting up Services
 	exerciseService := &services.ExerciseService{
@@ -63,9 +68,14 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	}
 	
 	templateService := services.NewTemplateService(templateRepo, exerciseRepo)
+
+	SessionService := &services.SessionService{
+		Repo: sessionRepo,
+		RepoExer: exerciseRepo,
+	}
 	
 	// Setting up routes and starting http server
-	srv := newServer(exerciseService,  templateService)
+	srv := newServer(exerciseService,  templateService, SessionService)
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler: srv,
