@@ -15,7 +15,10 @@ data class HistoryWorkout(
     @SerialName("exercise")
     val exercises: List<WorkoutExercise>,
     val note: String
-)
+) {
+    val totalVolume: Int
+        get() = exercises.sumOf { it.volume }
+}
 
 /**
  * Data class that represents a Exercise in a completed / past workout.
@@ -25,7 +28,8 @@ data class HistoryWorkout(
  */
 data class WorkoutExercise(
     val exercise: Exercise,
-    // TODO: endre i backend til "sets"
-    @SerialName("set")
     val sets: List<Set>
-)
+) {
+    val volume: Int
+        get() = sets.sumOf { it.volume }
+}

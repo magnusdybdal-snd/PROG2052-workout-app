@@ -121,7 +121,7 @@ fun HistoryPage(
                                                     contentDescription = "",
                                                 )
                                                 Text(// Volume
-                                                    text = "volume",
+                                                    text = it.totalVolume.toString(),
                                                     modifier.padding(start = 6.dp)
                                                 )
 
