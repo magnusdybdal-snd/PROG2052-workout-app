@@ -110,7 +110,11 @@ fun HistoryPage(
                                                 contentDescription = "",
                                             )
                                             Text(
-                                                text = it.duration,
+                                                text = "%02d:%02d:%02d".format(
+                                                    it.duration.toHours(),
+                                                    it.duration.toMinutes() % 60,
+                                                    it.duration.toSeconds() % 60
+                                                ),
                                                 modifier.padding(start = 6.dp)
                                             )
                                             Row(
@@ -131,7 +135,7 @@ fun HistoryPage(
                                     } // end column 1 "workout text
                                     Text(
                                         modifier = Modifier.padding(end = 30.dp),
-                                        text = it.date,
+                                        text = it.date.toString(),
                                         textAlign = TextAlign.End
                                     )
                                 }

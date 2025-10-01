@@ -6,6 +6,9 @@ import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutExercise
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 /**
@@ -22,11 +25,14 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
      */
     override suspend fun getHistoryWorkouts(): List<HistoryWorkout> {
         return api.getHistoryWorkouts().map { dto ->
+            val localTime = LocalTime.parse(dto.duration)
+            val duration = Duration.ofSeconds(localTime.toSecondOfDay().toLong())
+
             HistoryWorkout(
                 historyWorkoutId = dto.historyWorkoutId,
                 name = dto.name,
-                date = dto.date,
-                duration = dto.duration,
+                date = LocalDate.parse(dto.date),
+                duration = duration,
                 note = dto.note,
                 exercises = dto.exercises.map { workoutExerciseDto ->
                     WorkoutExercise(

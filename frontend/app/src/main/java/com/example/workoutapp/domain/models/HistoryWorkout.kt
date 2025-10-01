@@ -1,6 +1,7 @@
 package com.example.workoutapp.domain.models
 
-import kotlinx.serialization.SerialName
+import java.time.Duration
+import java.time.LocalDate
 
 /**
  * Data class for a HistoryWorkout (completed / past workout)
@@ -9,13 +10,11 @@ import kotlinx.serialization.SerialName
 data class HistoryWorkout(
     val historyWorkoutId: String,
     val name: String,
-    val date: String,
-    val duration: String,
-    // TODO: endre i backend til "exercises"
-    @SerialName("exercise")
+    val date: LocalDate,
+    val duration: Duration,
     val exercises: List<WorkoutExercise>,
     val note: String
-) {
+) { // Computed value, not stored but computed at access time
     val totalVolume: Int
         get() = exercises.sumOf { it.volume }
 }
@@ -29,7 +28,7 @@ data class HistoryWorkout(
 data class WorkoutExercise(
     val exercise: Exercise,
     val sets: List<Set>
-) {
+) { // Computed value, not stored but computed at access time
     val volume: Int
         get() = sets.sumOf { it.volume }
 }

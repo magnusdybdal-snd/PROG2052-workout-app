@@ -13,8 +13,8 @@ data class HistoryWorkoutDto(
     val historyWorkoutId: String,
     val name: String,
     val exercises: List<WorkoutExerciseDto>,
-    val duration: String,
-    val date: String,
+    val duration: String, //"01:10:00"
+    val date: String, //"2025-10-01"
     val note: String
 )
 
