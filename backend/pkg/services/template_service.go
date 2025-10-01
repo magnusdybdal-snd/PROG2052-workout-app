@@ -22,8 +22,36 @@ func NewTemplateService(
 	}
 }
 
-func (s *TemplateService) GetAllTemplates(ctx context.Context) ([]domain.Template, error) {
-	return s.RepoTempl.GetAllTemplates(ctx)
+func (s *TemplateService) GetAllTemplates(ctx context.Context, include bool) (interface{}, error) {
+	templ, err := s.RepoTempl.GetAllTemplates(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !include {
+		return templ, nil
+	}
+
+	var expandedTempl []domain.ExpandedTemplate
+
+	for _, te := range templ {
+		var newTemplate domain.ExpandedTemplate
+		newTemplate.TemplateId = te.TemplateId
+		newTemplate.Name = te.Name
+		for _, et := range te.Exercises {
+			ex, err := s.RepoExer.GetOneExercise(ctx, et.ExerciseId)
+			if err != nil {
+				return nil, err
+			}
+			newTemplate.Exercises = append(newTemplate.Exercises, domain.ExpandedExerciseTemplate{
+				Exercise: ex,
+				Set: et.Set,
+			})
+		}
+
+		expandedTempl = append(expandedTempl, newTemplate)
+	}
+
+	return expandedTempl, nil
 }
 
 func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include bool) (interface{}, error) {

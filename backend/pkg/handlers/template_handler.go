@@ -26,7 +26,8 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			data, err := serv.GetAllTemplates(ctx)
+			include := utils.ParseInclude(r,"exercises")
+			data, err := serv.GetAllTemplates(ctx, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
