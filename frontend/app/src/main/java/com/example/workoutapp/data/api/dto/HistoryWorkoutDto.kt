@@ -12,7 +12,6 @@ data class HistoryWorkoutDto(
     @SerialName("sessionId")
     val historyWorkoutId: String,
     val name: String,
-    @SerialName("exercise")
     val exercises: List<WorkoutExerciseDto>,
     val duration: String,
     val date: String,

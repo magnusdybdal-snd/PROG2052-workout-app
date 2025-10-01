@@ -22,6 +22,5 @@ data class WorkoutTemplateDto(
 data class TemplateExerciseDto(
     val exercise: ExerciseDto,
     // TODO: endre i backend til "sets"
-    @SerialName("set")
     val sets: List<SetDto>
 )

@@ -10,6 +10,5 @@ import kotlinx.serialization.Serializable
 data class SetDto(
     val rep: Int,
     val kg: Int,
-    @SerialName("TypeSet") // TODO: Endre i backend til camelCase
     val typeSet: Int
 )
