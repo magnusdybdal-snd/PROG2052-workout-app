@@ -8,6 +8,7 @@ import com.example.workoutapp.domain.usecases.GetExercisesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ class ExercisesViewModel @Inject constructor(  // @Inject = Hilt can construct t
     // The viewmodel can change this instance
     private val _uiState = MutableStateFlow(ExercisesUiState())
     // This immutable instance is for the UI, read only
-    val uiState: StateFlow<ExercisesUiState> = _uiState
+    val uiState: StateFlow<ExercisesUiState> = _uiState.asStateFlow()
 
     // Runs once when the class is instantiated
     init {

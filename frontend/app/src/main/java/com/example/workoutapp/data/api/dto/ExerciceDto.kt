@@ -1,12 +1,12 @@
 package com.example.workoutapp.data.api.dto
 
-import com.example.workoutapp.domain.models.Exercise
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Data transfer object for a exercise (in library) with its data members
+ */
 @Serializable
 data class ExerciseDto(
-    @SerialName("exerciseId")
     val exerciseId: String,
     val name: String,
     val targetMuscles: List<String>,

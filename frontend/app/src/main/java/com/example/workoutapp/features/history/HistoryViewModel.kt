@@ -1,0 +1,45 @@
+package com.example.workoutapp.features.history
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.usecases.GetHistoryWorkoutUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+data class HistoryUiState(
+    val isLoading: Boolean = false,
+    val historyWorkouts: List<HistoryWorkout> = emptyList(),
+    val error: String? = null
+)
+
+@HiltViewModel
+class HistoryViewModel @Inject constructor(
+    private val getHistoryWorkoutUseCase: GetHistoryWorkoutUseCase
+): ViewModel() {
+
+    private val _uiState = MutableStateFlow(HistoryUiState())
+    val uiState: StateFlow<HistoryUiState> = _uiState.asStateFlow()
+
+    init {
+        loadHistory()
+    }
+
+    fun loadHistory() {
+        viewModelScope.launch {
+            _uiState.value = HistoryUiState(isLoading = true)
+            try {
+                val data = getHistoryWorkoutUseCase()
+                Log.d("HistoryViewModel", "Fetched ${data.size} completed workouts")
+                _uiState.value = HistoryUiState(historyWorkouts = data.sortedBy { it.date })
+            } catch (e: Exception) {
+                _uiState.value = HistoryUiState(error = e.message ?: "Unknown error")
+            }
+        }
+    }
+}
