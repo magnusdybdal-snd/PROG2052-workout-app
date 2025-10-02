@@ -44,7 +44,7 @@ func (s *TemplateService) GetAllTemplates(ctx context.Context, include bool) (in
 			}
 			newTemplate.Exercises = append(newTemplate.Exercises, domain.ExpandedExerciseTemplate{
 				Exercise: ex,
-				Set: et.Set,
+				Set: et.Sets,
 			})
 		}
 
@@ -74,7 +74,7 @@ func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include 
 		}
 		expandedTempl.Exercises = append(expandedTempl.Exercises, domain.ExpandedExerciseTemplate{
 			Exercise: ex,
-			Set: et.Set,
+			Set: et.Sets,
 		})
 	}
 

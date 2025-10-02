@@ -11,6 +11,7 @@ func addRoutes(
 	mux *http.ServeMux, 
 	exerciseService *services.ExerciseService,
 	templateService *services.TemplateService,
+	sessionService *services.SessionService,
 ) {
 	// Home route
 	mux.Handle(API_ROUTE,handlers.HandleHome())
@@ -18,6 +19,8 @@ func addRoutes(
 	// Endpoints
 	mux.Handle(EXERCISES_ROUTE,handlers.GetAllExercises(exerciseService))
 	mux.Handle(EXERCISES_ID_ROUTE,handlers.GetOneExercise(exerciseService))
+
+	mux.Handle(SESSIONS_ROUTE, handlers.HandleSession(sessionService))
 
 	mux.Handle(TEMPLATES_ROUTE, handlers.HandleTemplate(templateService))
 	mux.Handle(TEMPLATES_ID_ROUTE,handlers.GetOneTemplate(templateService))
