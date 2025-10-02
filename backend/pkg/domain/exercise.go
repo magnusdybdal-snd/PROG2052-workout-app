@@ -11,6 +11,30 @@ type Exercises struct {
 	Instructions     []string `bson:"instructions" json:"instructions"`
 }
 
+type TypeSet int
+
+const (
+	Drop TypeSet = iota
+	Failure
+	Warmup
+)
+
+type Set struct {
+	Rep  int32   `bson:"rep" json:"rep"`
+	Kg   int32   `bson:"kg" json:"kg"`
+	Type TypeSet `bson:"typeSet" json:"typeSet"`
+}
+
+type ExerciseIdTemplate struct {
+	ExerciseId string `bson:"exerciseId" json:"exerciseId"` // Changed in service layer to exericise
+	Sets       []Set  `bson:"sets" json:"sets"`
+}
+
+type ExpandedExerciseTemplate struct {
+	Exercise Exercises `bson:"exercise" json:"exercise"`
+	Set      []Set     `bson:"sets" json:"sets"`
+}
+
 // TODO:
 // Set up interfaces here for exercises
 // This way, services only implements this interface

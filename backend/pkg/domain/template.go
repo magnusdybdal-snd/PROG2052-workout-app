@@ -5,29 +5,11 @@ import (
 	"fmt"
 )
 
-type TypeSet int
-
-const (
-	Drop TypeSet = iota
-	Failure
-	Warmup
-)
-
-type Set struct {
-	Rep  int32   `bson:"rep" json:"rep"`
-	Kg   int32   `bson:"kg" json:"kg"`
-	Type TypeSet `bson:"TypeSet" json:"TypeSet"`
-}
-
-type ExerciseTemplate struct {
-	ExerciseId string `bson:"exerciseId" json:"exerciseId"` // Changed in service layer to exericise
-	Set        []Set  `bson:"set" json:"set"`
-}
 
 type Template struct {
-	TemplateId string             `bson:"templateId" json:"templateId"`
-	Name       string             `bson:"name" json:"name"`
-	Exercises  []ExerciseTemplate `bson:"exercises" json:"exercises"`
+	TemplateId string               `bson:"templateId" json:"templateId"`
+	Name       string               `bson:"name" json:"name"`
+	Exercises  []ExerciseIdTemplate `bson:"exercises" json:"exercises"`
 }
 
 func (t *Template) Valid(ctx context.Context) map[string]string {
@@ -41,7 +23,7 @@ func (t *Template) Valid(ctx context.Context) map[string]string {
 	}
 	for i, e := range t.Exercises {
 		if e.ExerciseId == "" {
-			problems[fmt.Sprintf("exercise[%d].exerciseId",i)] = "exercises id is required"
+			problems[fmt.Sprintf("exercise[%d].exerciseId", i)] = "exercises id is required"
 		}
 	}
 	if len(problems) == 0 {
