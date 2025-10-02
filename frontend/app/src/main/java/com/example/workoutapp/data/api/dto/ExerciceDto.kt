@@ -1,7 +1,5 @@
 package com.example.workoutapp.data.api.dto
 
-import com.example.workoutapp.domain.models.Exercise
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**

@@ -1,6 +1,7 @@
 package com.example.workoutapp.data.api
 
 import com.example.workoutapp.data.api.dto.ExerciseDto
+import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -31,5 +32,11 @@ class ApiService @Inject constructor(
         // TODO: URL needs to be changed for one with param to fetch for logged in user
         return client.get("$baseUrl/templates?include=exercises").body()
     }
+
+    suspend fun getHistoryWorkouts(): List<HistoryWorkoutDto> {
+        // TODO: URL needs to be changed for one with param to fetch for logged in user
+        return client.get("$baseUrl/sessions?include=exercises").body()
+    }
+
     // More API calls like getWorkoutTemplates will be added here
 }

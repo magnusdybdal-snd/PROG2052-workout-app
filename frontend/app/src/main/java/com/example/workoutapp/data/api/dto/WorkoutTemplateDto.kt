@@ -21,16 +21,6 @@ data class WorkoutTemplateDto(
 @Serializable
 data class TemplateExerciseDto(
     val exercise: ExerciseDto,
-    val set: List<SetDto>
-)
-
-/**
- * Data transfer object for a set with rep, kg and type of set
- */
-@Serializable
-data class SetDto(
-    val rep: Int,
-    val kg: Int,
-    @SerialName("TypeSet") // TODO: Endre i backend til camelCase
-    val typeSet: Int
+    // TODO: endre i backend til "sets"
+    val sets: List<SetDto>
 )
