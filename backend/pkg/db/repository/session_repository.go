@@ -29,3 +29,12 @@ func (r *SessionRepository) GetAllSession(ctx context.Context) ([]domain.Session
 
 	return data, nil
 }
+
+func (r *SessionRepository) InsertSession(ctx context.Context, data domain.Session) (string, error) {
+	result, err := r.Coll.InsertOne(ctx, data)
+	if err != nil {
+		return "", err
+	}
+	id := fmt.Sprintf("%s",result.InsertedID)
+	return id, nil
+}

@@ -11,7 +11,7 @@ import (
 )
 
 func InitDB(uri string) (*mongo.Client, error) {
-	log.Println("Initlizing connection to database")
+	log.Println("Initializing connection to database")
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
