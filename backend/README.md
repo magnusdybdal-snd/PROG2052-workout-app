@@ -25,7 +25,9 @@ type Template struct {
 - /api/v1/exercises
 - /api/v1/exercises/{id}
 - /api/vi/templates
+- /api/vi/templates?include=exercises
 - /api/vi/templates/{id}
+- /api/vi/templates/{id}?include=exercises
 ---
 ### `GET /exercises`
 Henter alle øvelser

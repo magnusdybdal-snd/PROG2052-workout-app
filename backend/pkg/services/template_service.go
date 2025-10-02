@@ -84,7 +84,7 @@ func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include 
 func (s *TemplateService) PostOneTemplate(ctx context.Context, payload *domain.Template) (string, error) {
 	result, err := s.RepoTempl.InsertOneTemplate(ctx, *payload)
 	if err != nil {
-		return "error", nil
+		return "", err
 	}
 	return result, nil
 }

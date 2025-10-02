@@ -46,3 +46,11 @@ func (s *SessionService) GetAllSession(ctx context.Context, include bool) (inter
 
 	return expandedSession, nil
 }
+
+func (s *SessionService) PostSession(ctx context.Context, payload *domain.Session) (string, error) {
+	result, err := s.Repo.InsertSession(ctx,*payload)
+	if err != nil {
+		return "",err 
+	}
+	return result, nil
+}
