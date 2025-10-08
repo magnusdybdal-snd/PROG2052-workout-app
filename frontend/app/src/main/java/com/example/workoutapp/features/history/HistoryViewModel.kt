@@ -1,6 +1,7 @@
 package com.example.workoutapp.features.history
 
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.HistoryWorkout
@@ -41,15 +42,25 @@ class HistoryViewModel @Inject constructor(
                 val data = getHistoryWorkoutUseCase()
 
                 // Groups all workouts by month/year for sorting in history page
-                val grouped = data.groupBy { workout ->
+                val grouped = data
+                    .sortedByDescending { it.date }
+                    .groupBy { workout ->
                     val month = workout.date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
                     val year = workout.date.year
                     "$month $year"
                 }
+                    // Sorts the map so that the newest month appears first
+                    .toSortedMap(compareByDescending { key ->
+                        val parts = key.split(" ")
+                        val monthName = parts[0]
+                        val year = parts[1].toInt()
+                        val monthValue = java.time.Month.valueOf(monthName.uppercase()).value
+                        year * 12 + monthValue
+                    })
                 Log.d("HistoryViewModel", "Fetched ${data.size} completed workouts")
 
                 _uiState.value = HistoryUiState(
-                    historyWorkouts = data.sortedBy { it.date },
+                    historyWorkouts = data.sortedByDescending { it.date },
                     groupedHistory = grouped)
             } catch (e: Exception) {
                 _uiState.value = HistoryUiState(error = e.message ?: "Unknown error")

@@ -75,6 +75,7 @@ fun HistoryPage(
 
                     //horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Loops trough every month that the map is grouped by
                     state.groupedHistory.forEach { (monthHeader, workoutsInMonth) ->
                         // Header text for each month
                         Row(
@@ -82,8 +83,6 @@ fun HistoryPage(
                                 .fillMaxWidth()
                                 .padding(vertical = 5.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
-
-
                         ) {
                             // Name of the month and year
                             Text(
@@ -101,7 +100,7 @@ fun HistoryPage(
                             )
                         }
 
-                        // Looping over each workout
+                        // Looping over each workout within the month
                         workoutsInMonth.forEach {
                             Box( // vertical space between boxes
                                 modifier = Modifier.padding(vertical = 6.dp)
