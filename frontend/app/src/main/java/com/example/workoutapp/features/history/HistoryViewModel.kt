@@ -16,6 +16,7 @@ import java.util.Locale
 
 data class HistoryUiState(
     val isLoading: Boolean = false,
+    // List of all workouts, not used by UI in MVP but could be useful later
     val historyWorkouts: List<HistoryWorkout> = emptyList(),
     val groupedHistory: Map<String, List<HistoryWorkout>> = emptyMap(),
     val error: String? = null

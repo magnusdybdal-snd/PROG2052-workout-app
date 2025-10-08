@@ -77,15 +77,29 @@ fun HistoryPage(
                 ) {
                     state.groupedHistory.forEach { (monthHeader, workoutsInMonth) ->
                         // Header text for each month
-                        Text(
-                            text = monthHeader,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 5.dp)
-                        )
+                                .padding(vertical = 5.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+
+
+                        ) {
+                            // Name of the month and year
+                            Text(
+                                text = monthHeader,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                            )
+                            // Number of workouts that month
+                            Text(
+                                text = workoutsInMonth.size.toString() + " workouts",
+                                fontSize = 14.sp,
+                                color = Color.DarkGray,
+
+                            )
+                        }
 
                         // Looping over each workout
                         workoutsInMonth.forEach {
