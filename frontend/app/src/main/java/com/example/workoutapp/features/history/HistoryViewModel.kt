@@ -11,10 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.time.format.TextStyle
+import java.util.Locale
 
 data class HistoryUiState(
     val isLoading: Boolean = false,
     val historyWorkouts: List<HistoryWorkout> = emptyList(),
+    val groupedHistory: Map<String, List<HistoryWorkout>> = emptyMap(),
     val error: String? = null
 )
 
@@ -35,8 +38,18 @@ class HistoryViewModel @Inject constructor(
             _uiState.value = HistoryUiState(isLoading = true)
             try {
                 val data = getHistoryWorkoutUseCase()
+
+                // Groups all workouts by month/year for sorting in history page
+                val grouped = data.groupBy { workout ->
+                    val month = workout.date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                    val year = workout.date.year
+                    "$month $year"
+                }
                 Log.d("HistoryViewModel", "Fetched ${data.size} completed workouts")
-                _uiState.value = HistoryUiState(historyWorkouts = data.sortedBy { it.date })
+
+                _uiState.value = HistoryUiState(
+                    historyWorkouts = data.sortedBy { it.date },
+                    groupedHistory = grouped)
             } catch (e: Exception) {
                 _uiState.value = HistoryUiState(error = e.message ?: "Unknown error")
             }
