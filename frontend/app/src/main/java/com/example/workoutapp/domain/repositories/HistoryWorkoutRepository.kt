@@ -13,4 +13,5 @@ import com.example.workoutapp.domain.models.HistoryWorkout
  */
 interface HistoryWorkoutRepository {
     suspend fun getHistoryWorkouts(): List<HistoryWorkout>
+    suspend fun postHistoryWorkout(historyWorkout: HistoryWorkout)
 }

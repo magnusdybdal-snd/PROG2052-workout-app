@@ -57,4 +57,8 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    override suspend fun postHistoryWorkout(historyWorkout: HistoryWorkout) {
+        api.postHistoryWorkout()
+    }
 }

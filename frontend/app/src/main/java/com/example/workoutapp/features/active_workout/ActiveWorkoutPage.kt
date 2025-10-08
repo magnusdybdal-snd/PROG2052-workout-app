@@ -57,7 +57,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 @Composable
 fun ActiveWorkoutPage(
-    workoutName: String,
+    templateId: Int,
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: ActWorkViewModel = hiltViewModel()
@@ -71,7 +71,7 @@ fun ActiveWorkoutPage(
         else -> {
             var isAnyChecked by remember { mutableStateOf(false) }
 
-            var ticks by remember { mutableIntStateOf(5) }
+            var ticks by remember { mutableIntStateOf(60 * 3) }
             LaunchedEffect(Unit) {
                 while (true) {
                     delay(1.seconds)
@@ -148,7 +148,7 @@ fun ActiveWorkoutPage(
                             }
                         }
                         Text(
-                            state.templates[0].name,
+                            state.templates[templateId].name,
                             fontSize = 30.sp,
                             modifier = Modifier.padding(vertical = 10.dp)
                         )
@@ -158,7 +158,7 @@ fun ActiveWorkoutPage(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                         ) {
-                            state.templates[0].exercises.forEach { exSet ->
+                            state.templates[templateId].exercises.forEach { exSet ->
                                 Text(
                                     exSet.exercise.name,
                                     fontSize = 15.sp
@@ -200,7 +200,6 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Text("KG", fontSize = 10.sp)
                                         exSet.sets.forEach { set ->
-                                            // TODO get kg and reps from exercise
                                             val kg = remember { mutableStateOf(set.kg.toString()) }
                                             TextField(
                                                 value = kg.value,

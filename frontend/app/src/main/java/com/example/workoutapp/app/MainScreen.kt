@@ -17,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.exercises.ExercisesPage
@@ -76,8 +78,14 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
-                                                            // "Test" to be workout name
-            composable(Routes.WORKTEMP)  { ActiveWorkoutPage("Test",Modifier, navController) }
+                                                            // "Test" to be template id
+            composable(
+                route = Routes.WORKTEMP,
+                arguments = listOf(navArgument("tempId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
+                ActiveWorkoutPage(templateId.toInt(), Modifier, navController)
+            }
         }
     }
 }

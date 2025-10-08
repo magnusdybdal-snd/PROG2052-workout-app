@@ -112,7 +112,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    state.workoutTemplates.forEach { workoutTemplate: WorkoutTemplate ->
+                    state.workoutTemplates.forEachIndexed { index, workoutTemplate: WorkoutTemplate ->
                         Box(
                             modifier = Modifier
                                 .border(width = 2.dp, color = Color.Black)
@@ -130,7 +130,7 @@ fun HomePage(modifier: Modifier = Modifier,
                                     fontSize = 20.sp)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Button(
-                                        onClick = { navController.navigate(Routes.WORKTEMP) },
+                                        onClick = { navController.navigate("worktemp/$index")},
                                         shape = RoundedCornerShape(5.dp),
                                         modifier = Modifier.background(Color.White),
                                         colors = ButtonDefaults.outlinedButtonColors(
@@ -177,7 +177,7 @@ fun HomePage(modifier: Modifier = Modifier,
                                 Text("Example $i", fontSize = 20.sp) // TODO get example name from database
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Button(
-                                        onClick = { navController.navigate(Routes.WORKTEMP) },
+                                        onClick = { navController.navigate("worktemp/${i-1}")},
                                         shape = RoundedCornerShape(5.dp),
                                         modifier = Modifier.background(Color.White),
                                         colors = ButtonDefaults.outlinedButtonColors(

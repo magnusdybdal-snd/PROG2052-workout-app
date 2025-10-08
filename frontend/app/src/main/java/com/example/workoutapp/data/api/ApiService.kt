@@ -38,5 +38,10 @@ class ApiService @Inject constructor(
         return client.get("$baseUrl/sessions?include=exercises").body()
     }
 
+    suspend fun postHistoryWorkout(): HistoryWorkoutDto {
+        // TODO: URL needs to be changed for one with param to fetch for logged in user
+        return client.get("$baseUrl/sessions").body()
+    }
+
     // More API calls like getWorkoutTemplates will be added here
 }
