@@ -17,10 +17,6 @@ data class HistoryWorkout(
 ) { // Computed value, not stored but computed at access time
     val totalVolume: Int
         get() = exercises.sumOf { it.volume }
-
-    fun toDto(): Int {
-        return 0
-    }
 }
 
 /**

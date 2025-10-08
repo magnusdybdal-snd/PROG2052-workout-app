@@ -2,11 +2,15 @@ package com.example.workoutapp.features.active_workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
+import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
+import com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +25,8 @@ data class ActiveWorkoutUiState(
 // Hilt will generate all the factory code needed to create it.
 @HiltViewModel
 class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct this
-    private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase
+    private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase,
+    private val postHistoryWorkoutUseCase: PostHistoryWorkoutUseCase
 ) : ViewModel() {
 
     // The viewmodel can change this instance
@@ -40,11 +45,20 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
             try {
                 val data = getWorkoutTemplatesUseCase()
                 // On success update the state with data in exercises
-                //Log.d("ExercisesViewModel", "Fetched ${data.size} exercises")
                 _uiState.value = ActiveWorkoutUiState(templates = data.sortedBy { it.name.lowercase() })
                 // On failure update the state with an error message
             } catch (e: Exception) {
                 _uiState.value = ActiveWorkoutUiState(error = e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun postWorkout(historyWorkoutDto: HistoryWorkoutDto) {
+        viewModelScope.launch {
+            try {
+                postHistoryWorkoutUseCase(historyWorkoutDto)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message ?: "Failed to save workout") }
             }
         }
     }

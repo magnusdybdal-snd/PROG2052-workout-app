@@ -47,10 +47,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.data.api.dto.ExerciseDto
+import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
+import com.example.workoutapp.data.api.dto.SetDto
+import com.example.workoutapp.data.api.dto.WorkoutExerciseDto
+import com.example.workoutapp.domain.models.Exercise
+import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.models.Set
+import com.example.workoutapp.domain.models.WorkoutExercise
 import kotlinx.coroutines.delay
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 /**
  * Displays Workout page
@@ -138,7 +150,40 @@ fun ActiveWorkoutPage(
                         ) {
                             Text(getCurrentTimeString(), fontSize = 20.sp)
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    val template = state.templates[templateId]
+
+                                    val historyWorkoutDto = HistoryWorkoutDto(
+                                        historyWorkoutId = "sess_000",
+                                        name = template.name,
+                                        date = LocalDate.now().toString(),
+                                        duration = 60.minutes.toJavaDuration().toString(),
+                                        note = "", // you can add a note field later
+                                        exercises = template.exercises.map { exSet ->
+                                            WorkoutExerciseDto(
+                                                exercise = ExerciseDto(
+                                                    exerciseId = "Test",
+                                                    name = exSet.exercise.name,
+                                                    targetMuscles = exSet.exercise.targetMuscles,
+                                                    bodyParts = exSet.exercise.bodyParts,
+                                                    equipments = exSet.exercise.equipments,
+                                                    secondaryMuscles = exSet.exercise.secondaryMuscles,
+                                                    gifUrl = exSet.exercise.gifUrl,
+                                                    instructions = exSet.exercise.instructions
+                                                ),
+                                                sets = exSet.sets.map { set ->
+                                                    SetDto(
+                                                        rep = set.rep,
+                                                        kg = set.kg,
+                                                        typeSet = set.typeSet
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                    viewModel.postWorkout(historyWorkoutDto)
+                                    navController.popBackStack()
+                                },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
                                     containerColor = Color(0xFF127067)

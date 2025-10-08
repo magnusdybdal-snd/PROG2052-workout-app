@@ -3,9 +3,14 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.domain.models.HistoryWorkout
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import javax.inject.Inject
 
 /**
@@ -38,10 +43,11 @@ class ApiService @Inject constructor(
         return client.get("$baseUrl/sessions?include=exercises").body()
     }
 
-    suspend fun postHistoryWorkout(): HistoryWorkoutDto {
-        // TODO: URL needs to be changed for one with param to fetch for logged in user
-        return client.get("$baseUrl/sessions").body()
+    suspend fun postHistoryWorkout(historyWorkoutDto: HistoryWorkoutDto) {
+        client.post("$baseUrl/sessions") {
+            contentType(ContentType.Application.Json)
+            setBody(historyWorkoutDto)
+        }
     }
-
     // More API calls like getWorkoutTemplates will be added here
 }
