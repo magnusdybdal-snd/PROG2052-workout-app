@@ -1,0 +1,260 @@
+kotlin version: 2.0.21
+error message: org.jetbrains.kotlin.backend.common.CompilationException: Back-end: Please report this problem https://kotl.in/issue
+C:/Users/jonas/OneDrive/Documents/NTNU/Programering/3H/Integrasjonsprosjekt/prog2052-prosjekt/frontend/app/src/main/java/com/example/workoutapp/domain/models/HistoryWorkout.kt:12:1
+Problem with `@Serializable
+@StabilityInferred(parameters = 0)
+data class HistoryWorkout {
+  constructor(historyWorkoutId: String, name: String, date: LocalDate, duration: Duration, exercises: List<WorkoutExercise>, note: String) /* primary */ {
+    super/*Any*/()
+    /* <init>() */
+
+  }
+
+  val historyWorkoutId: String
+    field = historyWorkoutId
+    get
+
+  val name: String
+    field = name
+    get
+
+  @Contextual
+  val date: LocalDate
+    field = date
+    get
+
+  @Contextual
+  val duration: Duration
+    field = duration
+    get
+
+  val exercises: List<WorkoutExercise>
+    field = exercises
+    get
+
+  val note: String
+    field = note
+    get
+
+  val totalVolume: Int
+    get(): Int {
+      return <this>.<get-exercises>().sumOf<WorkoutExercise>(selector = local fun <anonymous>(it: WorkoutExercise): Int {
+        return it.<get-volume>()
+      }
+)
+    }
+
+  fun toDto(): HistoryWorkout {
+    return { // BLOCK
+      val tmp0_historyWorkoutId: String = <this>.<get-historyWorkoutId>()
+      val tmp1_name: String = <this>.<get-name>()
+      val tmp2_date: LocalDate = <this>.<get-date>()
+      val tmp3_duration: Duration = <this>.<get-duration>()
+      val tmp4_note: String = <this>.<get-note>()
+      val tmp5_exercises: List<WorkoutExercise> = <this>.<get-exercises>().map<WorkoutExercise, WorkoutExercise>(transform = local fun <anonymous>(workoutExercise: WorkoutExercise): WorkoutExercise {
+        return WorkoutExercise(exercise = Exercise(name = workoutExercise.<get-exercise>().<get-name>(), targetMuscles = workoutExercise.<get-exercise>().<get-targetMuscles>(), bodyParts = workoutExercise.<get-exercise>().<get-bodyParts>(), equipments = workoutExercise.<get-exercise>().<get-equipments>(), secondaryMuscles = workoutExercise.<get-exercise>().<get-secondaryMuscles>(), gifUrl = workoutExercise.<get-exercise>().<get-gifUrl>(), instructions = workoutExercise.<get-exercise>().<get-instructions>()), sets = workoutExercise.<get-sets>().map<Set, Set>(transform = local fun <anonymous>(set: Set): Set {
+          return Set(rep = set.<get-rep>(), kg = set.<get-kg>(), typeSet = set.<get-typeSet>())
+        }
+))
+      }
+)
+      HistoryWorkout(historyWorkoutId = tmp0_historyWorkoutId, name = tmp1_name, date = tmp2_date, duration = tmp3_duration, exercises = tmp5_exercises, note = tmp4_note)
+    }
+  }
+
+  companion object Companion {
+    private constructor() /* primary */ {
+      super/*Any*/()
+      /* <init>() */
+
+    }
+
+    fun serializer(): KSerializer<HistoryWorkout>
+
+    /* fake */ override operator fun equals(other: Any?): Boolean
+
+    /* fake */ override fun hashCode(): Int
+
+    /* fake */ override fun toString(): String
+
+  }
+
+  @Deprecated(message = "This synthesized declaration should not be used directly", level = DeprecationLevel.HIDDEN)
+  @StabilityInferred(parameters = 0)
+  object $serializer : GeneratedSerializer<HistoryWorkout> {
+    private constructor() /* primary */ {
+      super/*Any*/()
+      /* <init>() */
+
+    }
+
+    override fun serialize(encoder: Encoder, value: HistoryWorkout)
+
+    override fun deserialize(decoder: Decoder): HistoryWorkout
+
+    override val descriptor: SerialDescriptor
+      override get
+
+    override fun childSerializers(): Array<KSerializer<*>>
+
+    /* fake */ override fun typeParametersSerializers(): Array<KSerializer<*>>
+
+    /* fake */ override operator fun equals(other: Any?): Boolean
+
+    /* fake */ override fun hashCode(): Int
+
+    /* fake */ override fun toString(): String
+
+    /* static final field */ val $stable: Int = 8
+  }
+
+  operator fun component1(): String {
+    return <this>.#historyWorkoutId
+  }
+
+  operator fun component2(): String {
+    return <this>.#name
+  }
+
+  operator fun component3(): LocalDate {
+    return <this>.#date
+  }
+
+  operator fun component4(): Duration {
+    return <this>.#duration
+  }
+
+  operator fun component5(): List<WorkoutExercise> {
+    return <this>.#exercises
+  }
+
+  operator fun component6(): String {
+    return <this>.#note
+  }
+
+  fun copy(historyWorkoutId: String = <this>.#historyWorkoutId, name: String = <this>.#name, date: LocalDate = <this>.#date, duration: Duration = <this>.#duration, exercises: List<WorkoutExercise> = <this>.#exercises, note: String = <this>.#note): HistoryWorkout {
+    return HistoryWorkout(historyWorkoutId = historyWorkoutId, name = name, date = date, duration = duration, exercises = exercises, note = note)
+  }
+
+  override fun toString(): String {
+    return "HistoryWorkout(" + "historyWorkoutId=" + <this>.#historyWorkoutId + ", " + "name=" + <this>.#name + ", " + "date=" + <this>.#date + ", " + "duration=" + <this>.#duration + ", " + "exercises=" + <this>.#exercises + ", " + "note=" + <this>.#note + ")"
+  }
+
+  override fun hashCode(): Int {
+    var result: Int = <this>.#historyWorkoutId.hashCode()
+    result = result.times(other = 31).plus(other = <this>.#name.hashCode())
+    result = result.times(other = 31).plus(other = <this>.#date.hashCode())
+    result = result.times(other = 31).plus(other = <this>.#duration.hashCode())
+    result = result.times(other = 31).plus(other = <this>.#exercises.hashCode())
+    result = result.times(other = 31).plus(other = <this>.#note.hashCode())
+    return result
+  }
+
+  override operator fun equals(other: Any?): Boolean {
+    when {
+      EQEQEQ(arg0 = <this>, arg1 = other) -> return true
+    }
+    when {
+      other !is HistoryWorkout -> return false
+    }
+    val tmp0_other_with_cast: HistoryWorkout = other as HistoryWorkout
+    when {
+      EQEQ(arg0 = <this>.#historyWorkoutId, arg1 = tmp0_other_with_cast.#historyWorkoutId).not() -> return false
+    }
+    when {
+      EQEQ(arg0 = <this>.#name, arg1 = tmp0_other_with_cast.#name).not() -> return false
+    }
+    when {
+      EQEQ(arg0 = <this>.#date, arg1 = tmp0_other_with_cast.#date).not() -> return false
+    }
+    when {
+      EQEQ(arg0 = <this>.#duration, arg1 = tmp0_other_with_cast.#duration).not() -> return false
+    }
+    when {
+      EQEQ(arg0 = <this>.#exercises, arg1 = tmp0_other_with_cast.#exercises).not() -> return false
+    }
+    when {
+      EQEQ(arg0 = <this>.#note, arg1 = tmp0_other_with_cast.#note).not() -> return false
+    }
+    return true
+  }
+
+  /* static final field */ val $stable: Int = 8
+  @JvmStatic
+  internal fun write$Self(self: HistoryWorkout, output: CompositeEncoder, serialDesc: SerialDescriptor)
+
+  internal constructor(seen0: Int, historyWorkoutId: String?, name: String?, date: LocalDate?, duration: Duration?, exercises: List<WorkoutExercise>?, note: String?, serializationConstructorMarker: SerializationConstructorMarker?)
+
+}
+
+`
+Details: kotlinx.serialization compiler plugin internal error: unable to transform declaration, see cause
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializerClassLowering.lower(SerializationLoweringExtension.kt:230)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitClass(SerializationLoweringExtension.kt:46)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid$DefaultImpls.visitClass(IrElementVisitorVoid.kt:44)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitClass(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitClass(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlin.ir.declarations.IrClass.accept(IrClass.kt:72)
+	at org.jetbrains.kotlin.ir.declarations.IrFile.acceptChildren(IrFile.kt:34)
+	at org.jetbrains.kotlin.ir.visitors.IrVisitorsKt.acceptChildrenVoid(IrVisitors.kt:15)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitElement(SerializationLoweringExtension.kt:42)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid$DefaultImpls.visitPackageFragment(IrElementVisitorVoid.kt:168)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitPackageFragment(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid$DefaultImpls.visitFile(IrElementVisitorVoid.kt:184)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitFile(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid$DefaultImpls.visitFile(IrElementVisitorVoid.kt:180)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitFile(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt$runOnFileInOrder$1.visitFile(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlin.ir.declarations.IrFile.accept(IrFile.kt:28)
+	at org.jetbrains.kotlin.ir.visitors.IrVisitorsKt.acceptVoid(IrVisitors.kt:11)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtensionKt.runOnFileInOrder(SerializationLoweringExtension.kt:40)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationLoweringExtension.generate(SerializationLoweringExtension.kt:194)
+	at org.jetbrains.kotlin.fir.pipeline.ConvertToIrKt.applyIrGenerationExtensions(convertToIr.kt:442)
+	at org.jetbrains.kotlin.fir.pipeline.Fir2IrPipeline.runActualizationPipeline(convertToIr.kt:246)
+	at org.jetbrains.kotlin.fir.pipeline.Fir2IrPipeline.convertToIrAndActualize(convertToIr.kt:130)
+	at org.jetbrains.kotlin.fir.pipeline.ConvertToIrKt.convertToIrAndActualize(convertToIr.kt:99)
+	at org.jetbrains.kotlin.fir.pipeline.ConvertToIrKt.convertToIrAndActualize$default(convertToIr.kt:72)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.convertToIrAndActualizeForJvm(jvmCompilerPipeline.kt:196)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.convertAnalyzedFirToIr(jvmCompilerPipeline.kt:169)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.compileModulesUsingFrontendIrAndLightTree(jvmCompilerPipeline.kt:140)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:148)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:43)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:103)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:49)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:464)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:73)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally$lambda$9$compile(IncrementalCompilerRunner.kt:249)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:267)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:120)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(Unknown Source)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.IllegalStateException: Serializer for element of type com.example.workoutapp.domain.models.WorkoutExercise has not been found
+	at org.jetbrains.kotlinx.serialization.compiler.backend.ir.SerializerSearchUtilKt.findTypeSerializerOrContext(SerializerSearchUtil.kt:84)
+	at org.jetbrains.kotlinx.serialization.compiler.backend.ir.BaseIrGenerator.serializerInstance(BaseIrGenerator.kt:722)
+	at org.jetbrains.kotlinx.serialization.compiler.backend.ir.BaseIrGenerator.cacheableChildSerializerInstance(BaseIrGenerator.kt:496)
+	at org.jetbrains.kotlinx.serialization.compiler.backend.ir.BaseIrGenerator.createCachedChildSerializers(BaseIrGenerator.kt:468)
+	at org.jetbrains.kotlinx.serialization.compiler.backend.ir.SerializableIrGenerator.<init>(SerializableIrGenerator.kt:59)
+	at org.jetbrains.kotlinx.serialization.compiler.backend.ir.SerializableIrGenerator$Companion.generate(SerializableIrGenerator.kt:398)
+	at org.jetbrains.kotlinx.serialization.compiler.extensions.SerializerClassLowering.lower(SerializationLoweringExtension.kt:146)
+	... 57 more
+
+

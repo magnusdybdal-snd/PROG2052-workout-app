@@ -1,7 +1,14 @@
 package com.example.workoutapp.data.api.dto
 
+import com.example.workoutapp.domain.models.Exercise
+import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.models.Set
+import com.example.workoutapp.domain.models.WorkoutExercise
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 /**
  * Data transfer object for a past workout / completed workout with

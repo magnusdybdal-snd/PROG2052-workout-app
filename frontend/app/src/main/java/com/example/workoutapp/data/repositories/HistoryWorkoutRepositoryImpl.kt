@@ -1,8 +1,10 @@
 package com.example.workoutapp.data.repositories
 
 import com.example.workoutapp.data.api.ApiService
+import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutExercise
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
@@ -37,6 +39,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 exercises = dto.exercises.map { workoutExerciseDto ->
                     WorkoutExercise(
                         exercise = Exercise(
+                            exerciseId = workoutExerciseDto.exercise.exerciseId,
                             name = workoutExerciseDto.exercise.name,
                             targetMuscles = workoutExerciseDto.exercise.targetMuscles,
                             bodyParts = workoutExerciseDto.exercise.bodyParts,
@@ -56,5 +59,9 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 }
             )
         }
+    }
+
+    override suspend fun postHistoryWorkout(session: Session) {
+        api.postHistoryWorkout(session)
     }
 }

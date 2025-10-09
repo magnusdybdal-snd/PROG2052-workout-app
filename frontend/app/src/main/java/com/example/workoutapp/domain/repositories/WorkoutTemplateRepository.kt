@@ -1,5 +1,6 @@
 package com.example.workoutapp.domain.repositories
 
+import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
@@ -13,4 +14,5 @@ import com.example.workoutapp.domain.models.WorkoutTemplate
  */
 interface WorkoutTemplateRepository {
     suspend fun getWorkoutTemplates(): List<WorkoutTemplate>
+    suspend fun postWorkoutTemplate(workoutTemplateDto: WorkoutTemplateDto)
 }
