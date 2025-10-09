@@ -56,7 +56,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     .fillMaxSize()
                     .widthIn(max = 550.dp)
                     .background(MaterialTheme.colorScheme.background)
-                    .padding(vertical = 40.dp)
+                    .padding(top = 40.dp)
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
