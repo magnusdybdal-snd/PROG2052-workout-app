@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -59,15 +60,15 @@ fun HistoryPage(
             Column( // Workout Header
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight()
                     .widthIn(max = 500.dp)
                     //.padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
                     .background(Color.White),
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(top = 80.dp)
+                        .padding(top = 40.dp)
                         .padding(bottom = 20.dp),
                     text = "History",
                     fontSize = 50.sp,
