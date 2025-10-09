@@ -19,14 +19,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -47,17 +50,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.data.api.dto.ExerciseDto
+import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
+import com.example.workoutapp.data.api.dto.SetDto
+import com.example.workoutapp.data.api.dto.WorkoutExerciseDto
+import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.SessionExercise
+import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
-/**
+/**viewmodel
  * Displays Workout page
  */
 @Composable
 fun ActiveWorkoutPage(
-    workoutName: String,
+    templateId: Int,
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: ActWorkViewModel = hiltViewModel()
@@ -71,7 +84,7 @@ fun ActiveWorkoutPage(
         else -> {
             var isAnyChecked by remember { mutableStateOf(false) }
 
-            var ticks by remember { mutableIntStateOf(5) }
+            var ticks by remember { mutableIntStateOf(60 * 3) }
             LaunchedEffect(Unit) {
                 while (true) {
                     delay(1.seconds)
@@ -137,8 +150,12 @@ fun ActiveWorkoutPage(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(getCurrentTimeString(), fontSize = 20.sp)
+                            var showDialog by remember { mutableStateOf(false) }
+                            var notes by remember { mutableStateOf("") }
                             Button(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    showDialog = true
+                                },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
                                     containerColor = Color(0xFF127067)
@@ -146,9 +163,60 @@ fun ActiveWorkoutPage(
                             ) {
                                 Text("Finish", color = Color.White)
                             }
+
+                            if (showDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showDialog = false },
+                                    title = { Text("Add a note before finishing?") },
+                                    text = {
+                                        OutlinedTextField(
+                                            value = notes,
+                                            onValueChange = { notes = it },
+                                            label = { Text("Workout notes") }
+                                        )
+                                    },
+                                    confirmButton = {
+                                        TextButton(onClick = {
+                                            val template = state.templates[templateId]
+                                            val finishedWorkout = Session(
+                                                sessionId = "sess_003",
+                                                name = template.name,
+                                                exercises = template.exercises.mapIndexed { index,
+                                                                                            exSet ->
+                                                    SessionExercise(
+                                                        exerciseId = exSet.exercise.exerciseId,
+                                                        sets = exSet.sets.map { set ->
+                                                            Set(
+                                                                rep = set.rep,
+                                                                kg = set.kg,
+                                                                typeSet = set.typeSet
+                                                            )
+                                                        }
+                                                    )
+                                                },
+                                                duration = "00:30:00",
+                                                date = LocalDate.now().toString(),
+                                                note = notes
+                                            )
+
+                                            viewModel.postWorkout(finishedWorkout)
+                                            showDialog = false
+                                            navController.popBackStack()
+                                        }) {
+                                            Text("Finish Workout")
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(onClick = { showDialog = false }) {
+                                            Text("Cancel")
+                                        }
+                                    }
+                                )
+                            }
+
                         }
                         Text(
-                            state.templates[0].name,
+                            state.templates[templateId].name,
                             fontSize = 30.sp,
                             modifier = Modifier.padding(vertical = 10.dp)
                         )
@@ -158,7 +226,7 @@ fun ActiveWorkoutPage(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                         ) {
-                            state.templates[0].exercises.forEach { exSet ->
+                            state.templates[templateId].exercises.forEach { exSet ->
                                 Text(
                                     exSet.exercise.name,
                                     fontSize = 15.sp
@@ -200,11 +268,10 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Text("KG", fontSize = 10.sp)
                                         exSet.sets.forEach { set ->
-                                            // TODO get kg and reps from exercise
-                                            val kg = remember { mutableStateOf(set.kg.toString()) }
+                                            //val kg = remember { mutableStateOf() }
                                             TextField(
-                                                value = kg.value,
-                                                onValueChange = { kg.value = it },
+                                                value = set.kg.toString(),
+                                                onValueChange = { set.kg = it.toInt() },
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = TextFieldDefaults.colors(
                                                     focusedIndicatorColor = Color.Transparent,
@@ -226,10 +293,9 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Text("REPS", fontSize = 10.sp)
                                         exSet.sets.forEach { set ->
-                                            val reps = remember { mutableStateOf(set.rep.toString()) }
                                             TextField(
-                                                value = reps.value,
-                                                onValueChange = { reps.value = it },
+                                                value = set.rep.toString(),
+                                                onValueChange = { set.rep = it.toInt() },
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = TextFieldDefaults.colors(
                                                     focusedIndicatorColor = Color.Transparent,

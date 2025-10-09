@@ -1,6 +1,7 @@
 package com.example.workoutapp.domain.models
 
 data class Exercise(
+    val exerciseId: String,
     val name: String,
     val targetMuscles: List<String>,
     val bodyParts: List<String>,

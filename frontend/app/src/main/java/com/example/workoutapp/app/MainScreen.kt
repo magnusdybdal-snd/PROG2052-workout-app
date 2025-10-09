@@ -17,15 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
+//import com.example.workoutapp.features.new_template.NewTemplatePage
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -76,8 +79,14 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
-                                                            // "Test" to be workout name
-            composable(Routes.WORKTEMP)  { ActiveWorkoutPage("Test",Modifier, navController) }
+            //composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
+            composable(
+                route = Routes.WORKTEMP,
+                arguments = listOf(navArgument("tempId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
+                ActiveWorkoutPage(templateId.toInt(), Modifier, navController)
+            }
         }
     }
 }

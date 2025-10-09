@@ -13,6 +13,7 @@ class ExercisesRepositoryImpl @Inject constructor(
     override suspend fun getExercises(): List<Exercise> {
         return api.getExercises().map { dto ->
             Exercise(
+                exerciseId = dto.exerciseId,
                 name = dto.name,
                 targetMuscles = dto.targetMuscles,
                 bodyParts = dto.bodyParts,

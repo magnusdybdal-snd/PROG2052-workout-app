@@ -4,5 +4,6 @@ object Routes {
     const val HISTORY = "history"
     const val WORKOUT = "workout"
     const val EXERCISES = "exercises"
-    const val WORKTEMP = "workTemp"
+    const val NEWTEMP = "newTemp"
+    const val WORKTEMP = "workTemp/{tempId}"
 }
