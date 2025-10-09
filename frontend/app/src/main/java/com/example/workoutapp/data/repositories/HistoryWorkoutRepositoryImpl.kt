@@ -1,13 +1,15 @@
 package com.example.workoutapp.data.repositories
 
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
+import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutExercise
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
@@ -18,7 +20,8 @@ import javax.inject.Inject
  * Built by injecting the API service
  */
 class HistoryWorkoutRepositoryImpl @Inject constructor(
-    private val api: ApiService
+    private val api: ApiService,
+    private val dao: HistoryWorkoutDao
 ): HistoryWorkoutRepository {
 
     /**
