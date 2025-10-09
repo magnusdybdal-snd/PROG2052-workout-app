@@ -1,4 +1,4 @@
-/*package com.example.workoutapp.features.new_template
+package com.example.workoutapp.features.new_template
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -254,4 +254,4 @@ fun getCurrentTimeString(): String {
     val currentTime = LocalTime.now() // current time
     val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
     return currentTime.format(formatter)
-}*/
+}
