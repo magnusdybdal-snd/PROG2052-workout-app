@@ -28,7 +28,7 @@ import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
-//import com.example.workoutapp.features.new_template.NewTemplatePage
+import com.example.workoutapp.features.new_template.NewTemplatePage
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -79,7 +79,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
-            //composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
+            composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
             composable(
                 route = Routes.WORKTEMP,
                 arguments = listOf(navArgument("tempId") { type = NavType.StringType })
