@@ -270,7 +270,7 @@ fun ActiveWorkoutPage(
                                             //val kg = remember { mutableStateOf() }
                                             TextField(
                                                 value = set.kg.toString(),
-                                                onValueChange = { set.kg = it.toInt() },
+                                                onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = TextFieldDefaults.colors(
                                                     focusedIndicatorColor = Color.Transparent,
@@ -294,7 +294,7 @@ fun ActiveWorkoutPage(
                                         exSet.sets.forEach { set ->
                                             TextField(
                                                 value = set.rep.toString(),
-                                                onValueChange = { set.rep = it.toInt() },
+                                                onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = TextFieldDefaults.colors(
                                                     focusedIndicatorColor = Color.Transparent,
