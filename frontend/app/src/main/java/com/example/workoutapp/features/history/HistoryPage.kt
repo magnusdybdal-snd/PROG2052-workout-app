@@ -69,29 +69,45 @@ fun HistoryPage(
                     modifier = Modifier
                         .widthIn(max = 700.dp)
                         .background(Color.White)
-                        //.padding(bottom = 20.dp)
+                        .padding(horizontal = 20.dp)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
 
-                    //        horizontalAlignment = Alignment.CenterHorizontally
+                    //horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    for (i in 1..3){ // loop over months
-                        Text( // Month
-                            modifier = Modifier.padding(start = 20.dp, top = 10.dp),
-                            text = "September", // Value hardcoded until backend Logic is available
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
+                    // Loops trough every month that the map is grouped by
+                    state.groupedHistory.forEach { (monthHeader, workoutsInMonth) ->
+                        // Header text for each month
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 5.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // Name of the month and year
+                            Text(
+                                text = monthHeader,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                            )
+                            // Number of workouts that month
+                            Text(
+                                text = workoutsInMonth.size.toString() + " workouts",
+                                fontSize = 14.sp,
+                                color = Color.DarkGray,
 
                             )
-                        // Looping for more elements.
-                        state.historyWorkouts.forEach {
+                        }
+
+                        // Looping over each workout within the month
+                        workoutsInMonth.forEach {
                             Box( // vertical space between boxes
-                                modifier = Modifier.padding(6.dp)
+                                modifier = Modifier.padding(vertical = 6.dp)
                             ) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 20.dp)
                                         .border(width = 2.dp, color = Color.Black)
                                         .padding(vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
