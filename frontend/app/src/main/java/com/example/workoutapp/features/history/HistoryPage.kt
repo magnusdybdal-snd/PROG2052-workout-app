@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 
@@ -42,6 +45,14 @@ fun HistoryPage(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    // Checks if user navigates back to history and reloads the composable (refreshes histories)
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(currentBackStackEntry) {
+        if (currentBackStackEntry?.destination?.route == "history") {
+            viewModel.loadHistory()
+        }
+    }
+
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
@@ -49,15 +60,15 @@ fun HistoryPage(
             Column( // Workout Header
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight()
                     .widthIn(max = 500.dp)
                     //.padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
                     .background(Color.White),
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(top = 80.dp)
+                        .padding(top = 40.dp)
                         .padding(bottom = 20.dp),
                     text = "History",
                     fontSize = 50.sp,

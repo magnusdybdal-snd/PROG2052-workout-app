@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -39,34 +40,31 @@ fun ExercisesPage(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .widthIn(max = 700.dp)
                     .background(Color.White),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                Text( // Title of page
                     modifier = Modifier
-                        .padding(top = 80.dp)
+                        .padding(top = 40.dp)
                         .padding(bottom = 20.dp),
                     text = "Exercises",
                     fontSize = 50.sp,
                     color = Color.Black,
                 )
-
-                Column(
+                Column( // All exercises
                     modifier = modifier
                         .fillMaxSize()
                         .widthIn(max = 550.dp)
                         .padding(horizontal = 20.dp)
-                        .padding(bottom = 100.dp)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -80,7 +78,7 @@ fun ExercisesPage(
                                 .border(width = 2.dp, color = Color.Black),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Image(
+                            Image( // Picture of exercise
                                 painter = painterResource(id = R.drawable.exampleworkoutimage),
                                 contentDescription = "Exercise image",
                                 contentScale = ContentScale.Inside,
@@ -88,8 +86,7 @@ fun ExercisesPage(
                                     .heightIn(80.dp, 80.dp)
                                     .padding(8.dp)
                             )
-
-                            Text(
+                            Text( // Exercise name
                                 modifier = Modifier.padding(6.dp),
                                 text = exercise.name,
                                 fontSize = 20.sp
