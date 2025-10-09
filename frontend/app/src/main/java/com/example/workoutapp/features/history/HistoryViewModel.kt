@@ -45,7 +45,7 @@ class HistoryViewModel @Inject constructor(
                 val grouped = data
                     .sortedByDescending { it.date }
                     .groupBy { workout ->
-                    val month = workout.date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                    val month = workout.date.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
                     val year = workout.date.year
                     "$month $year"
                 }
