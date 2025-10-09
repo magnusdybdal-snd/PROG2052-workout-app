@@ -1,6 +1,8 @@
 package com.example.workoutapp.data.repositories
 
 import com.example.workoutapp.data.api.ApiService
+import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
+import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
@@ -28,6 +30,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 exercises = dto.exercises.map { templateExerciseDto ->
                     TemplateExercise(
                         exercise = Exercise(
+                            exerciseId = templateExerciseDto.exercise.exerciseId,
                             name = templateExerciseDto.exercise.name,
                             targetMuscles = templateExerciseDto.exercise.targetMuscles,
                             bodyParts = templateExerciseDto.exercise.bodyParts,
@@ -47,5 +50,9 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 }
             )
         }
+    }
+
+    override suspend fun postWorkoutTemplate(workoutTemplateDto: WorkoutTemplateDto) {
+        api.postWorkoutTemplate(workoutTemplateDto)
     }
 }

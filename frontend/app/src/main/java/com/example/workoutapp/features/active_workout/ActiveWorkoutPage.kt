@@ -19,14 +19,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -51,20 +54,18 @@ import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.SetDto
 import com.example.workoutapp.data.api.dto.WorkoutExerciseDto
-import com.example.workoutapp.domain.models.Exercise
-import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
-import com.example.workoutapp.domain.models.WorkoutExercise
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
-/**
+/**viewmodel
  * Displays Workout page
  */
 @Composable
@@ -149,40 +150,11 @@ fun ActiveWorkoutPage(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(getCurrentTimeString(), fontSize = 20.sp)
+                            var showDialog by remember { mutableStateOf(false) }
+                            var notes by remember { mutableStateOf("") }
                             Button(
                                 onClick = {
-                                    val template = state.templates[templateId]
-
-                                    val historyWorkoutDto = HistoryWorkoutDto(
-                                        historyWorkoutId = "sess_000",
-                                        name = template.name,
-                                        date = LocalDate.now().toString(),
-                                        duration = 60.minutes.toJavaDuration().toString(),
-                                        note = "", // you can add a note field later
-                                        exercises = template.exercises.map { exSet ->
-                                            WorkoutExerciseDto(
-                                                exercise = ExerciseDto(
-                                                    exerciseId = "Test",
-                                                    name = exSet.exercise.name,
-                                                    targetMuscles = exSet.exercise.targetMuscles,
-                                                    bodyParts = exSet.exercise.bodyParts,
-                                                    equipments = exSet.exercise.equipments,
-                                                    secondaryMuscles = exSet.exercise.secondaryMuscles,
-                                                    gifUrl = exSet.exercise.gifUrl,
-                                                    instructions = exSet.exercise.instructions
-                                                ),
-                                                sets = exSet.sets.map { set ->
-                                                    SetDto(
-                                                        rep = set.rep,
-                                                        kg = set.kg,
-                                                        typeSet = set.typeSet
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-                                    viewModel.postWorkout(historyWorkoutDto)
-                                    navController.popBackStack()
+                                    showDialog = true
                                 },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -191,6 +163,57 @@ fun ActiveWorkoutPage(
                             ) {
                                 Text("Finish", color = Color.White)
                             }
+
+                            if (showDialog) {
+                                AlertDialog(
+                                    onDismissRequest = { showDialog = false },
+                                    title = { Text("Add a note before finishing?") },
+                                    text = {
+                                        OutlinedTextField(
+                                            value = notes,
+                                            onValueChange = { notes = it },
+                                            label = { Text("Workout notes") }
+                                        )
+                                    },
+                                    confirmButton = {
+                                        TextButton(onClick = {
+                                            val template = state.templates[templateId]
+                                            val finishedWorkout = Session(
+                                                sessionId = "sess_003",
+                                                name = template.name,
+                                                exercises = template.exercises.mapIndexed { index,
+                                                                                            exSet ->
+                                                    SessionExercise(
+                                                        exerciseId = exSet.exercise.exerciseId,
+                                                        sets = exSet.sets.map { set ->
+                                                            Set(
+                                                                rep = set.rep,
+                                                                kg = set.kg,
+                                                                typeSet = set.typeSet
+                                                            )
+                                                        }
+                                                    )
+                                                },
+                                                duration = "00:30:00",
+                                                date = LocalDate.now().toString(),
+                                                note = notes
+                                            )
+
+                                            viewModel.postWorkout(finishedWorkout)
+                                            showDialog = false
+                                            navController.popBackStack()
+                                        }) {
+                                            Text("Finish Workout")
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(onClick = { showDialog = false }) {
+                                            Text("Cancel")
+                                        }
+                                    }
+                                )
+                            }
+
                         }
                         Text(
                             state.templates[templateId].name,
@@ -245,10 +268,10 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Text("KG", fontSize = 10.sp)
                                         exSet.sets.forEach { set ->
-                                            val kg = remember { mutableStateOf(set.kg.toString()) }
+                                            //val kg = remember { mutableStateOf() }
                                             TextField(
-                                                value = kg.value,
-                                                onValueChange = { kg.value = it },
+                                                value = set.kg.toString(),
+                                                onValueChange = { set.kg = it.toInt() },
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = TextFieldDefaults.colors(
                                                     focusedIndicatorColor = Color.Transparent,
@@ -270,10 +293,9 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Text("REPS", fontSize = 10.sp)
                                         exSet.sets.forEach { set ->
-                                            val reps = remember { mutableStateOf(set.rep.toString()) }
                                             TextField(
-                                                value = reps.value,
-                                                onValueChange = { reps.value = it },
+                                                value = set.rep.toString(),
+                                                onValueChange = { set.rep = it.toInt() },
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = TextFieldDefaults.colors(
                                                     focusedIndicatorColor = Color.Transparent,

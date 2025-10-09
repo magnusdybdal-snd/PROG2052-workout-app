@@ -3,7 +3,7 @@ package com.example.workoutapp.features.active_workout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
-import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase
@@ -53,10 +53,10 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
         }
     }
 
-    fun postWorkout(historyWorkoutDto: HistoryWorkoutDto) {
+    fun postWorkout(session: Session) {
         viewModelScope.launch {
             try {
-                postHistoryWorkoutUseCase(historyWorkoutDto)
+                postHistoryWorkoutUseCase(session)
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message ?: "Failed to save workout") }
             }

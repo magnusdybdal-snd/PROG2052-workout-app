@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class WorkoutTemplateDto(
     val templateId: String,
-    val name: String,
+    var name: String,
     val exercises: List<TemplateExerciseDto>
 )
 
