@@ -92,7 +92,7 @@ fun HomePage(modifier: Modifier = Modifier,
                         fontSize = 30.sp,
                     )
                     IconButton (
-                        onClick = {/*TODO*/ }
+                        onClick = {navController.navigate(Routes.NEWTEMP) }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,

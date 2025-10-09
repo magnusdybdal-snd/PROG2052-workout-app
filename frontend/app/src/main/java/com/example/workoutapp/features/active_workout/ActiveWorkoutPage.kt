@@ -181,8 +181,7 @@ fun ActiveWorkoutPage(
                                             val finishedWorkout = Session(
                                                 sessionId = "sess_003",
                                                 name = template.name,
-                                                exercises = template.exercises.mapIndexed { index,
-                                                                                            exSet ->
+                                                exercises = template.exercises.map { exSet ->
                                                     SessionExercise(
                                                         exerciseId = exSet.exercise.exerciseId,
                                                         sets = exSet.sets.map { set ->
