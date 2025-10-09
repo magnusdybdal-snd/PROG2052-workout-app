@@ -21,19 +21,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.domain.models.WorkoutTemplate
@@ -56,7 +55,7 @@ fun HomePage(modifier: Modifier = Modifier,
                 modifier = modifier
                     .fillMaxSize()
                     .widthIn(max = 550.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(vertical = 40.dp)
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
@@ -66,27 +65,26 @@ fun HomePage(modifier: Modifier = Modifier,
                 Text(
                     text = "Workouts",
                     fontSize = 50.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                 )
                 Button(
                     onClick = {/*TODO*/ },
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor =  Color(0xFF127067)
+                        containerColor =  MaterialTheme.colorScheme.tertiary
                     ),
                     modifier = Modifier
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.background)
                         .fillMaxWidth()
                         .padding(top = 40.dp, bottom = 15.dp)
                 ) {
                     Text(
                         text = "Start empty workout",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onTertiary
                     )
                 }
                 Row (
-                    modifier = Modifier
-                        .align(Alignment.Start)
+                    modifier = Modifier.align(Alignment.Start)
                 ){
                     Text(
                         text = "My workout",
@@ -116,7 +114,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     state.workoutTemplates.forEachIndexed { index, workoutTemplate: WorkoutTemplate ->
                         Box(
                             modifier = Modifier
-                                .border(width = 2.dp, color = Color.Black)
+                                .border(width = 2.dp, color = MaterialTheme.colorScheme.onBackground)
                                 .fillMaxWidth()
                         ) {
                             Row(
@@ -133,12 +131,12 @@ fun HomePage(modifier: Modifier = Modifier,
                                     Button(
                                         onClick = { navController.navigate("worktemp/$index")},
                                         shape = RoundedCornerShape(5.dp),
-                                        modifier = Modifier.background(Color.White),
+                                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
                                         colors = ButtonDefaults.outlinedButtonColors(
-                                            containerColor =  Color(0xFF127067)
+                                            containerColor = MaterialTheme.colorScheme.tertiary
                                         ),
                                     ) {
-                                        Text("Start", color = Color.White)
+                                        Text("Start", color = MaterialTheme.colorScheme.onTertiary)
                                     }
                                     IconButton(onClick = { /*TODO*/ }) {
                                         Icon(
@@ -165,7 +163,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     for (i in 1..4) {
                         Box(
                             modifier = Modifier
-                                .border(width = 2.dp, color = Color.Black)
+                                .border(width = 2.dp, color = MaterialTheme.colorScheme.onBackground)
                                 .fillMaxWidth()
                         ) {
                             Row(
@@ -180,12 +178,12 @@ fun HomePage(modifier: Modifier = Modifier,
                                     Button(
                                         onClick = { navController.navigate("worktemp/${i-1}")},
                                         shape = RoundedCornerShape(5.dp),
-                                        modifier = Modifier.background(Color.White),
+                                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
                                         colors = ButtonDefaults.outlinedButtonColors(
-                                            containerColor =  Color(0xFF127067)
+                                            containerColor = MaterialTheme.colorScheme.tertiary
                                         ),
                                     ) {
-                                        Text("Start", color = Color.White)
+                                        Text("Start", color = MaterialTheme.colorScheme.onTertiary)
                                     }
                                     IconButton(onClick = { /*TODO*/ }) {
                                         Icon(
