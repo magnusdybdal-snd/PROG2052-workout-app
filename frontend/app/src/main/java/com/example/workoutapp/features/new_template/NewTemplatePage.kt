@@ -1,4 +1,3 @@
-/*
 package com.example.workoutapp.features.new_template
 
 import androidx.compose.foundation.border
@@ -27,6 +26,9 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +50,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.theme.AppColor
+import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
@@ -64,6 +68,7 @@ fun NewTemplatePage(
     viewModel: NewTempViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
     when {
         state.isLoading -> LoadingStateView()
@@ -81,7 +86,8 @@ fun NewTemplatePage(
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFFE8DEF8)
+                        containerColor = cs.tertiary,
+                        contentColor = cs.onTertiary
                     ),
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 40.dp)
@@ -100,7 +106,7 @@ fun NewTemplatePage(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .border(width = 2.dp, color = Color.Black)
+                            .border(width = 2.dp, color = cs.onBackground)
                             .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -113,10 +119,10 @@ fun NewTemplatePage(
                             },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = Color(0xFF127067)
+                                containerColor = cs.tertiary
                             ),
                         ) {
-                            Text("Add template", color = Color.White)
+                            Text("Add template", color = cs.onTertiary)
                         }
 
                         if (showDialog &&
@@ -124,7 +130,12 @@ fun NewTemplatePage(
                             exercises.isNotEmpty()) {
                             AlertDialog(
                                 onDismissRequest = { showDialog = false },
-                                title = { Text("Complete template?") },
+                                title = {
+                                    Text(
+                                        text = "Complete template?",
+                                        color = cs.onBackground
+                                    )
+                                },
                                 confirmButton = {
                                     TextButton(onClick = {
                                         val newTemplate = NewTemplate(
@@ -136,12 +147,18 @@ fun NewTemplatePage(
                                         showDialog = false
                                         navController.popBackStack()
                                     }) {
-                                        Text("Add template")
+                                        Text(
+                                            text ="Add template",
+                                            color = cs.onBackground
+                                        )
                                     }
                                 },
                                 dismissButton = {
                                     TextButton(onClick = { showDialog = false }) {
-                                        Text("Cancel")
+                                        Text(
+                                            text = "Cancel",
+                                            color = cs.onBackground
+                                        )
                                     }
                                 }
                             )
@@ -151,13 +168,10 @@ fun NewTemplatePage(
                     TextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Set template name") },
+                        label = { Text(text = "Set template name",
+                            color = cs.onSecondaryContainer) },
                         shape = RoundedCornerShape(12.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        ),
+                        colors = AppTextField.fieldColors(),
                         modifier = Modifier
                             .padding(vertical = 10.dp)
                     )
@@ -173,11 +187,17 @@ fun NewTemplatePage(
                         }
                         DropdownMenu(
                             expanded = expanded,
-                            onDismissRequest = { expanded = false }
+                            onDismissRequest = { expanded = false },
+                            containerColor = cs.tertiary
                         ) {
                             state.exercises.forEach { exercise ->
                                 DropdownMenuItem(
-                                    text = { Text(exercise.name) },
+                                    text = {
+                                        Text(
+                                            text = exercise.name,
+                                            color = cs.onTertiary
+                                        )
+                                    },
                                     onClick = {
                                         exercises.add(
                                             NewTemplateExercise(
@@ -248,11 +268,7 @@ fun NewTemplatePage(
                                             value = set.kg.toString(),
                                             onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
+                                            colors = AppTextField.fieldColors(),
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .height(50.dp)
@@ -272,11 +288,7 @@ fun NewTemplatePage(
                                             value = set.rep.toString(),
                                             onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
+                                            colors = AppTextField.fieldColors(),
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .height(50.dp)
@@ -313,4 +325,3 @@ fun getCurrentTimeString(): String {
     val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
     return currentTime.format(formatter)
 }
- */

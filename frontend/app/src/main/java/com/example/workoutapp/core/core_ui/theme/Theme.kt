@@ -2,40 +2,57 @@ package com.example.workoutapp.core.core_ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = AppColor.black,
+    onPrimary = AppColor.white,
+    secondary = AppColor.lightGrey,
+    onSecondary = AppColor.darkGrey,
+    tertiary = AppColor.lightTeal,
+    onTertiary = AppColor.white,
+    background = AppColor.black,
+    onBackground = AppColor.white,
+    surface = AppColor.teal,
+    onSurface = AppColor.black,
+    onSurfaceVariant = AppColor.white,
+    secondaryContainer = AppColor.fadedTeal,
+    onSecondaryContainer = AppColor.white,
 )
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val LightColorScheme = lightColorScheme(
+    primary = AppColor.white,
+    onPrimary = AppColor.black,
+    secondary = AppColor.darkGrey,
+    onSecondary = AppColor.lightGrey,
+    tertiary = AppColor.teal,
+    onTertiary = AppColor.white,
+    background = AppColor.white,
+    onBackground = AppColor.black,
+    surface = AppColor.teal,
+    onSurface = AppColor.black,
+    onSurfaceVariant = AppColor.white,
+    secondaryContainer = AppColor.fadedTeal,
+    onSecondaryContainer = AppColor.black,
 )
 
 @Composable
 fun WorkoutAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -53,4 +70,59 @@ fun WorkoutAppTheme(
         typography = Typography,
         content = content
     )
+}
+
+/**
+ * Colors used in styling of NavigationBarItem.
+ * @return NavigationBarIdemDefault with colors from appropriate theme.
+ */
+object AppNavBar {
+    @Composable
+    fun itemColors(): NavigationBarItemColors {
+        val cs = MaterialTheme.colorScheme      // "cs" is short for "ColorScheme"
+        return NavigationBarItemDefaults.colors(
+            selectedIconColor = cs.onSecondaryContainer,
+            selectedTextColor = cs.onSurfaceVariant,
+            indicatorColor = cs.background,
+            unselectedIconColor = cs.onSurfaceVariant,
+            unselectedTextColor = cs.onSurfaceVariant,
+            disabledIconColor = cs.onSurface.copy(alpha = 0.38f),
+            disabledTextColor = cs.onSurface.copy(alpha = 0.38f)
+        )
+    }
+}
+object AppTextField {
+    @Composable
+    fun fieldColors(): TextFieldColors {
+        val cs = MaterialTheme.colorScheme
+        return TextFieldDefaults.colors(
+            focusedTextColor = cs.onSecondaryContainer,
+            unfocusedTextColor = cs.onSecondaryContainer.copy(alpha = 0.9f),
+            disabledTextColor = cs.onSurface.copy(alpha = 0.38f),
+
+            focusedContainerColor = cs.secondaryContainer,
+            unfocusedContainerColor = cs.secondaryContainer.copy(alpha = 0.3f),
+            disabledContainerColor = cs.surfaceVariant.copy(alpha = 0.3f),
+
+            cursorColor = cs.primary,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    }
+}
+
+object AppCheckBox {
+    @Composable
+    fun checkBoxColor(): CheckboxColors {
+        val cs = MaterialTheme.colorScheme
+        return CheckboxDefaults.colors(
+            checkedColor = cs.secondaryContainer,
+            uncheckedColor = cs.onBackground.copy(alpha = 0.3f),
+            checkmarkColor = cs.onBackground,
+            disabledCheckedColor = cs.surfaceVariant.copy(alpha = 0.3f),
+            disabledUncheckedColor = cs.surfaceVariant.copy(alpha = 0.3f)
+        )
+
+    }
 }

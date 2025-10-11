@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,6 +44,7 @@ fun HistoryPage(
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
     // Checks if user navigates back to history and reloads the composable (refreshes histories)
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -63,7 +64,7 @@ fun HistoryPage(
                     .fillMaxHeight()
                     .widthIn(max = 500.dp)
                     //.padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
-                    .background(Color.White),
+                    .background(cs.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -72,14 +73,13 @@ fun HistoryPage(
                         .padding(bottom = 20.dp),
                     text = "History",
                     fontSize = 50.sp,
-                    //  fontWeight = FontWeight.SemiBold,
-                    color = Color.Black,
+                    color = cs.onBackground,
                 )
 
                 Column( // Boxes
                     modifier = Modifier
                         .widthIn(max = 700.dp)
-                        .background(Color.White)
+                        .background(cs.background)
                         .padding(horizontal = 20.dp)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
@@ -100,13 +100,13 @@ fun HistoryPage(
                                 text = monthHeader,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = cs.onBackground,
                             )
                             // Number of workouts that month
                             Text(
                                 text = workoutsInMonth.size.toString() + " workouts",
                                 fontSize = 14.sp,
-                                color = Color.DarkGray,
+                                color = MaterialTheme.colorScheme.secondary,
 
                             )
                         }
@@ -119,7 +119,7 @@ fun HistoryPage(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .border(width = 2.dp, color = Color.Black)
+                                        .border(width = 2.dp, color = cs.onBackground)
                                         .padding(vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween

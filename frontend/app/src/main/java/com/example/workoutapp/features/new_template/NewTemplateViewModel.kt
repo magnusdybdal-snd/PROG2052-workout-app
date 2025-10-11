@@ -3,15 +3,9 @@ package com.example.workoutapp.features.new_template
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
-import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.Exercise
-import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.NewTemplate
-import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.usecases.GetExercisesUseCase
-import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
-import com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase
 import com.example.workoutapp.domain.usecases.PostWorkoutTemplateUseCase
 import com.example.workoutapp.features.exercises.ExercisesUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
