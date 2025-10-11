@@ -7,13 +7,16 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -24,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
+import com.example.workoutapp.core.core_ui.theme.AppNavBar
 import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
@@ -49,8 +53,12 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
 
     Scaffold(
         bottomBar = {
+            val cs = MaterialTheme.colorScheme
             if (showBottomBar) { // check if condition is true (show/hide bottom-bar)
-                NavigationBar {
+                NavigationBar (
+                    containerColor = cs.surface,
+                    contentColor = cs.onSurface
+                ){
                     navItemList.forEach { item ->
                         NavigationBarItem(
                             selected = currentDestination.isOnRoute(item.route),
@@ -64,8 +72,9 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                                 }
                             },
                             icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
-                        )
+                            label = { Text(item.label) },
+                            colors = AppNavBar.itemColors()
+                            )
                     }
                 }
             }
