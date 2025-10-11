@@ -26,6 +26,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.theme.AppColor
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
@@ -63,6 +65,7 @@ fun NewTemplatePage(
     viewModel: NewTempViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
     when {
         state.isLoading -> LoadingStateView()
@@ -80,7 +83,8 @@ fun NewTemplatePage(
                     shape = CircleShape,
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFFE8DEF8)
+                        containerColor = cs.tertiary,
+                        contentColor = cs.onTertiary
                     ),
                     modifier = Modifier
                         .padding(top = 20.dp, bottom = 40.dp)
@@ -99,7 +103,7 @@ fun NewTemplatePage(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .border(width = 2.dp, color = Color.Black)
+                            .border(width = 2.dp, color = cs.onBackground)
                             .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -112,10 +116,10 @@ fun NewTemplatePage(
                             },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = Color(0xFF127067)
+                                containerColor = cs.tertiary
                             ),
                         ) {
-                            Text("Add template", color = Color.White)
+                            Text("Add template", color = cs.onTertiary)
                         }
 
                         if (showDialog &&
