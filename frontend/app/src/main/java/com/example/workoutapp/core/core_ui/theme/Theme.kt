@@ -2,9 +2,13 @@ package com.example.workoutapp.core.core_ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -12,7 +16,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import kotlin.contracts.Returns
 
 object Color{
 
@@ -20,32 +23,34 @@ object Color{
 
 private val DarkColorScheme = darkColorScheme(
     primary = AppColor.black,
-    secondary = AppColor.lightGrey,
     onPrimary = AppColor.white,
-    tertiary = AppColor.darkTeal,
+    secondary = AppColor.lightGrey,
+    onSecondary = AppColor.darkGrey,
+    tertiary = AppColor.lightTeal,
     onTertiary = AppColor.white,
     background = AppColor.black,
     onBackground = AppColor.white,
     surface = AppColor.teal,
     onSurface = AppColor.black,
-    secondaryContainer = AppColor.black,
-    onSecondaryContainer = AppColor.white,
     onSurfaceVariant = AppColor.white,
+    secondaryContainer = AppColor.fadedTeal,
+    onSecondaryContainer = AppColor.white,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = AppColor.white,
-    secondary = AppColor.darkGrey,
     onPrimary = AppColor.black,
+    secondary = AppColor.darkGrey,
+    onSecondary = AppColor.lightGrey,
     tertiary = AppColor.teal,
     onTertiary = AppColor.white,
     background = AppColor.white,
     onBackground = AppColor.black,
     surface = AppColor.teal,
     onSurface = AppColor.black,
-    secondaryContainer = AppColor.white,
-    onSecondaryContainer = AppColor.black,
     onSurfaceVariant = AppColor.white,
+    secondaryContainer = AppColor.fadedTeal,
+    onSecondaryContainer = AppColor.black,
 )
 
 @Composable
@@ -82,11 +87,46 @@ object AppNavBar {
         return NavigationBarItemDefaults.colors(
             selectedIconColor = cs.onSecondaryContainer,
             selectedTextColor = cs.onSurfaceVariant,
-            indicatorColor = cs.secondaryContainer,
+            indicatorColor = cs.background,
             unselectedIconColor = cs.onSurfaceVariant,
             unselectedTextColor = cs.onSurfaceVariant,
             disabledIconColor = cs.onSurface.copy(alpha = 0.38f),
             disabledTextColor = cs.onSurface.copy(alpha = 0.38f)
         )
+    }
+}
+object AppTextField {
+    @Composable
+    fun fieldColors(): TextFieldColors {
+        val cs = MaterialTheme.colorScheme
+        return TextFieldDefaults.colors(
+            focusedTextColor = cs.onSecondaryContainer,
+            unfocusedTextColor = cs.onSecondaryContainer.copy(alpha = 0.9f),
+            disabledTextColor = cs.onSurface.copy(alpha = 0.38f),
+
+            focusedContainerColor = cs.secondaryContainer,
+            unfocusedContainerColor = cs.secondaryContainer.copy(alpha = 0.3f),
+            disabledContainerColor = cs.surfaceVariant.copy(alpha = 0.3f),
+
+            cursorColor = cs.primary,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    }
+}
+
+object AppCheckBox {
+    @Composable
+    fun checkBoxColor(): CheckboxColors {
+        val cs = MaterialTheme.colorScheme
+        return CheckboxDefaults.colors(
+            checkedColor = cs.secondaryContainer,
+            uncheckedColor = cs.surfaceVariant,
+            checkmarkColor = cs.onBackground,
+            disabledCheckedColor = cs.surfaceVariant.copy(alpha = 0.3f),
+            disabledUncheckedColor = cs.surfaceVariant.copy(alpha = 0.3f)
+        )
+
     }
 }

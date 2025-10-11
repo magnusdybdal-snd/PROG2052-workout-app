@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -31,7 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,10 +49,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
-import com.example.workoutapp.data.api.dto.ExerciseDto
-import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
-import com.example.workoutapp.data.api.dto.SetDto
-import com.example.workoutapp.data.api.dto.WorkoutExerciseDto
+import com.example.workoutapp.core.core_ui.theme.AppCheckBox
+import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
@@ -61,9 +58,7 @@ import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 /**viewmodel
  * Displays Workout page
@@ -76,6 +71,7 @@ fun ActiveWorkoutPage(
     viewModel: ActWorkViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
 
     when {
@@ -125,7 +121,8 @@ fun ActiveWorkoutPage(
                         shape = CircleShape,
                         contentPadding = PaddingValues(0.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color(0xFFE8DEF8)
+                            containerColor = cs.tertiary,
+                            contentColor = cs.onTertiary
                         ),
                         modifier = Modifier
                             .padding(innerPadding) //, top = 20.dp, bottom = 40.dp
@@ -144,7 +141,7 @@ fun ActiveWorkoutPage(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(width = 2.dp, color = Color.Black)
+                                .border(width = 2.dp, color = cs.onBackground)
                                 .padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -158,10 +155,10 @@ fun ActiveWorkoutPage(
                                 },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = Color(0xFF127067)
+                                    containerColor = cs.tertiary
                                 ),
                             ) {
-                                Text("Finish", color = Color.White)
+                                Text("Finish", color = cs.onTertiary)
                             }
 
                             if (showDialog) {
@@ -272,11 +269,8 @@ fun ActiveWorkoutPage(
                                                 value = set.kg.toString(),
                                                 onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
                                                 shape = RoundedCornerShape(12.dp),
-                                                colors = TextFieldDefaults.colors(
-                                                    focusedIndicatorColor = Color.Transparent,
-                                                    unfocusedIndicatorColor = Color.Transparent,
-                                                    disabledIndicatorColor = Color.Transparent
-                                                ),
+                                                colors = AppTextField.fieldColors()
+                                                ,
                                                 modifier = Modifier
                                                     .width(100.dp)
                                                     .height(50.dp)
@@ -296,11 +290,7 @@ fun ActiveWorkoutPage(
                                                 value = set.rep.toString(),
                                                 onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
                                                 shape = RoundedCornerShape(12.dp),
-                                                colors = TextFieldDefaults.colors(
-                                                    focusedIndicatorColor = Color.Transparent,
-                                                    unfocusedIndicatorColor = Color.Transparent,
-                                                    disabledIndicatorColor = Color.Transparent
-                                                ),
+                                                colors = AppTextField.fieldColors(),
                                                 modifier = Modifier
                                                     .width(100.dp)
                                                     .height(50.dp)
@@ -316,14 +306,18 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Icon(
                                             Icons.Default.Check,
-                                            contentDescription = "Done set"
+                                            contentDescription = "Done set",
+                                            tint = cs.onBackground
                                         )
                                         repeat(y) {
                                             var checked by remember { mutableStateOf(false) }
-                                            Checkbox(checked, {
+                                            Checkbox(
+                                                checked, {
                                                 isAnyChecked = isAnyChecked || it
                                                 checked = it
-                                            })
+                                            },
+                                                colors = AppCheckBox.checkBoxColor()
+                                            )
                                         }
                                     }
                                 }
