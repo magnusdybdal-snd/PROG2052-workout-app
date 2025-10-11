@@ -122,7 +122,7 @@ object AppCheckBox {
         val cs = MaterialTheme.colorScheme
         return CheckboxDefaults.colors(
             checkedColor = cs.secondaryContainer,
-            uncheckedColor = cs.surfaceVariant,
+            uncheckedColor = cs.onBackground.copy(alpha = 0.3f),
             checkmarkColor = cs.onBackground,
             disabledCheckedColor = cs.surfaceVariant.copy(alpha = 0.3f),
             disabledUncheckedColor = cs.surfaceVariant.copy(alpha = 0.3f)
