@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.theme.AppColor
+import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
@@ -127,7 +128,12 @@ fun NewTemplatePage(
                             exercises.isNotEmpty()) {
                             AlertDialog(
                                 onDismissRequest = { showDialog = false },
-                                title = { Text("Complete template?") },
+                                title = {
+                                    Text(
+                                        text = "Complete template?",
+                                        color = cs.onBackground
+                                    )
+                                },
                                 confirmButton = {
                                     TextButton(onClick = {
                                         val newTemplate = NewTemplate(
@@ -139,12 +145,18 @@ fun NewTemplatePage(
                                         showDialog = false
                                         navController.popBackStack()
                                     }) {
-                                        Text("Add template")
+                                        Text(
+                                            text ="Add template",
+                                            color = cs.onBackground
+                                        )
                                     }
                                 },
                                 dismissButton = {
                                     TextButton(onClick = { showDialog = false }) {
-                                        Text("Cancel")
+                                        Text(
+                                            text = "Cancel",
+                                            color = cs.onBackground
+                                        )
                                     }
                                 }
                             )
@@ -156,11 +168,7 @@ fun NewTemplatePage(
                         onValueChange = { name = it },
                         label = { Text("Set template name") },
                         shape = RoundedCornerShape(12.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        ),
+                        colors = AppTextField.fieldColors(),
                         modifier = Modifier
                             .padding(vertical = 10.dp)
                     )
@@ -180,7 +188,12 @@ fun NewTemplatePage(
                         ) {
                             state.exercises.forEach { exercise ->
                                 DropdownMenuItem(
-                                    text = { Text(exercise.name) },
+                                    text = {
+                                        Text(
+                                            text = exercise.name,
+                                            color = cs.onBackground
+                                        )
+                                    },
                                     onClick = {
                                         exercises.add(
                                             NewTemplateExercise(
@@ -251,11 +264,7 @@ fun NewTemplatePage(
                                             value = set.kg.toString(),
                                             onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
+                                            colors = AppTextField.fieldColors(),
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .height(50.dp)
@@ -275,11 +284,7 @@ fun NewTemplatePage(
                                             value = set.rep.toString(),
                                             onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
-                                            colors = TextFieldDefaults.colors(
-                                                focusedIndicatorColor = Color.Transparent,
-                                                unfocusedIndicatorColor = Color.Transparent,
-                                                disabledIndicatorColor = Color.Transparent
-                                            ),
+                                            colors = AppTextField.fieldColors(),
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .height(50.dp)
