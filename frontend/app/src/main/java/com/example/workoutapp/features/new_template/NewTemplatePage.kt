@@ -27,6 +27,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -166,7 +168,8 @@ fun NewTemplatePage(
                     TextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Set template name") },
+                        label = { Text(text = "Set template name",
+                            color = cs.onSecondaryContainer) },
                         shape = RoundedCornerShape(12.dp),
                         colors = AppTextField.fieldColors(),
                         modifier = Modifier
@@ -184,14 +187,15 @@ fun NewTemplatePage(
                         }
                         DropdownMenu(
                             expanded = expanded,
-                            onDismissRequest = { expanded = false }
+                            onDismissRequest = { expanded = false },
+                            containerColor = cs.tertiary
                         ) {
                             state.exercises.forEach { exercise ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
                                             text = exercise.name,
-                                            color = cs.onBackground
+                                            color = cs.onTertiary
                                         )
                                     },
                                     onClick = {
