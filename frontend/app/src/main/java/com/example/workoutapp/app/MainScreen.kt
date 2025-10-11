@@ -10,13 +10,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -28,11 +26,11 @@ import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
+import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
-import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
-//import com.example.workoutapp.features.new_template.NewTemplatePage
+import com.example.workoutapp.features.new_template.NewTemplatePage
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -88,7 +86,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
-            //composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
+            composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
             composable(
                 route = Routes.WORKTEMP,
                 arguments = listOf(navArgument("tempId") { type = NavType.StringType })

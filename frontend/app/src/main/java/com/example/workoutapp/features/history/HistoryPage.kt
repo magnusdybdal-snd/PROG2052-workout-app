@@ -44,6 +44,7 @@ fun HistoryPage(
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
     // Checks if user navigates back to history and reloads the composable (refreshes histories)
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -63,7 +64,7 @@ fun HistoryPage(
                     .fillMaxHeight()
                     .widthIn(max = 500.dp)
                     //.padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
-                    .background(MaterialTheme.colorScheme.background),
+                    .background(cs.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -72,13 +73,13 @@ fun HistoryPage(
                         .padding(bottom = 20.dp),
                     text = "History",
                     fontSize = 50.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = cs.onBackground,
                 )
 
                 Column( // Boxes
                     modifier = Modifier
                         .widthIn(max = 700.dp)
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(cs.background)
                         .padding(horizontal = 20.dp)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
@@ -99,7 +100,7 @@ fun HistoryPage(
                                 text = monthHeader,
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground,
+                                color = cs.onBackground,
                             )
                             // Number of workouts that month
                             Text(
@@ -118,7 +119,7 @@ fun HistoryPage(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .border(width = 2.dp, color = MaterialTheme.colorScheme.onBackground)
+                                        .border(width = 2.dp, color = cs.onBackground)
                                         .padding(vertical = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.domain.models.WorkoutTemplate
@@ -91,7 +92,7 @@ fun HomePage(modifier: Modifier = Modifier,
                         fontSize = 30.sp,
                     )
                     IconButton (
-                        onClick = {/*TODO*/ }
+                        onClick = {navController.navigate(Routes.NEWTEMP) }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,

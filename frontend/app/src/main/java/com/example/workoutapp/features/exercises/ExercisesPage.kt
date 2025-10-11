@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -28,9 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
-import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.domain.models.Exercise
 
 @Composable
 fun ExercisesPage(
@@ -39,6 +38,7 @@ fun ExercisesPage(
     viewModel: ExercisesViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val cs = MaterialTheme.colorScheme
 
     when {
         state.isLoading -> LoadingStateView()
@@ -48,7 +48,7 @@ fun ExercisesPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .widthIn(max = 700.dp)
-                    .background(MaterialTheme.colorScheme.background),
+                    .background(cs.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -58,7 +58,7 @@ fun ExercisesPage(
                         .padding(bottom = 20.dp),
                     text = "Exercises",
                     fontSize = 50.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = cs.onBackground,
                 )
                 Column( // All exercises
                     modifier = modifier
@@ -75,7 +75,7 @@ fun ExercisesPage(
                                 .fillMaxWidth()
                                 .heightIn(80.dp, 80.dp)
                                 .padding(vertical = 6.dp)
-                                .border(width = 2.dp, color = MaterialTheme.colorScheme.onBackground),
+                                .border(width = 2.dp, color = cs.onBackground),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image( // Picture of exercise

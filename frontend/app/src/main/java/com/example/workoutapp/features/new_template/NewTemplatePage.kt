@@ -1,8 +1,8 @@
-/*
 package com.example.workoutapp.features.new_template
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,18 +18,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,11 +47,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
-import com.example.workoutapp.data.api.dto.ExerciseDto
-import com.example.workoutapp.data.api.dto.SetDto
-import com.example.workoutapp.data.api.dto.WorkoutExerciseDto
-import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
-import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.domain.models.NewTemplate
+import com.example.workoutapp.domain.models.NewTemplateExercise
+import com.example.workoutapp.domain.models.Set
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -62,11 +68,8 @@ fun NewTemplatePage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-            val exerciseX = WorkoutTemplateDto(
-                templateId = "",
-                name = "",
-                exercises = emptyList()
-            )
+            var name by remember { mutableStateOf("") }
+            val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
 
             Column(
                 modifier = modifier
@@ -85,7 +88,7 @@ fun NewTemplatePage(
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "content description"
+                        contentDescription = "go back"
                     )
                 }
                 Column(
@@ -102,36 +105,11 @@ fun NewTemplatePage(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(getCurrentTimeString(), fontSize = 20.sp)
+                        var showDialog by remember { mutableStateOf(false) }
                         Button(
                             onClick = {
-                                val newTemplate = WorkoutTemplateDto(
-                                    templateId = "tmp_000",
-                                    name = exerciseX.name,
-                                    exercises = newTempX.exercises.mapIndexed { index, exSet ->
-                                        WorkoutExerciseDto(
-                                            exercise = ExerciseDto(
-                                                exerciseId = index.toString(),
-                                                name = exSet.exercise.name,
-                                                targetMuscles = exSet.exercise.targetMuscles,
-                                                bodyParts = exSet.exercise.bodyParts,
-                                                equipments = exSet.exercise.equipments,
-                                                secondaryMuscles = exSet.exercise.secondaryMuscles,
-                                                gifUrl = exSet.exercise.gifUrl,
-                                                instructions = exSet.exercise.instructions
-                                            ),
-                                            sets = exSet.sets.map { set ->
-                                                SetDto(
-                                                    rep = set.rep,
-                                                    kg = kg[index],
-                                                    typeSet = set.typeSet
-                                                )
-                                            }
-                                        )
-                                    }
-                                )
-                                viewModel.postWorkout(newTemplate)
-                                navController.popBackStack()
-                            },//plus
+                                showDialog = true
+                            },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 containerColor = Color(0xFF127067)
@@ -139,11 +117,40 @@ fun NewTemplatePage(
                         ) {
                             Text("Add template", color = Color.White)
                         }
+
+                        if (showDialog &&
+                            name != "" &&
+                            exercises.isNotEmpty()) {
+                            AlertDialog(
+                                onDismissRequest = { showDialog = false },
+                                title = { Text("Complete template?") },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        val newTemplate = NewTemplate(
+                                            templateId = "tmp_000",
+                                            name = name,
+                                            exercises = exercises
+                                        )
+                                        viewModel.postWorkout(newTemplate)
+                                        showDialog = false
+                                        navController.popBackStack()
+                                    }) {
+                                        Text("Add template")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showDialog = false }) {
+                                        Text("Cancel")
+                                    }
+                                }
+                            )
+                        }
                     }
+
                     TextField(
-                        value = "",
-                        label = { Text("Label") },
-                        onValueChange = { exerciseX.name = it },
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Set template name") },
                         shape = RoundedCornerShape(12.dp),
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Color.Transparent,
@@ -154,14 +161,49 @@ fun NewTemplatePage(
                             .padding(vertical = 10.dp)
                     )
 
+                    var expanded by remember { mutableStateOf(false) }
+
+                    Box(
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        Button(onClick = { expanded = !expanded }) {
+                            Text("Add exercise")
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            state.exercises.forEach { exercise ->
+                                DropdownMenuItem(
+                                    text = { Text(exercise.name) },
+                                    onClick = {
+                                        exercises.add(
+                                            NewTemplateExercise(
+                                                exerciseId = exercise.exerciseId,
+                                                sets = mutableListOf(
+                                                    Set (
+                                                        rep = 0,
+                                                        kg = 0,
+                                                        typeSet = 0,
+                                                    )
+                                                )
+                                            )
+                                        )
+                                        expanded = !expanded
+                                    }
+                                )
+                            }
+                        }
+                    }
                     Column(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier
                             .padding(top = 10.dp),
                     ) {
-                        state.templates[templateId].exercises.forEach { exSet ->
+                        exercises.forEach { exSet ->
                             Text(
-                                exSet.exercise.name,
+                                exSet.exerciseId,
                                 fontSize = 15.sp
                             )
                             Row(
@@ -201,10 +243,9 @@ fun NewTemplatePage(
                                 ) {
                                     Text("KG", fontSize = 10.sp)
                                     exSet.sets.forEach { set ->
-                                        val kg = remember { mutableStateOf(set.kg.toString()) }
                                         TextField(
-                                            value = kg.value,
-                                            onValueChange = { kg.value = it },
+                                            value = set.kg.toString(),
+                                            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
                                             colors = TextFieldDefaults.colors(
                                                 focusedIndicatorColor = Color.Transparent,
@@ -226,10 +267,9 @@ fun NewTemplatePage(
                                 ) {
                                     Text("REPS", fontSize = 10.sp)
                                     exSet.sets.forEach { set ->
-                                        val reps = remember { mutableStateOf(set.rep.toString()) }
                                         TextField(
-                                            value = reps.value,
-                                            onValueChange = { reps.value = it },
+                                            value = set.rep.toString(),
+                                            onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
                                             colors = TextFieldDefaults.colors(
                                                 focusedIndicatorColor = Color.Transparent,
@@ -242,6 +282,22 @@ fun NewTemplatePage(
                                         )
                                     }
                                 }
+                            }
+                            IconButton (
+                                onClick = {
+                                    exSet.sets.add(
+                                        Set(
+                                            rep = 0,
+                                            kg = 0,
+                                            typeSet = 0,
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add workout"
+                                )
                             }
                         }
                     }
@@ -256,4 +312,3 @@ fun getCurrentTimeString(): String {
     val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
     return currentTime.format(formatter)
 }
- */
