@@ -1,5 +1,6 @@
 package com.example.workoutapp.features.active_workout
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -97,15 +98,18 @@ fun ActiveWorkoutPage(
             Scaffold(
                 bottomBar = {
                     if (isAnyChecked) { // check if condition is true (show/hide bottombar)
-                        NavigationBar {
+                        NavigationBar{
                             Box(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = cs.background),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = "${ticks / 60}:${ticks % 60}",
                                     fontSize = 70.sp,
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+                                    color = cs.onBackground
                                 )
                             }
                         }
