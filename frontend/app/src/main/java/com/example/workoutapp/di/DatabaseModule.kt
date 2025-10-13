@@ -7,21 +7,35 @@ import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+
+/**
+ * Hilt module that provides Room database instances and DAOs.
+ *
+ * The database is built once (singleton) and shared across the entire app.
+ * DAOs are lightweight and can be provided directly from the database instance.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(appContext: Context): AppDatabase =
+    fun provideDatabase(
+        @ApplicationContext appContext: Context
+    ): AppDatabase =
         Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
             "workout_app_db"
-        ).build()
+        )
+            // During development: if schema changes, drop all tables and rebuild.
+            // In production, replace this with proper migrations.
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
 
     @Provides
     fun provideHistoryWorkoutDao(db: AppDatabase): HistoryWorkoutDao =
