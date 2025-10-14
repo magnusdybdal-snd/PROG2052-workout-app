@@ -18,7 +18,6 @@ import java.util.UUID
  * @property name The workout's name (e.g., "Push Day" or "Legs & Core").
  * @property date The date when the workout was completed.
  * @property duration Total time spent on the workout.
- * @property totalVolume The total training volume (sum of weight × reps across all sets).
  * @property note Optional user note or comment attached to the workout.
  * @property isSynced Indicates whether this record has been successfully synced
  *                    with the backend API. New or edited local workouts start as `false`.
@@ -40,9 +39,6 @@ data class HistoryWorkoutEntity(
 
     /** Total duration of the workout session. */
     val duration: Duration,
-
-    /** Sum of all sets' volume (reps × weight). */
-    val totalVolume: Double,
 
     /** Optional personal note for the workout. */
     val note: String? = null,

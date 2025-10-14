@@ -48,52 +48,83 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
 
     /**
      * Fetch HistoryWorkouts from the API and update the local database with fresh API data
+     * 1. Push unsynced local workouts to the API
+     * 2. Pull updated workouts from the API and merge them locally
      */
     override suspend fun getHistoryWorkouts(): List<HistoryWorkout> {
-        val remoteWorkouts = api.getHistoryWorkouts().map { dto ->
-            val localTime = LocalTime.parse(dto.duration)
-            val duration = Duration.ofSeconds(localTime.toSecondOfDay().toLong())
-
-            HistoryWorkoutEntity(
-                id = dto.historyWorkoutId,
-                name = dto.name,
-                date = LocalDate.parse(dto.date),
-                duration = duration,
-                note = dto.note,
-                totalVolume = 0.0, // TODO: calculate on demand or store?
-                isSynced = true
+        // Step 1: Post unsynced workouts to API
+        val unsyncedWorkouts = dao.getUnsyncedWorkouts()
+        unsyncedWorkouts.forEach { entity ->
+            val session = Session(
+                sessionId = entity.id,
+                name = entity.name,
+                exercises = emptyList(), //TODO: add nested data later
+                duration = entity.duration,
+                date = entity.date,
+                note = entity.note
             )
+            try {
+                api.postHistoryWorkout(session)
+                dao.markAsSynced(entity.id)
+            } catch (_: Exception) {
+                // Stay unsynced if offline or error
+            }
         }
 
-        // Replace local data with fresh API data
-        dao.clearAll()
-        dao.insertAll(remoteWorkouts)
+        // Step 2: Pull latest from API
+        val remoteWorkouts = try {
+            api.getHistoryWorkouts().map { dto ->
+                HistoryWorkoutEntity(
+                    id = dto.historyWorkoutId,
+                    name = dto.name,
+                    date = LocalDate.parse(dto.date),
+                    duration = Duration.parse(dto.duration),
+                    note = dto.note,
+                    isSynced = true
+                )
+            }
+        } catch (_: Exception) {
+            emptyList()
+        }
 
-        // Return the domain model for use in viewmodel
-        return remoteWorkouts.map { entity ->
+        // Step 3: Merge local and remote
+        if (remoteWorkouts.isNotEmpty()){
+            dao.clearAll()
+            dao.insertAll(remoteWorkouts)
+
+        }
+
+        // Step 4: Return local data from DB (Local first)
+        return dao.getAllHistoryWorkoutsSnapshot().map { entity ->
             HistoryWorkout(
                 id = entity.id,
                 name = entity.name,
                 date = entity.date,
                 duration = entity.duration,
                 note = entity.note,
-                exercises = emptyList() // TODO: Add nested structure
+                exercises = emptyList() // TODO: add nested stuff
             )
         }
     }
 
-
     override suspend fun postHistoryWorkout(session: Session) {
-        api.postHistoryWorkout(session)
-
         val entity = HistoryWorkoutEntity(
+            id = session.sessionId,
             name = session.name,
-            date = session.date,            // TODO: use LocalDate for date not String      @see Session.kt
-            duration = session.duration,    // TODO: use Duration for duration not String   @see Session.kt
-            totalVolume = 0.0, // Todo: calculate?,
+            date = session.date,
+            duration = session.duration,
             note = session.note,
             isSynced = true
         )
         dao.insert(entity)
+
+        // Try to push new session
+        try {
+            api.postHistoryWorkout(session)
+            dao.markAsSynced(session.sessionId)
+        } catch (_: Exception) {
+            // Remains unsynced until next sync attempt
+        }
+
     }
 }

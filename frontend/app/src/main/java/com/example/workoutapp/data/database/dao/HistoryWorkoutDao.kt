@@ -47,4 +47,8 @@ interface HistoryWorkoutDao {
     // Deletes all stored workouts. Used for full sync resets
     @Query("DELETE FROM history_workouts")
     suspend fun clearAll()
+
+    // Get all workouts from ROOM once (not reactive)
+    @Query("SELECT * FROM history_workouts ORDER BY date DESC")
+    suspend fun getAllHistoryWorkoutsSnapshot(): List<HistoryWorkoutEntity>
 }

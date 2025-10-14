@@ -6,7 +6,6 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import java.io.Serial
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -15,7 +14,7 @@ import java.time.format.DateTimeFormatter
 /**
  * Serializer for LocalDate using ISO-8601 format ("2025-10-09")
  */
-object LocalDataSerializer: KSerializer<LocalDate> {
+object LocalDateSerializer: KSerializer<LocalDate> {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
 
     override val descriptor: SerialDescriptor =
