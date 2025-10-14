@@ -62,15 +62,12 @@ func HandleSession(serv *services.SessionService) http.HandlerFunc {
 }
 
 /*
-Delete one session on ID
+HandleOneSession
+PUT /sessions/{sessionId}
+DELETE /sessions/{sessionId}
 */
-func DeleteSession(serv *services.SessionService) http.HandlerFunc {
+func HandleOneSession(serv *services.SessionService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodDelete {
-			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
-			return
-		}
-
 		id := r.PathValue("sessionId")
 		if id == "" {
 			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
@@ -78,14 +75,40 @@ func DeleteSession(serv *services.SessionService) http.HandlerFunc {
 		}
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
-		result, err := serv.DeleteSession(ctx, id)
-		if err != nil {
-			utils.HandleError(w,http.StatusInternalServerError,err,err.Error())
+
+		switch r.Method {
+		case http.MethodDelete:
+			result, err := serv.DeleteSession(ctx, id)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      result,
+				"message": "successfuly deleted document on id",
+			})
+		case http.MethodPut:
+			payload, problems, err := utils.DecodeValid[*domain.Session](r)
+			if err != nil {
+				if problems != nil {
+					utils.Encode(w, http.StatusBadRequest, problems)
+					return
+				}
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
+				return
+			}
+			result, err := serv.Repo.UpdateOneSession(ctx, id, payload)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      result,
+				"message": "successfuly patched document on id",
+			})
+		default:
+			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
 			return
 		}
-		utils.Encode(w, http.StatusOK,map[string]string {
-			"id": result,
-			"message": "successfuly deleted document on id",
-		})
 	}
 }

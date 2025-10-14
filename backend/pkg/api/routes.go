@@ -27,7 +27,7 @@ func addRoutes(
 	// GET, POST /sessions
 	mux.Handle(SESSIONS_ROUTE, handlers.HandleSession(sessionService))
 	// DELETE /sessions
-	mux.Handle(SESSIONS_ID_ROUTE, handlers.DeleteSession(sessionService))
+	mux.Handle(SESSIONS_ID_ROUTE, handlers.HandleOneSession(sessionService))
 
 	// GET, POST /templates
 	mux.Handle(TEMPLATES_ROUTE, handlers.HandleTemplate(templateService))

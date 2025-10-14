@@ -52,6 +52,18 @@ func (r *TemplateRepository) InsertOneTemplate(ctx context.Context, data domain.
 	return id, nil
 }
 
+func (r *TemplateRepository) UpdateOneTemplate(ctx context.Context, id string, data interface{}) (string, error) {
+	filter := bson.M{"templateId": id}
+	result, err := r.Coll.ReplaceOne(ctx, filter, data)
+	if err != nil {
+		return "", err
+	}
+	if result.MatchedCount == 0 {
+		return "", fmt.Errorf("no template found with this id: %s",id)
+	}
+	return id, nil
+}
+
 func (r *TemplateRepository) DeleteOneTemplate(ctx context.Context, id string) (string, error) {
 	filter := bson.M{"templateId": id}
 	result, err := r.Coll.DeleteOne(ctx, filter)

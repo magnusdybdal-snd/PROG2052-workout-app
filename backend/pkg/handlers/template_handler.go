@@ -66,6 +66,7 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 
 /*
 GET /template/{templateId}
+PUT /template/{templateId}
 DELETE /template/{templateId}
 */
 func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
@@ -88,6 +89,25 @@ func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 				return
 			}
 			utils.Encode(w, http.StatusOK, data)
+		case http.MethodPut:
+			payload, problems, err := utils.DecodeValid[*domain.Template](r)
+			if err != nil {
+				if problems != nil {
+					utils.Encode(w, http.StatusBadRequest, problems)
+					return
+				}
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
+				return
+			}
+			result, err := serv.RepoTempl.UpdateOneTemplate(ctx, id, payload)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK,map[string]string{
+				"id":      result,
+				"message": "successfuly patched document on id",
+			})
 		case http.MethodDelete:
 			result, err := serv.DeleteTemplate(ctx, id)
 			if err != nil {
