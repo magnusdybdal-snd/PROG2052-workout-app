@@ -16,8 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +43,7 @@ import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
+import com.example.workoutapp.core.core_ui.composable.RoundedButton
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppTextField
@@ -53,8 +52,6 @@ import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.seconds
 
 /**viewmodel
@@ -113,8 +110,9 @@ fun ActiveWorkoutPage(
                 }
             ) { innerPadding ->
                 Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState()),
+                    modifier = Modifier.verticalScroll(
+                        state= rememberScrollState()
+                    ),
                 ) {
                    RoundBackButton(
                        navController = navController,
@@ -122,8 +120,7 @@ fun ActiveWorkoutPage(
                    )
                     Column(
                         horizontalAlignment = Alignment.Start,
-                        modifier = Modifier
-                            .padding(horizontal = 20.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp)
                     ) {
                         Row(
                             modifier = BorderBoxModifier(),
@@ -133,17 +130,11 @@ fun ActiveWorkoutPage(
                             Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
                             var showDialog by remember { mutableStateOf(false) }
                             var notes by remember { mutableStateOf("") }
-                            Button(
-                                onClick = {
-                                    showDialog = true
-                                },
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = cs.tertiary
-                                ),
-                            ) {
-                                Text("Finish", color = cs.onTertiary)
-                            }
+
+                            RoundedButton(
+                                buttonText = "Finish",
+                                onClick = { showDialog = true },
+                            )
 
                             if (showDialog) {
                                 AlertDialog(

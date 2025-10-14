@@ -82,3 +82,22 @@ fun RoundBackButton(
         )
     }
 }
+@Composable
+fun RoundedButton(
+    buttonText: String,
+    onClick: () -> Unit,
+    cs: ColorScheme = MaterialTheme.colorScheme
+){
+    return Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = cs.tertiary
+        ),
+    ) {
+        Text(
+            text = buttonText,
+            color = cs.onTertiary
+        )
+    }
+}
