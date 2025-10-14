@@ -14,10 +14,14 @@ fun BorderBox(): Modifier {
     val cs = MaterialTheme.colorScheme
     return Modifier
         .fillMaxWidth()
-        .padding(vertical = 6.dp)
-        .heightIn(60.dp, 60.dp)
+        .padding(vertical = 6.dp)   // Padding between boxes
+        .heightIn(                  // Force to 60.dp height
+            min= 60.dp,
+            max = 60.dp
+        )
         .border(
             width = 2.dp,
             color = cs.onBackground
         )
+        .padding(horizontal = 10.dp) // Padding between box content and border
 }
