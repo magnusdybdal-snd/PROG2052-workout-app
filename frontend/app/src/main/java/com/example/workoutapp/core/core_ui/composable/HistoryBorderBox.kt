@@ -1,0 +1,81 @@
+package com.example.workoutapp.core.core_ui.composable
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.workoutapp.domain.models.HistoryWorkout
+
+
+@Composable
+fun HistoryBorderBox(it : HistoryWorkout){
+    val cs = MaterialTheme.colorScheme
+
+    Box( // vertical space between boxes
+        modifier = Modifier.padding(vertical = 6.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(width = 2.dp, color = cs.onBackground)
+                .padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier.padding(start = 30.dp)
+            ) {
+                Text( // Workout name
+                    text = it.name,
+                    fontSize = 20.sp
+                )
+                Row {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "",
+                    )
+                    Text(
+                        text = "%02d:%02d:%02d".format(
+                            it.duration.toHours(),
+                            it.duration.toMinutes() % 60,
+                            it.duration.toSeconds() % 60
+                        ),
+                        modifier = Modifier.padding(start = 6.dp)
+                    )
+                    Row(
+                        modifier = Modifier.padding(start = 10.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "",
+                        )
+                        Text(// Volume
+                            text = it.totalVolume.toString(),
+                            modifier = Modifier.padding(start = 6.dp)
+                        )
+                    }
+                }
+            } // end column 1 "workout text
+            Text(
+                modifier = Modifier.padding(end = 30.dp),
+                text = it.date.toString(),
+                textAlign = TextAlign.End
+            )
+        }
+    }
+}

@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.HistoryBorderBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 
 /**
@@ -63,7 +64,6 @@ fun HistoryPage(
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .widthIn(max = 500.dp)
-                    //.padding(bottom = 80.dp) // padding to compensate for navbar - navigationBarsPadding()?
                     .background(cs.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -110,62 +110,9 @@ fun HistoryPage(
 
                             )
                         }
-
                         // Looping over each workout within the month
                         workoutsInMonth.forEach {
-                            Box( // vertical space between boxes
-                                modifier = Modifier.padding(vertical = 6.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(width = 2.dp, color = cs.onBackground)
-                                        .padding(vertical = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(start = 30.dp)
-                                    ) {
-                                        Text( // Workout name
-                                            text = it.name,
-                                            fontSize = 20.sp
-                                        )
-                                        Row {
-                                            Icon(
-                                                imageVector = Icons.Default.Info,
-                                                contentDescription = "",
-                                            )
-                                            Text(
-                                                text = "%02d:%02d:%02d".format(
-                                                    it.duration.toHours(),
-                                                    it.duration.toMinutes() % 60,
-                                                    it.duration.toSeconds() % 60
-                                                ),
-                                                modifier.padding(start = 6.dp)
-                                            )
-                                            Row(
-                                                modifier = Modifier.padding(start = 10.dp)
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.AccountCircle,
-                                                    contentDescription = "",
-                                                )
-                                                Text(// Volume
-                                                    text = it.totalVolume.toString(),
-                                                    modifier.padding(start = 6.dp)
-                                                )
-
-                                            }
-                                        }
-
-                                    } // end column 1 "workout text
-                                    Text(
-                                        modifier = Modifier.padding(end = 30.dp),
-                                        text = it.date.toString(),
-                                        textAlign = TextAlign.End
-                                    )
-                                }
+                            HistoryBorderBox(it)
                             }
                         }
                     }
@@ -173,5 +120,5 @@ fun HistoryPage(
             }
         }
     }
-}
+
 
