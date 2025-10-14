@@ -40,10 +40,13 @@ func (r *SessionRepository) InsertSession(ctx context.Context, data domain.Sessi
 }
 
 func (r *SessionRepository) DeleteSession(ctx context.Context, id string) (string, error) {
-	filter := bson.M{"id": id}
-	_, err := r.Coll.DeleteOne(ctx,filter)
+	filter := bson.M{"sessionId": id}
+	result, err := r.Coll.DeleteOne(ctx,filter)
 	if err != nil {
 		return "", err
+	}
+	if result.DeletedCount == 0 {
+		return "", fmt.Errorf("no session with id %s", id)
 	}
 
 	return id, nil

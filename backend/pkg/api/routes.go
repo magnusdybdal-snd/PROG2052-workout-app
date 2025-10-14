@@ -32,7 +32,7 @@ func addRoutes(
 	// GET, POST /templates
 	mux.Handle(TEMPLATES_ROUTE, handlers.HandleTemplate(templateService))
 	// GET /templates/{templateId}
-	mux.Handle(TEMPLATES_ID_ROUTE,handlers.GetOneTemplate(templateService))
+	mux.Handle(TEMPLATES_ID_ROUTE,handlers.HandleOneTemplate(templateService))
 
 	// Media
 	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/exercises"))))

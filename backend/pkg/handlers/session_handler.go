@@ -80,7 +80,7 @@ func DeleteSession(serv *services.SessionService) http.HandlerFunc {
 		defer cancel()
 		result, err := serv.DeleteSession(ctx, id)
 		if err != nil {
-			utils.HandleError(w,http.StatusInternalServerError,err,utils.ErrMsgInternal)
+			utils.HandleError(w,http.StatusInternalServerError,err,err.Error())
 			return
 		}
 		utils.Encode(w, http.StatusOK,map[string]string {

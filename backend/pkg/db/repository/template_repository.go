@@ -32,9 +32,9 @@ func (r *TemplateRepository) GetAllTemplates(ctx context.Context) ([]domain.Temp
 
 func (r *TemplateRepository) GetOneTemplate(ctx context.Context, id string) (domain.Template, error) {
 	var data domain.Template
-	filter := bson.M{"templateId":id}
+	filter := bson.M{"templateId": id}
 
-	err := r.Coll.FindOne(ctx,filter).Decode(&data)
+	err := r.Coll.FindOne(ctx, filter).Decode(&data)
 	if err != nil {
 		var empty domain.Template
 		return empty, err
@@ -44,10 +44,22 @@ func (r *TemplateRepository) GetOneTemplate(ctx context.Context, id string) (dom
 }
 
 func (r *TemplateRepository) InsertOneTemplate(ctx context.Context, data domain.Template) (string, error) {
-	result, err := r.Coll.InsertOne(ctx,data)
+	result, err := r.Coll.InsertOne(ctx, data)
 	if err != nil {
 		return "", err
 	}
-	id := fmt.Sprintf("%s",result.InsertedID)
+	id := fmt.Sprintf("%s", result.InsertedID)
+	return id, nil
+}
+
+func (r *TemplateRepository) DeleteOneTemplate(ctx context.Context, id string) (string, error) {
+	filter := bson.M{"templateId": id}
+	result, err := r.Coll.DeleteOne(ctx, filter)
+	if err != nil {
+		return "", err
+	}
+	if result.DeletedCount == 0 {
+		return "", fmt.Errorf("no session with id %s", id)
+	}
 	return id, nil
 }

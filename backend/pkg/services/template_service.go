@@ -88,3 +88,11 @@ func (s *TemplateService) PostOneTemplate(ctx context.Context, payload *domain.T
 	}
 	return result, nil
 }
+
+func (s *TemplateService) DeleteTemplate(ctx context.Context, id string) (string, error) {
+	result, err := s.RepoTempl.DeleteOneTemplate(ctx, id)
+	if err != nil {
+		return "", err
+	}
+	return result, err
+}
