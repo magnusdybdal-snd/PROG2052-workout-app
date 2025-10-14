@@ -63,7 +63,9 @@ fun HomePage(modifier: Modifier = Modifier,
                     fillScreen = true
                 )
                 Row (
-                    modifier = Modifier.align(Alignment.Start),
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(top = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ){
                    TemplateCategoryHeading(

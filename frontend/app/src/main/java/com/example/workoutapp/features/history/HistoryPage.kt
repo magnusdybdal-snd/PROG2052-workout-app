@@ -63,8 +63,6 @@ fun HistoryPage(
                 Column( // Boxes
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
-
-                    //horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // Loops trough every month that the map is grouped by
                     state.groupedHistory.forEach { (monthHeader, workoutsInMonth) ->
@@ -86,7 +84,7 @@ fun HistoryPage(
                             Text(
                                 text = workoutsInMonth.size.toString() + " workouts",
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = cs.secondary,
 
                             )
                         }

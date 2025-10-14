@@ -32,7 +32,6 @@ fun ExercisesPage(
     viewModel: ExercisesViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val cs = MaterialTheme.colorScheme
 
     when {
         state.isLoading -> LoadingStateView()
