@@ -1,0 +1,46 @@
+stages:
+  - test
+  - deploy
+
+variables:
+  GO_VERSION: "1.25-alpine"
+  APP_NAME: "backend"
+  HOST: "10.212.168.186"
+  SSH_USER: "ubuntu"
+  SSH_KEY: $SSH_PRIVATE_KEY  
+
+# ---------- TEST STAGE ----------
+unit-test:
+  stage: test
+  image: golang:${GO_VERSION}
+  before_script:
+    - cd backend
+  script:
+    - go mod tidy
+    - go test ./... -v
+  only:
+    - merge_requests
+    - dev
+    - main
+
+# ---------- DEPLOY (DEV OR MAIN) ----------
+deploy_backend:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh
+  script:
+    - echo "$SSH_KEY" | tr -d '\r' > id_rsa
+    - chmod 600 id_rsa
+    - ssh -o StrictHostKeyChecking=no -i id_rsa $SSH_USER@$HOST "
+        cd /home/$SSH_USER/$APP_NAME &&
+        git fetch origin &&
+        git checkout $CI_COMMIT_REF_NAME &&
+        git pull origin $CI_COMMIT_REF_NAME &&
+        cd backend &&
+        docker compose down &&
+        docker compose up -d --build
+      "
+  only:
+    - dev
+    - main
