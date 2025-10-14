@@ -2,6 +2,7 @@ package com.example.workoutapp.features.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,7 +78,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     modifier = Modifier
                         .background(cs.background)
                         .fillMaxWidth()
-                        .padding(top = 40.dp, bottom = 15.dp)
+                        .padding(bottom = 15.dp)
                 ) {
                     Text(
                         text = "Start empty workout",

@@ -16,8 +16,10 @@ fun PageHeading(
 ) {
     return Text(
             modifier = Modifier
-                .padding(top = 40.dp)
-                .padding(bottom = 20.dp),
+                .padding(
+                    top = 40.dp,
+                    bottom = 40.dp
+                ),
             text = displayText,
             fontSize = 50.sp,
             color = cs.onBackground,
