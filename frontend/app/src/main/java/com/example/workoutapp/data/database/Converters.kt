@@ -21,8 +21,8 @@ class Converters {
 
     // Converts a LocalDate type into a string
     @TypeConverter
-    fun fromLocalDate(date: String?): String? {
-        return date?.format(dateFormatter)
+    fun fromLocalDate(date: LocalDate?): String? {
+        return date?.toString()
     }
 
     // Converts a date as string into a LocalDate type

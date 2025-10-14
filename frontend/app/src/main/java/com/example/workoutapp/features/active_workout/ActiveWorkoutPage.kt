@@ -57,6 +57,7 @@ import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 /**viewmodel
@@ -188,8 +189,8 @@ fun ActiveWorkoutPage(
                                                         }
                                                     )
                                                 },
-                                                duration = "00:30:00",
-                                                date = LocalDate.now().toString(),
+                                                duration = java.time.Duration.ofHours(1).plusMinutes(15).plusSeconds(45), // TODO THIS IS MOCK DATA
+                                                date = LocalDate.now(),
                                                 note = notes
                                             )
 
