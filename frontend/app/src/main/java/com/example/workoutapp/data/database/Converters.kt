@@ -1,10 +1,12 @@
 package com.example.workoutapp.data.database
 
 import androidx.room.TypeConverter
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.time.toDuration
 
 class Converters {
 
@@ -45,5 +47,23 @@ class Converters {
     @TypeConverter
     fun toDuration(seconds: Long?): Duration? {
         return seconds?.let { Duration.ofSeconds(it) }
+    }
+
+    /*
+     * List converters
+     */
+
+    @TypeConverter
+    fun fromStringList(list: List<String>?): String {
+        return list?.let { Json.encodeToString(it) } ?: "[]"
+    }
+
+    @TypeConverter
+    fun toStringList(json: String): List<String> {
+        return try {
+            Json.decodeFromString(json)
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 }
