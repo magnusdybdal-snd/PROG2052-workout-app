@@ -24,7 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
-import com.example.workoutapp.core.core_ui.modifiers.PageColumnModifier
+import com.example.workoutapp.core.core_ui.composable.modifiers.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
 /**
  * Displays History page

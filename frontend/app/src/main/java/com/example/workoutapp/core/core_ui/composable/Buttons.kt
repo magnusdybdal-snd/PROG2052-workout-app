@@ -19,6 +19,7 @@ import androidx.navigation.NavController
  * @param cs ColorScheme of app (not required)
  * @param navController used to navigate to next screen with onClick button parameter
  * @param route path navigated when onClick is triggered.
+ * @param fillMaxWidth fillMaxWidth() will be enabled
  * @return Button
  */
 @Composable
@@ -27,7 +28,7 @@ fun StandardButton(
     cs: ColorScheme = MaterialTheme.colorScheme,
     navController: NavController,
     route: String,
-    fillScreen: Boolean = false
+    fillMaxWidth: Boolean = false
 ) {
     return Button(
         onClick = { navController.navigate(route) },
@@ -35,7 +36,7 @@ fun StandardButton(
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = cs.tertiary
         ),
-        modifier = if (fillScreen) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
+        modifier = if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
     ) {
         Text(
             buttonText,

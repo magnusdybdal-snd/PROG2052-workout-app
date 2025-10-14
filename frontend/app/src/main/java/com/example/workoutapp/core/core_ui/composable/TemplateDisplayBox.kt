@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.workoutapp.core.core_ui.modifiers.BorderBoxModifier
+import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 
 /**
  * Displays  content of template on HomePage

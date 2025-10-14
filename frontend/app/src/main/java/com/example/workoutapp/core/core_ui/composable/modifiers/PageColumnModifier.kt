@@ -1,4 +1,4 @@
-package com.example.workoutapp.core.core_ui.modifiers
+package com.example.workoutapp.core.core_ui.composable.modifiers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize

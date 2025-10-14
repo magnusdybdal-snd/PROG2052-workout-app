@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +26,7 @@ import com.example.workoutapp.core.core_ui.composable.PageHeading
 import com.example.workoutapp.core.core_ui.composable.StandardButton
 import com.example.workoutapp.core.core_ui.composable.TemplateCategoryHeading
 import com.example.workoutapp.core.core_ui.composable.TemplateDisplayContent
-import com.example.workoutapp.core.core_ui.modifiers.PageColumnModifier
+import com.example.workoutapp.core.core_ui.composable.modifiers.PageColumnModifier
 import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
@@ -60,7 +59,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     buttonText = "Start empty workout",
                     navController = navController,
                     route = Routes.NEWTEMP, // TODO this i sa temporary route!! -> replace when proper path is set.
-                    fillScreen = true
+                    fillMaxWidth = true
                 )
                 Row (
                     modifier = Modifier
