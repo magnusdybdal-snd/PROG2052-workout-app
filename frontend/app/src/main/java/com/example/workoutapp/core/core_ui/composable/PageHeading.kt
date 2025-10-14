@@ -9,6 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Title of each page
+ * @param displayText text that will be displayed
+ * @param cs Color scheme provided through MaterialTheme
+ */
 @Composable
 fun PageHeading(
     displayText: String,
