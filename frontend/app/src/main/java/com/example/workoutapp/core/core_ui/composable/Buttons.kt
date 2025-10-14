@@ -1,6 +1,7 @@
 package com.example.workoutapp.core.core_ui.composable
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -17,29 +18,28 @@ import androidx.navigation.NavController
  * @param buttonText Text displayed on button
  * @param cs ColorScheme of app (not required)
  * @param navController used to navigate to next screen with onClick button parameter
- * @param index of item
+ * @param route route navigated after onClick is triggered.
  * @return Button
  */
 @Composable
-fun RoundedButton(
+fun StandardButton(
     buttonText: String,
     cs: ColorScheme = MaterialTheme.colorScheme,
-    navController : NavController,
-    route : String
-
-){
+    navController: NavController,
+    route: String,
+    fillScreen: Boolean = false
+) {
     return Button(
-        onClick = { navController.navigate(route)},
-        shape = RoundedCornerShape(5.dp),
-        modifier = Modifier.background(cs.background),
+        onClick = { navController.navigate(route) },
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.outlinedButtonColors(
             containerColor = cs.tertiary
         ),
+        modifier = if (fillScreen) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
     ) {
         Text(
             buttonText,
             color = cs.onTertiary
         )
     }
-
 }

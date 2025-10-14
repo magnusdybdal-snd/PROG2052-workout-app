@@ -1,14 +1,10 @@
 package com.example.workoutapp.features.history
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
-import com.example.workoutapp.core.core_ui.composable.PageColumnModifier
+import com.example.workoutapp.core.core_ui.modifiers.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
 /**
  * Displays History page
@@ -62,11 +58,7 @@ fun HistoryPage(
                     displayText = "History"
                 )
                 Column( // Boxes
-                    modifier = Modifier
-                        .widthIn(max = 700.dp)
-                        .background(cs.background)
-                        .padding(horizontal = 20.dp)
-                        .verticalScroll(rememberScrollState()),
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
 
                     //horizontalAlignment = Alignment.CenterHorizontally
