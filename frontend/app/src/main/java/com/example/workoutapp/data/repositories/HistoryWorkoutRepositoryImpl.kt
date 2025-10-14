@@ -1,5 +1,6 @@
 package com.example.workoutapp.data.repositories
 
+import android.util.Log
 import com.example.workoutapp.data.api.ApiService
 import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
@@ -30,7 +31,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
      * new changes when there are changes to the DB so view models that observes trough this
      * function will be updated automatically and therefore update UI automatically
      */
-    fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>> {
+    override fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>> {
 
         return dao.getAllHistoryWorkouts().map { entities ->
             entities.map { entity ->
@@ -74,25 +75,33 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         // Step 2: Pull latest from API
         val remoteWorkouts = try {
             api.getHistoryWorkouts().map { dto ->
+                val localTime = LocalTime.parse(dto.duration)
+                val duration = Duration.ofSeconds(localTime.toSecondOfDay().toLong())
+
                 HistoryWorkoutEntity(
                     id = dto.historyWorkoutId,
                     name = dto.name,
                     date = LocalDate.parse(dto.date),
-                    duration = Duration.parse(dto.duration),
+                    duration = duration,
                     note = dto.note,
                     isSynced = true
                 )
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Log.e("Repo", "Error fetching workouts from API: ${e.message}")
             emptyList()
         }
 
         // Step 3: Merge local and remote
         if (remoteWorkouts.isNotEmpty()){
-            dao.clearAll()
-            dao.insertAll(remoteWorkouts)
+            remoteWorkouts.forEach { remote ->
+                dao.insert(remote)
+            }
 
         }
+
+        Log.d("Repo", "Fetched ${remoteWorkouts.size} remote workouts")
+        Log.d("Repo", "Local DB now has ${dao.getAllHistoryWorkoutsSnapshot().size} workouts")
 
         // Step 4: Return local data from DB (Local first)
         return dao.getAllHistoryWorkoutsSnapshot().map { entity ->

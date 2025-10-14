@@ -26,7 +26,7 @@ interface HistoryWorkoutRepository {
      * Observes all stored workouts in local Room database.
      * Returns a Flow so the UI can automatically update when data changes.
      */
-    suspend fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>>
+    fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>>
 
     /**
      * Posts a completed workout to the API and saves it locally.

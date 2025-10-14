@@ -17,17 +17,16 @@ class GetHistoryWorkoutUseCase @Inject constructor(
 ) {
 
     /**
-     * Returns a Flow of all workouts from local storage.
-     * Also triggers a remote fetch once on start to ensure latest data.
+     * Observe the local database for workout changes (reactive)
      */
-    suspend operator fun invoke(): Flow<List<HistoryWorkout>> {
+    operator fun invoke(): Flow<List<HistoryWorkout>> {
         return repository.observeHistoryWorkouts()
-            .onStart {
-                try {
-                    repository.getHistoryWorkouts()
-            } catch (_: Exception) {
-                // Fail silently - offline mode still works
-            }
-        }
+    }
+
+    /**
+     * Perform a manual sync form remote API to local database
+     */
+    suspend fun syncNow(): List<HistoryWorkout> {
+        return repository.getHistoryWorkouts()
     }
 }

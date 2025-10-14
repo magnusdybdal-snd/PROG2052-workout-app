@@ -57,6 +57,7 @@ import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -174,7 +175,7 @@ fun ActiveWorkoutPage(
                                         TextButton(onClick = {
                                             val template = state.templates[templateId]
                                             val finishedWorkout = Session(
-                                                sessionId = "sess_003",
+                                                sessionId = UUID.randomUUID().toString(),
                                                 name = template.name,
                                                 exercises = template.exercises.mapIndexed { index,
                                                                                             exSet ->

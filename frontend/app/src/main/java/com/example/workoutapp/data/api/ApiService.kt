@@ -3,7 +3,6 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
-import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

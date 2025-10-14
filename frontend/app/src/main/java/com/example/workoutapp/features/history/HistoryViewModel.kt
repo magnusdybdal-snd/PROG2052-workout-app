@@ -35,9 +35,10 @@ class HistoryViewModel @Inject constructor(
 
     init {
         observeHistoryWorkouts()
+        syncFromApi()
     }
 
-    private fun observeHistoryWorkouts() {
+    fun observeHistoryWorkouts() {
         viewModelScope.launch {
             getHistoryWorkoutUseCase()
                 .onEach { workouts ->
@@ -70,6 +71,16 @@ class HistoryViewModel @Inject constructor(
                     )
                 }
                 .collect()
+        }
+    }
+
+    private fun syncFromApi() {
+        viewModelScope.launch {
+            try {
+                getHistoryWorkoutUseCase.syncNow()
+            } catch (e: Exception) {
+                Log.e("HistoryViewModel", "Sync failed: ${e.message}")
+            }
         }
     }
 }
