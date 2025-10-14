@@ -28,6 +28,9 @@ import com.example.workoutapp.core.core_ui.modifiers.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
 /**
  * Displays History page
+ * @param modifier
+ * @param navController
+ * @param viewModel
  */
 @Composable
 fun HistoryPage(

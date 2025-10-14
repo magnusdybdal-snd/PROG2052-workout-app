@@ -21,6 +21,9 @@ import com.example.workoutapp.domain.models.Exercise
 
 /**
  * Displays Exercises page
+ * @param modifier
+ * @param navController
+ * @param viewModel
  */
 @Composable
 fun ExercisesPage(

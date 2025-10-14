@@ -32,6 +32,9 @@ import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
  * Displays Workout page
+ * @param modifier
+ * @param navController
+ * @param viewModel
  */
 @Composable
 fun HomePage(modifier: Modifier = Modifier,

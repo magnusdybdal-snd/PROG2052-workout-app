@@ -32,8 +32,16 @@ import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.new_template.NewTemplatePage
 
+/**
+ * Main screen
+ * @param modifier
+ * @param navController
+ */
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
 
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),

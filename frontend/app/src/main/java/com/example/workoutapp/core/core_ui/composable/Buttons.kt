@@ -18,7 +18,7 @@ import androidx.navigation.NavController
  * @param buttonText Text displayed on button
  * @param cs ColorScheme of app (not required)
  * @param navController used to navigate to next screen with onClick button parameter
- * @param route route navigated after onClick is triggered.
+ * @param route path navigated when onClick is triggered.
  * @return Button
  */
 @Composable
