@@ -54,3 +54,11 @@ func (s *SessionService) PostSession(ctx context.Context, payload *domain.Sessio
 	}
 	return result, nil
 }
+
+func (s *SessionService) DeleteSession(ctx context.Context, id string) (string, error) {
+	result, err := s.Repo.DeleteSession(ctx,id)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}

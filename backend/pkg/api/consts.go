@@ -10,6 +10,7 @@ const (
 	TEMPLATES_ROUTE = API_ROUTE + "/templates"
 	TEMPLATES_ID_ROUTE = TEMPLATES_ROUTE + "/{templateId}"
 	SESSIONS_ROUTE = API_ROUTE + "/sessions"
+	SESSIONS_ID_ROUTE = SESSIONS_ROUTE + "/{sessionId}" 
 
 	MEDIA_ROUTE = API_ROUTE + "/media"
 )

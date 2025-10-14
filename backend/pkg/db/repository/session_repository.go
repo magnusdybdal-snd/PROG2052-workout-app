@@ -38,3 +38,13 @@ func (r *SessionRepository) InsertSession(ctx context.Context, data domain.Sessi
 	id := fmt.Sprintf("%s",result.InsertedID)
 	return id, nil
 }
+
+func (r *SessionRepository) DeleteSession(ctx context.Context, id string) (string, error) {
+	filter := bson.M{"id": id}
+	_, err := r.Coll.DeleteOne(ctx,filter)
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
+}
