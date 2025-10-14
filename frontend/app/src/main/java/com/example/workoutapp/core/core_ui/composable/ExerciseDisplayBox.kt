@@ -15,8 +15,14 @@ import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.modifiers.BorderBoxModifier
 import com.example.workoutapp.domain.models.Exercise
 
+/**
+ * Displays exercise and some of its data
+ * @param exercise single instance of Exercise
+ */
 @Composable
-fun ExerciseDisplayBox(exercise: Exercise){
+fun ExerciseDisplayBox(
+    exercise: Exercise
+) {
     Row(
         modifier = BorderBoxModifier(),
         verticalAlignment = Alignment.CenterVertically
@@ -26,7 +32,7 @@ fun ExerciseDisplayBox(exercise: Exercise){
             contentDescription = "Exercise image",
             contentScale = ContentScale.Inside,
             modifier = Modifier
-                .padding(vertical = 6.dp) // Padding between border and image.
+                .padding(vertical = 8.dp) // Padding between border and image.
         )
         Text( // Exercise name
             modifier = Modifier.padding(6.dp),

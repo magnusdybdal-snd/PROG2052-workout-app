@@ -61,10 +61,10 @@ fun MainScreen(
         bottomBar = {
             val cs = MaterialTheme.colorScheme
             if (showBottomBar) { // check if condition is true (show/hide bottom-bar)
-                NavigationBar (
+                NavigationBar(
                     containerColor = cs.surface,
                     contentColor = cs.onSurface
-                ){
+                ) {
                     navItemList.forEach { item ->
                         NavigationBarItem(
                             selected = currentDestination.isOnRoute(item.route),
@@ -80,7 +80,7 @@ fun MainScreen(
                             icon = { Icon(item.icon, contentDescription = item.label) },
                             label = { Text(item.label) },
                             colors = AppNavBar.itemColors()
-                            )
+                        )
                     }
                 }
             }

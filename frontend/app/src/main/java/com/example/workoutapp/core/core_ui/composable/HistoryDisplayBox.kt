@@ -21,6 +21,7 @@ import com.example.workoutapp.domain.models.HistoryWorkout
 
 @Composable
 fun HistoryDisplayBox(it : HistoryWorkout){
+    val padding = Modifier.padding(start = 8.dp)
         Row(
             modifier = BorderBoxModifier(),
             verticalAlignment = Alignment.CenterVertically,
@@ -34,7 +35,7 @@ fun HistoryDisplayBox(it : HistoryWorkout){
                 Row {
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = "",
+                        contentDescription = "Time Icon",
                     )
                     Text(
                         text = "%02d:%02d:%02d".format(
@@ -42,16 +43,17 @@ fun HistoryDisplayBox(it : HistoryWorkout){
                             it.duration.toMinutes() % 60,
                             it.duration.toSeconds() % 60
                         ),
-                        modifier = Modifier.padding(start = 6.dp)
+                        modifier = padding
                     )
                     Row {
                         Icon(
                             imageVector = Icons.Default.AccountCircle,
                             contentDescription = "",
+                            modifier = padding
                         )
-                        Text(// Volume
+                        Text( // Total volume
                             text = it.totalVolume.toString(),
-                            modifier = Modifier.padding(start = 6.dp)
+                            modifier = padding
                         )
                     }
                 }

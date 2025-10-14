@@ -67,7 +67,7 @@ fun HomePage(modifier: Modifier = Modifier,
                         .align(Alignment.Start)
                         .padding(top = 30.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                    TemplateCategoryHeading(
                        displayText = "My Workouts"
                    )
@@ -98,7 +98,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     }
                 }
                 Column(
-                    modifier.padding(top = 20.dp)
+                    modifier = Modifier.padding(top = 20.dp)
                 ) {
                     TemplateCategoryHeading(
                         displayText = "Example workouts"
