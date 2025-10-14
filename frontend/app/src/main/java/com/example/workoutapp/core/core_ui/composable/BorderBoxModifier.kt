@@ -1,11 +1,9 @@
 package com.example.workoutapp.core.core_ui.composable
 
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +14,7 @@ import androidx.compose.ui.unit.dp
  * @return Modifier for box with border and content padding / size
  */
 @Composable
-fun BorderBox(): Modifier {
+fun BorderBoxModifier(): Modifier {
     val cs = MaterialTheme.colorScheme
     return Modifier
         .fillMaxWidth()

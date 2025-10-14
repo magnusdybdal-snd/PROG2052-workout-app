@@ -21,7 +21,7 @@ import com.example.workoutapp.domain.models.HistoryWorkout
 @Composable
 fun HistoryDisplayBox(it : HistoryWorkout){
         Row(
-            modifier = BorderBox(),
+            modifier = BorderBoxModifier(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

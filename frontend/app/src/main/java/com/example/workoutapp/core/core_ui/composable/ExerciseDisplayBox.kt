@@ -17,7 +17,7 @@ import com.example.workoutapp.domain.models.Exercise
 @Composable
 fun ExerciseDisplayBox(exercise: Exercise){
     Row(
-        modifier = BorderBox(),
+        modifier = BorderBoxModifier(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image( // Picture of exercise

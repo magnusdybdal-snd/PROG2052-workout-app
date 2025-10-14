@@ -1,14 +1,11 @@
 package com.example.workoutapp.features.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -35,10 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_navigation.Routes
-import com.example.workoutapp.core.core_ui.composable.BorderBox
+import com.example.workoutapp.core.core_ui.composable.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.PageHeading
+import com.example.workoutapp.core.core_ui.composable.RoundedButton
+import com.example.workoutapp.core.core_ui.composable.TemplateCategoryHeading
 import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
@@ -66,7 +65,9 @@ fun HomePage(modifier: Modifier = Modifier,
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                PageHeading(displayText = "Workouts")
+                PageHeading(
+                    displayText = "Workouts"
+                )
                 Button(
                     onClick = {/*TODO*/ },
                     shape = RoundedCornerShape(8.dp),
@@ -84,12 +85,12 @@ fun HomePage(modifier: Modifier = Modifier,
                     )
                 }
                 Row (
-                    modifier = Modifier.align(Alignment.Start)
+                    modifier = Modifier
+                        .align(Alignment.Start)
                 ){
-                    Text(
-                        text = "My workout",
-                        fontSize = 30.sp,
-                    )
+                   TemplateCategoryHeading(
+                       displayText = "My Workouts"
+                   )
                     IconButton (
                         onClick = {navController.navigate(Routes.NEWTEMP) }
                     ) {
@@ -107,12 +108,10 @@ fun HomePage(modifier: Modifier = Modifier,
                         )
                     }
                 }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Column {
                     state.workoutTemplates.forEachIndexed { index, workoutTemplate: WorkoutTemplate ->
                             Row(
-                                modifier = BorderBox(),
+                                modifier = BorderBoxModifier(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -120,17 +119,12 @@ fun HomePage(modifier: Modifier = Modifier,
                                     text = workoutTemplate.name,
                                     fontSize = 20.sp
                                 )
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Button(
-                                        onClick = { navController.navigate("worktemp/$index")},
-                                        shape = RoundedCornerShape(5.dp),
-                                        modifier = Modifier.background(cs.background),
-                                        colors = ButtonDefaults.outlinedButtonColors(
-                                            containerColor = cs.tertiary
-                                        ),
-                                    ) {
-                                        Text("Start", color = cs.onTertiary)
-                                    }
+                                Row {
+                                   RoundedButton(
+                                       buttonText = "Start",
+                                       navController = navController,
+                                       route = "worktemp/$index"
+                                   )
                                     IconButton(onClick = { /*TODO*/ }) {
                                         Icon(
                                             imageVector = Icons.Default.MoreVert,
@@ -141,33 +135,28 @@ fun HomePage(modifier: Modifier = Modifier,
                             }
                     }
                 }
-                Text(
-                    text = "Example workout",
-                    fontSize = 30.sp,
-                    textAlign = TextAlign.Left,
-                    modifier = Modifier.padding(top = 40.dp)
-                )
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier.padding(top = 20.dp)
                 ) {
+                    TemplateCategoryHeading(
+                        displayText = "Example workouts",
+                    )
                     for (i in 1..4) {
                             Row(
-                                modifier = BorderBox(),
+                                modifier = BorderBoxModifier(),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Example $i", fontSize = 20.sp) // TODO get example name from database
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Button(
-                                        onClick = { navController.navigate("worktemp/${i-1}")},
-                                        shape = RoundedCornerShape(5.dp),
-                                        modifier = Modifier.background(cs.background),
-                                        colors = ButtonDefaults.outlinedButtonColors(
-                                            containerColor = cs.tertiary
-                                        ),
-                                    ) {
-                                        Text("Start", color = cs.onTertiary)
-                                    }
+                                Text(
+                                    text = "Example $i",
+                                    fontSize = 20.sp
+                                ) // TODO get example name from database
+                                Row {
+                                    RoundedButton(
+                                        buttonText = "Start",
+                                        navController = navController,
+                                        route = "worktemp/${i-1}"
+                                    )
                                     IconButton(onClick = { /*TODO*/ }) {
                                         Icon(
                                             imageVector = Icons.Default.MoreVert,

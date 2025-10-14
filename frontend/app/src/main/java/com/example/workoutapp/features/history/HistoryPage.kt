@@ -61,7 +61,9 @@ fun HistoryPage(
                     .background(cs.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                PageHeading(displayText = "History")
+                PageHeading(
+                    displayText = "History"
+                )
                 Column( // Boxes
                     modifier = Modifier
                         .widthIn(max = 700.dp)

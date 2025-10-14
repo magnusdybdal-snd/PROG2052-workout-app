@@ -45,15 +45,10 @@ fun ExercisesPage(
                     .background(cs.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) { PageHeading(displayText = "Exercises")
-//                Text( // Title of page
-//                    modifier = Modifier
-//                        .padding(top = 40.dp)
-//                        .padding(bottom = 20.dp),
-//                    text = "Exercises",
-//                    fontSize = 50.sp,
-//                    color = cs.onBackground,
-//                )
+            ) {
+                PageHeading(
+                    displayText = "Exercises"
+                )
                 Column( // All exercises
                     modifier = modifier
                         .fillMaxSize()
