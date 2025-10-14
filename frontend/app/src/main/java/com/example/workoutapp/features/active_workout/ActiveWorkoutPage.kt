@@ -1,24 +1,19 @@
 package com.example.workoutapp.features.active_workout
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -27,7 +22,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,6 +45,7 @@ import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
+import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.Session
@@ -131,14 +126,11 @@ fun ActiveWorkoutPage(
                             .padding(horizontal = 20.dp)
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(width = 2.dp, color = cs.onBackground)
-                                .padding(10.dp),
+                            modifier = BorderBoxModifier(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(getCurrentTimeString(), fontSize = 20.sp)
+                            Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
                             var showDialog by remember { mutableStateOf(false) }
                             var notes by remember { mutableStateOf("") }
                             Button(
@@ -322,8 +314,3 @@ fun ActiveWorkoutPage(
     }
 }
 
-fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now() // current time
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
-    return currentTime.format(formatter)
-}

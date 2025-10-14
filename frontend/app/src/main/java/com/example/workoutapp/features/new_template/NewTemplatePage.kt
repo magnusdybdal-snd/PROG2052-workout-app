@@ -51,6 +51,7 @@ import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
+import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.theme.AppColor
 import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
@@ -91,14 +92,11 @@ fun NewTemplatePage(
                         .padding(horizontal = 20.dp)
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(width = 2.dp, color = cs.onBackground)
-                            .padding(10.dp),
+                        modifier = BorderBoxModifier(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(getCurrentTimeString(), fontSize = 20.sp)
+                        Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
                         var showDialog by remember { mutableStateOf(false) }
                         Button(
                             onClick = {
@@ -307,8 +305,4 @@ fun NewTemplatePage(
     }
 }
 
-fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now() // current time
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
-    return currentTime.format(formatter)
-}
+
