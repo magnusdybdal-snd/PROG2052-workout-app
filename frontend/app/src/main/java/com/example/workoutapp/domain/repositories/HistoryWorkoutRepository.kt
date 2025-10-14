@@ -3,6 +3,7 @@ package com.example.workoutapp.domain.repositories
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository interface for accessing past workouts.
@@ -15,5 +16,6 @@ import com.example.workoutapp.domain.models.Session
  */
 interface HistoryWorkoutRepository {
     suspend fun getHistoryWorkouts(): List<HistoryWorkout>
+    suspend fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>>
     suspend fun postHistoryWorkout(session: Session)
 }
