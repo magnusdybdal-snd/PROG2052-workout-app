@@ -3,6 +3,7 @@ package com.example.workoutapp.features.active_workout
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import java.time.ZoneId
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -114,7 +116,7 @@ fun ActiveWorkoutPage(
             ) { innerPadding ->
                 Column(
                     modifier = modifier
-                        .verticalScroll(rememberScrollState()),
+                        .verticalScroll(rememberScrollState()), //sets
                 ) {
                     OutlinedButton(
                         onClick = { navController.popBackStack() },
@@ -173,32 +175,35 @@ fun ActiveWorkoutPage(
                                         )
                                     },
                                     confirmButton = {
-                                        TextButton(onClick = {
-                                            val template = state.templates[templateId]
-                                            val finishedWorkout = Session(
-                                                sessionId = "sess_003",
-                                                name = template.name,
-                                                exercises = template.exercises.map { exSet ->
-                                                    SessionExercise(
-                                                        exerciseId = exSet.exercise.exerciseId,
-                                                        sets = exSet.sets.map { set ->
-                                                            Set(
-                                                                rep = set.rep,
-                                                                kg = set.kg,
-                                                                typeSet = set.typeSet
-                                                            )
-                                                        }
-                                                    )
-                                                },
-                                                duration = "00:30:00",
-                                                date = LocalDate.now().toString(),
-                                                note = notes
-                                            )
+                                        TextButton(
+                                            onClick = {
+                                                val template = state.templates[templateId]
+                                                val finishedWorkout = Session(
+                                                    sessionId = "sess_003",
+                                                    name = template.name,
+                                                    exercises = template.exercises.map { exSet ->
+                                                        SessionExercise(
+                                                            exerciseId = exSet.exercise.exerciseId,
+                                                            sets = exSet.sets.map { set ->
+                                                                Set(
+                                                                    rep = set.rep,
+                                                                    kg = set.kg,
+                                                                    typeSet = set.typeSet
+                                                                )
+                                                            }
+                                                        )
+                                                    },
+                                                    duration = "00:30:00",
+                                                    date = LocalDate.now().toString(),
+                                                    note = notes
+                                                )
 
-                                            viewModel.postWorkout(finishedWorkout)
-                                            showDialog = false
-                                            navController.popBackStack()
-                                        }) {
+                                                viewModel.postWorkout(finishedWorkout)
+                                                showDialog = false
+                                                navController.popBackStack()
+                                            },
+                                            //colors = ButtonColors
+                                        ) {
                                             Text("Finish Workout")
                                         }
                                     },
@@ -331,7 +336,7 @@ fun ActiveWorkoutPage(
 }
 
 fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now() // current time
+    val currentTime = LocalTime.now(ZoneId.systemDefault()) // current time
     val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
     return currentTime.format(formatter)
 }

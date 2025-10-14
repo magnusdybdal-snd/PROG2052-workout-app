@@ -202,7 +202,7 @@ fun NewTemplatePage(
                                         exercises.add(
                                             NewTemplateExercise(
                                                 exerciseId = exercise.exerciseId,
-                                                sets = mutableListOf(
+                                                sets = mutableStateListOf(
                                                     Set (
                                                         rep = 0,
                                                         kg = 0,
@@ -274,7 +274,7 @@ fun NewTemplatePage(
                                                 .height(50.dp)
                                         )
                                     }
-                                }
+                                } //icon
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
                                     horizontalAlignment = Alignment.CenterHorizontally,
