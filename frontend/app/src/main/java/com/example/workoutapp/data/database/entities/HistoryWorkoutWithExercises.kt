@@ -28,7 +28,7 @@ data class WorkoutExerciseWithSets(
 
     @Relation(
         parentColumn = "id",
-        entityColumn = "exerciseEntiyId",
+        entityColumn = "exerciseEntityId",
         entity = SetEntity::class
     )
     val sets: List<SetEntity>

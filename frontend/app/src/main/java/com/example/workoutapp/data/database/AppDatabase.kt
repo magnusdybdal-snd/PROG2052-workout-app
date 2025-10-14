@@ -5,6 +5,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
+import com.example.workoutapp.data.database.entities.SetEntity
+import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
 
 /**
  * The main Room database for the Workout app.
@@ -12,8 +14,11 @@ import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
  * Contains all DAOs and serves as the single access point to persisted local data.
  */
 @Database(
-    entities = [HistoryWorkoutEntity::class],
-    version = 1,
+    entities = [
+        HistoryWorkoutEntity::class,
+        WorkoutExerciseEntity::class,
+        SetEntity::class],
+    version = 2,
     exportSchema = false
 )
 // Needs a converter as Room does not support Duration and LocalDate

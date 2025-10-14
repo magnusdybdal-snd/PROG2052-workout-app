@@ -7,6 +7,6 @@ data class Exercise(
     val bodyParts: List<String>,
     val equipments: List<String>,
     val secondaryMuscles: List<String>,
-    val gifUrl: String,
+    val gifUrl: String?,
     val instructions: List<String>
 )

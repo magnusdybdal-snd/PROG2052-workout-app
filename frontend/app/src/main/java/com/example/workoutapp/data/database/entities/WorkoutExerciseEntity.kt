@@ -33,6 +33,12 @@ data class WorkoutExerciseEntity(
 
     val workoutId: String,  // FK to parent workout
     val exerciseId: String, // Matches exercise from API
-    val name: String
 
+    val name: String,
+    val targetMuscles: List<String>,
+    val bodyParts: List<String>,
+    val equipments: List<String>,
+    val secondaryMuscles: List<String>,
+    val gifUrl: String?,
+    val instructions: List<String>
 )

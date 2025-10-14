@@ -143,9 +143,11 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
 
         // Step 3: Insert locally (nested)
         remoteWorkouts.forEach { (workout, exercises, sets) ->
-            dao.insert(workout)
-            dao.insertExercises(exercises)
-            dao.insertSets(sets)
+            try {
+                dao.insertFullWorkout(workout, exercises, sets)
+            } catch (e: Exception) {
+                Log.e("Repo", "Failed to insert full workout ${workout.id}: ${e.message}")
+            }
         }
 
         Log.d("Repo", "Fetched ${remoteWorkouts.size} remote workouts")

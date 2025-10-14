@@ -81,5 +81,30 @@ interface HistoryWorkoutDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSets(sets: List<SetEntity>)
 
+    //--------------------------
+    //  Combined transactional insert
+    //--------------------------
+
+    /**
+     * Inserts a full workout (parent + exercises + sets) in one atomic transaction.
+     * Prevents foreign key violations by ensuring the parent is inserted first.
+     */
+    @Transaction
+    suspend fun insertFullWorkout(
+        workout: HistoryWorkoutEntity,
+        exercises: List<WorkoutExerciseEntity>,
+        sets: List<SetEntity>
+    ) {
+        // Insert parent first
+        insert(workout)
+
+        // Insert exercises (children)
+        insertExercises(exercises)
+
+        // Insert sets (grandchildren)
+        insertSets(sets)
+    }
+
+
 
 }
