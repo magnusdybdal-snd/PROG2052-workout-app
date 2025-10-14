@@ -112,7 +112,6 @@ fun HomePage(modifier: Modifier = Modifier,
                     }
                 }
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     state.workoutTemplates.forEachIndexed { index, workoutTemplate: WorkoutTemplate ->
@@ -123,12 +122,13 @@ fun HomePage(modifier: Modifier = Modifier,
                             ) {
                                 Text(
                                     text = workoutTemplate.name,
-                                    fontSize = 20.sp)
+                                    fontSize = 20.sp
+                                )
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Button(
                                         onClick = { navController.navigate("worktemp/$index")},
                                         shape = RoundedCornerShape(5.dp),
-                                        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                                        modifier = Modifier.background(cs.background),
                                         colors = ButtonDefaults.outlinedButtonColors(
                                             containerColor = cs.tertiary
                                         ),
@@ -149,11 +149,9 @@ fun HomePage(modifier: Modifier = Modifier,
                     text = "Example workout",
                     fontSize = 30.sp,
                     textAlign = TextAlign.Left,
-                    modifier = Modifier
-                        .padding(top = 40.dp)
+                    modifier = Modifier.padding(top = 40.dp)
                 )
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(5.dp), // spacing between boxes
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     for (i in 1..4) {
