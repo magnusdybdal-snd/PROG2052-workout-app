@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.theme.AppColor
 import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
@@ -81,23 +82,9 @@ fun NewTemplatePage(
                 modifier = modifier
                     .verticalScroll(rememberScrollState()),
             ) {
-                OutlinedButton(
-                    onClick = { navController.popBackStack() },
-                    shape = CircleShape,
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = cs.tertiary,
-                        contentColor = cs.onTertiary
-                    ),
-                    modifier = Modifier
-                        .padding(top = 20.dp, bottom = 40.dp)
-                        .size(50.dp)
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = "go back"
-                    )
-                }
+                RoundBackButton(
+                    navController = navController,
+                )
                 Column(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier

@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.Session
@@ -95,7 +96,7 @@ fun ActiveWorkoutPage(
                 }
             }
 
-            Scaffold(
+            Scaffold (
                 bottomBar = {
                     if (isAnyChecked) { // check if condition is true (show/hide bottombar)
                         NavigationBar{
@@ -117,26 +118,13 @@ fun ActiveWorkoutPage(
                 }
             ) { innerPadding ->
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .verticalScroll(rememberScrollState()),
                 ) {
-                    OutlinedButton(
-                        onClick = { navController.popBackStack() },
-                        shape = CircleShape,
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = cs.tertiary,
-                            contentColor = cs.onTertiary
-                        ),
-                        modifier = Modifier
-                            .padding(innerPadding) //, top = 20.dp, bottom = 40.dp
-                            .size(50.dp)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "content description"
-                        )
-                    }
+                   RoundBackButton(
+                       navController = navController,
+                       modifier = Modifier.padding(innerPadding)
+                   )
                     Column(
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier
