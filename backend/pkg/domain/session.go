@@ -32,6 +32,7 @@ func (s *Session) Valid(ctx context.Context) map[string]string {
 			problems[fmt.Sprintf("exercise[%d].exerciseId", i)] = "exercises id is required"
 		}
 	}
+	// pt1h15m30s
 	if s.Duration == "" {
 		problems["duration"] = "duration is required"
 	} else {
@@ -40,6 +41,7 @@ func (s *Session) Valid(ctx context.Context) map[string]string {
 			problems["duration"] = "duration must be in format hh:mm:ss"
 		}
 	}
+	// iso 9601
 	if s.Date == "" {
 		problems["date"] = "date is required"
 	} else {
