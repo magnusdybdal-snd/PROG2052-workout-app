@@ -38,6 +38,7 @@ import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.BorderBox
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.PageHeading
 import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
@@ -60,17 +61,12 @@ fun HomePage(modifier: Modifier = Modifier,
                     .fillMaxSize()
                     .widthIn(max = 550.dp)
                     .background(cs.background)
-                    .padding(top = 40.dp)
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Workouts",
-                    fontSize = 50.sp,
-                    color = cs.onBackground,
-                )
+                PageHeading(displayText = "Workouts")
                 Button(
                     onClick = {/*TODO*/ },
                     shape = RoundedCornerShape(8.dp),

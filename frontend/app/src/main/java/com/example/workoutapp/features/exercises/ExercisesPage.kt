@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.ExerciseDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.PageHeading
 import com.example.workoutapp.domain.models.Exercise
 
 @Composable
@@ -44,15 +45,15 @@ fun ExercisesPage(
                     .background(cs.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text( // Title of page
-                    modifier = Modifier
-                        .padding(top = 40.dp)
-                        .padding(bottom = 20.dp),
-                    text = "Exercises",
-                    fontSize = 50.sp,
-                    color = cs.onBackground,
-                )
+            ) { PageHeading(displayText = "Exercises")
+//                Text( // Title of page
+//                    modifier = Modifier
+//                        .padding(top = 40.dp)
+//                        .padding(bottom = 20.dp),
+//                    text = "Exercises",
+//                    fontSize = 50.sp,
+//                    color = cs.onBackground,
+//                )
                 Column( // All exercises
                     modifier = modifier
                         .fillMaxSize()

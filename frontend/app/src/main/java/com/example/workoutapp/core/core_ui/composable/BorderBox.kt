@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 /**
- * Box-styling for a uniform look across all screens
+ * Box-styling for a uniform look across all screens that uses this component
  * @return Modifier for box with border and content padding / size
  */
 @Composable

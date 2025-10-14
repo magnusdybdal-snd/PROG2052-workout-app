@@ -27,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.PageHeading
 
 /**
  * Displays History page
@@ -60,15 +61,7 @@ fun HistoryPage(
                     .background(cs.background),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    modifier = Modifier
-                        .padding(top = 40.dp)
-                        .padding(bottom = 20.dp),
-                    text = "History",
-                    fontSize = 50.sp,
-                    color = cs.onBackground,
-                )
-
+                PageHeading(displayText = "History")
                 Column( // Boxes
                     modifier = Modifier
                         .widthIn(max = 700.dp)
