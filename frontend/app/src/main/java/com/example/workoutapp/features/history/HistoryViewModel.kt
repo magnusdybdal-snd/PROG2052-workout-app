@@ -1,7 +1,6 @@
 package com.example.workoutapp.features.history
 
 import android.util.Log
-import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.HistoryWorkout
@@ -10,6 +9,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.time.format.TextStyle
@@ -28,43 +30,46 @@ class HistoryViewModel @Inject constructor(
     private val getHistoryWorkoutUseCase: GetHistoryWorkoutUseCase
 ): ViewModel() {
 
-    private val _uiState = MutableStateFlow(HistoryUiState())
+    private val _uiState = MutableStateFlow(HistoryUiState(isLoading = true))
     val uiState: StateFlow<HistoryUiState> = _uiState.asStateFlow()
 
     init {
-        loadHistory()
+        observeHistoryWorkouts()
     }
 
-    fun loadHistory() {
+    private fun observeHistoryWorkouts() {
         viewModelScope.launch {
-            _uiState.value = HistoryUiState(isLoading = true)
-            try {
-                val data = getHistoryWorkoutUseCase()
+            getHistoryWorkoutUseCase()
+                .onEach { workouts ->
+                    Log.d("HistoryViewmodel", "Recieved ${workouts.size} workouts from flow")
 
-                // Groups all workouts by month/year for sorting in history page
-                val grouped = data
-                    .sortedByDescending { it.date }
-                    .groupBy { workout ->
-                    val month = workout.date.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-                    val year = workout.date.year
-                    "$month $year"
+                    val grouped = workouts
+                        .sortedByDescending { it.date }
+                        .groupBy { workout ->
+                            val month = workout.date.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+                            val year = workout.date.year
+                            "$month $year"
+                        }
+                        .toSortedMap(compareByDescending { key ->
+                            val (monthName, yearStr) = key.split(" ")
+                            val monthValue = java.time.Month.valueOf(monthName.uppercase()).value
+                            val year = yearStr.toInt()
+                            year * 12 * monthValue
+                        })
+
+                    _uiState.value = HistoryUiState(
+                        isLoading = false,
+                        historyWorkouts = workouts,
+                        groupedHistory = grouped
+                    )
                 }
-                    // Sorts the map so that the newest month appears first
-                    .toSortedMap(compareByDescending { key ->
-                        val parts = key.split(" ")
-                        val monthName = parts[0]
-                        val year = parts[1].toInt()
-                        val monthValue = java.time.Month.valueOf(monthName.uppercase()).value
-                        year * 12 + monthValue
-                    })
-                Log.d("HistoryViewModel", "Fetched ${data.size} completed workouts")
-
-                _uiState.value = HistoryUiState(
-                    historyWorkouts = data.sortedByDescending { it.date },
-                    groupedHistory = grouped)
-            } catch (e: Exception) {
-                _uiState.value = HistoryUiState(error = e.message ?: "Unknown error")
-            }
+                .catch { e ->
+                    _uiState.value = HistoryUiState(
+                        isLoading = false,
+                        error = e.message ?: "Unknown error"
+                    )
+                }
+                .collect()
         }
     }
 }
