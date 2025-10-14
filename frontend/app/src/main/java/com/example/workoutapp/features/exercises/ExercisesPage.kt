@@ -22,9 +22,12 @@ import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.ExerciseDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
 import com.example.workoutapp.domain.models.Exercise
-
+/**
+ * Displays Exercises page
+ */
 @Composable
 fun ExercisesPage(
     modifier: Modifier = Modifier,
@@ -39,10 +42,7 @@ fun ExercisesPage(
         state.error != null -> ErrorStateView(state.error)
         else -> {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .widthIn(max = 700.dp)
-                    .background(cs.background),
+                modifier = PageColumnModifier(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

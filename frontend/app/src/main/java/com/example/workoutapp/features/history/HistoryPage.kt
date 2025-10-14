@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -27,8 +28,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.core.core_ui.composable.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
-
 /**
  * Displays History page
  */
@@ -54,11 +55,7 @@ fun HistoryPage(
         state.error != null -> ErrorStateView(state.error)
         else -> {
             Column( // Workout Header
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .widthIn(max = 500.dp)
-                    .background(cs.background),
+                modifier = PageColumnModifier(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 PageHeading(

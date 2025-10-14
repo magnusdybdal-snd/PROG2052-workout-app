@@ -86,8 +86,7 @@ fun HomePage(modifier: Modifier = Modifier,
                     )
                 }
                 Row (
-                    modifier = Modifier
-                        .align(Alignment.Start)
+                    modifier = Modifier.align(Alignment.Start)
                 ){
                    TemplateCategoryHeading(
                        displayText = "My Workouts"
