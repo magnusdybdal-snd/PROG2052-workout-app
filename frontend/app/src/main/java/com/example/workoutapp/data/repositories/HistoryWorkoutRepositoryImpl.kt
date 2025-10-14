@@ -2,6 +2,7 @@ package com.example.workoutapp.data.repositories
 
 import com.example.workoutapp.data.api.ApiService
 import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
+import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
 import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
@@ -16,8 +17,8 @@ import java.time.LocalTime
 import javax.inject.Inject
 
 /**
- * Implementation for the HistoryWorkoutRepository.
- * Built by injecting the API service
+ * Repository that provides access to workout history from both local Room DB and remote API.
+ * Room acts as the single source of truth, while the API syncs data in and out.
  */
 class HistoryWorkoutRepositoryImpl @Inject constructor(
     private val api: ApiService,
@@ -25,46 +26,74 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
 ): HistoryWorkoutRepository {
 
     /**
-     * Converts the Data Transfer Object built from the API json into the
-     * domain model HistoryWorkout (nested with WorkoutExercise and Set)
+     * Observers all local workouts (used by viewmodel) The Flow will automatically emit
+     * new changes when there are changes to the DB so view models that observes trough this
+     * function will be updated automatically and therefore update UI automatically
+     */
+    fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>> {
+
+        return dao.getAllHistoryWorkouts().map { entities ->
+            entities.map { entity ->
+                HistoryWorkout(
+                    id = entity.id,
+                    name = entity.name,
+                    date = entity.date,
+                    duration = entity.duration,
+                    note = entity.note,
+                    exercises = emptyList() // TODO: Add nested exercises and sets
+                )
+            }
+        }
+    }
+
+    /**
+     * Fetch HistoryWorkouts from the API and update the local database with fresh API data
      */
     override suspend fun getHistoryWorkouts(): List<HistoryWorkout> {
-        return api.getHistoryWorkouts().map { dto ->
+        val remoteWorkouts = api.getHistoryWorkouts().map { dto ->
             val localTime = LocalTime.parse(dto.duration)
             val duration = Duration.ofSeconds(localTime.toSecondOfDay().toLong())
 
-            HistoryWorkout(
-                historyWorkoutId = dto.historyWorkoutId,
+            HistoryWorkoutEntity(
+                id = dto.historyWorkoutId,
                 name = dto.name,
                 date = LocalDate.parse(dto.date),
                 duration = duration,
                 note = dto.note,
-                exercises = dto.exercises.map { workoutExerciseDto ->
-                    WorkoutExercise(
-                        exercise = Exercise(
-                            exerciseId = workoutExerciseDto.exercise.exerciseId,
-                            name = workoutExerciseDto.exercise.name,
-                            targetMuscles = workoutExerciseDto.exercise.targetMuscles,
-                            bodyParts = workoutExerciseDto.exercise.bodyParts,
-                            equipments = workoutExerciseDto.exercise.equipments,
-                            secondaryMuscles = workoutExerciseDto.exercise.secondaryMuscles,
-                            gifUrl = workoutExerciseDto.exercise.gifUrl,
-                            instructions = workoutExerciseDto.exercise.instructions
-                        ),
-                        sets = workoutExerciseDto.sets.map { setDto ->
-                            Set(
-                                rep = setDto.rep,
-                                kg = setDto.kg,
-                                typeSet = setDto.typeSet
-                            )
-                        }
-                    )
-                }
+                totalVolume = 0.0, // TODO: calculate on demand or store?
+                isSynced = true
+            )
+        }
+
+        // Replace local data with fresh API data
+        dao.clearAll()
+        dao.insertAll(remoteWorkouts)
+
+        // Return the domain model for use in viewmodel
+        return remoteWorkouts.map { entity ->
+            HistoryWorkout(
+                id = entity.id,
+                name = entity.name,
+                date = entity.date,
+                duration = entity.duration,
+                note = entity.note,
+                exercises = emptyList() // TODO: Add nested structure
             )
         }
     }
 
+
     override suspend fun postHistoryWorkout(session: Session) {
         api.postHistoryWorkout(session)
+
+        val entity = HistoryWorkoutEntity(
+            name = session.name,
+            date = session.date,            // TODO: use LocalDate for date not String      @see Session.kt
+            duration = session.duration,    // TODO: use Duration for duration not String   @see Session.kt
+            totalVolume = 0.0, // Todo: calculate?,
+            note = session.note,
+            isSynced = true
+        )
+        dao.insert(entity)
     }
 }

@@ -50,10 +50,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
-import com.example.workoutapp.data.api.dto.ExerciseDto
-import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
-import com.example.workoutapp.data.api.dto.SetDto
-import com.example.workoutapp.data.api.dto.WorkoutExerciseDto
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
@@ -61,9 +57,7 @@ import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 /**viewmodel
  * Displays Workout page

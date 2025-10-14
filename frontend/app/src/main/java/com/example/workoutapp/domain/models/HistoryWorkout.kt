@@ -8,12 +8,12 @@ import java.time.LocalDate
  * Contains a list of WorkoutExercise, not to be mixed with TemplateExercise
  */
 data class HistoryWorkout(
-    val historyWorkoutId: String,
+    val id: String,
     val name: String,
     val date: LocalDate,
     val duration: Duration,
     val exercises: List<WorkoutExercise>,
-    val note: String
+    val note: String?
 ) { // Computed value, not stored but computed at access time
     val totalVolume: Int
         get() = exercises.sumOf { it.volume }
