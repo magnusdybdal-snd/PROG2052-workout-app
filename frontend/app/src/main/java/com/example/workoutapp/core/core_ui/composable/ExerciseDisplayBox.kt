@@ -25,7 +25,7 @@ fun ExerciseDisplayBox(exercise: Exercise){
             contentDescription = "Exercise image",
             contentScale = ContentScale.Inside,
             modifier = Modifier
-                .padding(6.dp)
+                .padding(vertical = 6.dp) // Padding between border and image.
         )
         Text( // Exercise name
             modifier = Modifier.padding(6.dp),

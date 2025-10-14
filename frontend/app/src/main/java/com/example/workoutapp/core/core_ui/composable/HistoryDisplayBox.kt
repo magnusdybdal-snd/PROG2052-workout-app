@@ -25,9 +25,7 @@ fun HistoryDisplayBox(it : HistoryWorkout){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier.padding(start = 30.dp)
-            ) {
+            Column {
                 Text( // Workout name
                     text = it.name,
                     fontSize = 20.sp
@@ -45,9 +43,7 @@ fun HistoryDisplayBox(it : HistoryWorkout){
                         ),
                         modifier = Modifier.padding(start = 6.dp)
                     )
-                    Row(
-                        modifier = Modifier.padding(start = 10.dp)
-                    ) {
+                    Row {
                         Icon(
                             imageVector = Icons.Default.AccountCircle,
                             contentDescription = "",
@@ -60,7 +56,6 @@ fun HistoryDisplayBox(it : HistoryWorkout){
                 }
             } // end column 1 "workout text
             Text(
-                modifier = Modifier.padding(end = 30.dp),
                 text = it.date.toString(),
                 textAlign = TextAlign.End
             )

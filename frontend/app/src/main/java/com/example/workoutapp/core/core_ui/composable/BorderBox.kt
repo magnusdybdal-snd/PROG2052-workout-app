@@ -1,14 +1,20 @@
 package com.example.workoutapp.core.core_ui.composable
 
+import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * Box-styling for a uniform look across all screens
+ * @return Modifier for box with border and content padding / size
+ */
 @Composable
 fun BorderBox(): Modifier {
     val cs = MaterialTheme.colorScheme
@@ -23,5 +29,5 @@ fun BorderBox(): Modifier {
             width = 2.dp,
             color = cs.onBackground
         )
-        .padding(horizontal = 10.dp) // Padding between box content and border
+        .padding(horizontal = 20.dp) // Padding between box content and border
 }

@@ -72,6 +72,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation(libs.androidx.foundation)
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Coroutines (stable)
