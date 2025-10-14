@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.workoutapp.data.api.ApiService
 import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
+import com.example.workoutapp.data.database.entities.SetEntity
+import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
 import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
@@ -33,15 +35,35 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
      */
     override fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>> {
 
-        return dao.getAllHistoryWorkouts().map { entities ->
-            entities.map { entity ->
+        return dao.getAllHistoryWorkoutsWithExercises().map { workoutWithExercises ->
+            workoutWithExercises.map { fullWorkout ->
                 HistoryWorkout(
-                    id = entity.id,
-                    name = entity.name,
-                    date = entity.date,
-                    duration = entity.duration,
-                    note = entity.note,
-                    exercises = emptyList() // TODO: Add nested exercises and sets
+                    id = fullWorkout.workout.id,
+                    name = fullWorkout.workout.name,
+                    date = fullWorkout.workout.date,
+                    duration = fullWorkout.workout.duration,
+                    note = fullWorkout.workout.note,
+                    exercises = fullWorkout.exercises.map { exerciseWithSets ->
+                        WorkoutExercise(
+                            exercise = Exercise(
+                                exerciseId = exerciseWithSets.exercise.exerciseId,
+                                name = exerciseWithSets.exercise.name,
+                                targetMuscles = exerciseWithSets.exercise.targetMuscles,
+                                bodyParts = exerciseWithSets.exercise.bodyParts,
+                                equipments = exerciseWithSets.exercise.equipments,
+                                secondaryMuscles = exerciseWithSets.exercise.secondaryMuscles,
+                                gifUrl = exerciseWithSets.exercise.gifUrl,
+                                instructions = exerciseWithSets.exercise.instructions
+                            ),
+                            sets = exerciseWithSets.sets.map { setEntity ->
+                                Set(
+                                    rep = setEntity.rep,
+                                    kg = setEntity.kg,
+                                    typeSet = setEntity.typeSet
+                                )
+                            }
+                        )
+                    }
                 )
             }
         }
@@ -55,20 +77,20 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
     override suspend fun getHistoryWorkouts(): List<HistoryWorkout> {
         // Step 1: Post unsynced workouts to API
         val unsyncedWorkouts = dao.getUnsyncedWorkouts()
-        unsyncedWorkouts.forEach { entity ->
+        unsyncedWorkouts.forEach { local ->
             val session = Session(
-                sessionId = entity.id,
-                name = entity.name,
+                sessionId = local.id,
+                name = local.name,
                 exercises = emptyList(), //TODO: add nested data later
-                duration = entity.duration,
-                date = entity.date,
-                note = entity.note
+                duration = local.duration,
+                date = local.date,
+                note = local.note ?: ""
             )
             try {
                 api.postHistoryWorkout(session)
-                dao.markAsSynced(entity.id)
+                dao.markAsSynced(local.id)
             } catch (_: Exception) {
-                // Stay unsynced if offline or error
+                Log.w("Repo", "Failed to sync workout ${local.id}")
             }
         }
 
@@ -78,7 +100,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 val localTime = LocalTime.parse(dto.duration)
                 val duration = Duration.ofSeconds(localTime.toSecondOfDay().toLong())
 
-                HistoryWorkoutEntity(
+                val workoutEntity = HistoryWorkoutEntity(
                     id = dto.historyWorkoutId,
                     name = dto.name,
                     date = LocalDate.parse(dto.date),
@@ -86,18 +108,44 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     note = dto.note,
                     isSynced = true
                 )
+
+                // Nested entities
+                val exerciseEntities = dto.exercises.map { exDto ->
+                    WorkoutExerciseEntity(
+                        workoutId = dto.historyWorkoutId,
+                        exerciseId = exDto.exercise.exerciseId,
+                        name = exDto.exercise.name,
+                        targetMuscles = exDto.exercise.targetMuscles,
+                        bodyParts = exDto.exercise.bodyParts,
+                        equipments = exDto.exercise.equipments,
+                        secondaryMuscles = exDto.exercise.secondaryMuscles,
+                        gifUrl = exDto.exercise.gifUrl,
+                        instructions = exDto.exercise.instructions
+                    )
+                }
+
+                val setEntities = dto.exercises.flatMapIndexed { idx, exDto ->
+                    exDto.sets.map { setDto ->
+                        SetEntity(
+                            exerciseEntityId = idx + 1, // temporary — fixed by foreign key later
+                            rep = setDto.rep,
+                            kg = setDto.kg,
+                            typeSet = setDto.typeSet
+                        )
+                    }
+                }
+                Triple(workoutEntity, exerciseEntities, setEntities)
             }
         } catch (e: Exception) {
             Log.e("Repo", "Error fetching workouts from API: ${e.message}")
             emptyList()
         }
 
-        // Step 3: Merge local and remote
-        if (remoteWorkouts.isNotEmpty()){
-            remoteWorkouts.forEach { remote ->
-                dao.insert(remote)
-            }
-
+        // Step 3: Insert locally (nested)
+        remoteWorkouts.forEach { (workout, exercises, sets) ->
+            dao.insert(workout)
+            dao.insertExercises(exercises)
+            dao.insertSets(sets)
         }
 
         Log.d("Repo", "Fetched ${remoteWorkouts.size} remote workouts")
@@ -111,7 +159,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 date = entity.date,
                 duration = entity.duration,
                 note = entity.note,
-                exercises = emptyList() // TODO: add nested stuff
+                exercises = emptyList() // exercises are handled by Flow observers
             )
         }
     }
@@ -132,7 +180,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
             api.postHistoryWorkout(session)
             dao.markAsSynced(session.sessionId)
         } catch (_: Exception) {
-            // Remains unsynced until next sync attempt
+            Log.w("Repo", "Workout queued for sync: ${session.sessionId}")
         }
 
     }

@@ -34,6 +34,6 @@ data class SetEntity(
 
     val exerciseEntityId: Int,
     val rep: Int,
-    val kg: Double,
+    val kg: Int,
     val typeSet: Int
 )
