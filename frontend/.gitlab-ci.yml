@@ -20,7 +20,7 @@ build_android_debug:
     - ./gradlew --version
   script:
     - ./gradlew clean
-    - ./gradlew assembleDebug --stacktrace --no-daemon -x test
+#    - ./gradlew assembleDebug --stacktrace --no-daemon -x test
     - ./gradlew build 
     # -x test excludes the test task
     # --stacktrace gives good debug info 
