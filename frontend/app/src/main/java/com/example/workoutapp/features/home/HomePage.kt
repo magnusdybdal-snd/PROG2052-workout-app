@@ -16,9 +16,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.R
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
@@ -53,7 +55,7 @@ fun HomePage(modifier: Modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 PageHeading(
-                    displayText = "Workouts"
+                    displayText = stringResource(R.string.workouts)
                 )
                 StandardButton(
                     buttonText = "Start empty workout",
@@ -68,14 +70,14 @@ fun HomePage(modifier: Modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                    TemplateCategoryHeading(
-                       displayText = "My Workouts"
+                       displayText = "My " + stringResource(R.string.workouts)
                    )
                     IconButton (
                         onClick = {navController.navigate(Routes.NEWTEMP) }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add workout"
+                            contentDescription = stringResource(R.string.add_workout)
                         )
                     }
                     IconButton (
@@ -83,7 +85,8 @@ fun HomePage(modifier: Modifier = Modifier,
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = "Search workout"
+                            contentDescription = "Search " +
+                                    stringResource(R.string.workouts).lowercase()
                         )
                     }
                 }
@@ -100,7 +103,8 @@ fun HomePage(modifier: Modifier = Modifier,
                     modifier = Modifier.padding(top = 20.dp)
                 ) {
                     TemplateCategoryHeading(
-                        displayText = "Example workouts"
+                        displayText = "Example " +
+                                stringResource(R.string.workouts).lowercase()
                     )
                     for (i in 1..4) {
                         TemplateDisplayContent(

@@ -15,12 +15,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
@@ -58,7 +60,7 @@ fun HistoryPage(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 PageHeading(
-                    displayText = "History"
+                    displayText = stringResource(R.string.history)
                 )
                 Column( // Boxes
                     modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -82,7 +84,9 @@ fun HistoryPage(
                             )
                             // Number of workouts that month
                             Text(
-                                text = workoutsInMonth.size.toString() + " workouts",
+                                text = workoutsInMonth.size.toString() +
+                                        " " +
+                                        stringResource(R.string.workouts).lowercase(),
                                 fontSize = 14.sp,
                                 color = cs.secondary,
 

@@ -30,11 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
@@ -128,7 +130,7 @@ fun ActiveWorkoutPage(
                             var notes by remember { mutableStateOf("") }
 
                             RoundedButton(
-                                buttonText = "Finish",
+                                buttonText = stringResource(R.string.finish),
                                 onClick = { showDialog = true },
                             )
 
@@ -140,7 +142,7 @@ fun ActiveWorkoutPage(
                                         OutlinedTextField(
                                             value = notes,
                                             onValueChange = { notes = it },
-                                            label = { Text("Workout notes") }
+                                            label = { Text(text = stringResource(R.string.workout_notes)) }
                                         )
                                     },
                                     confirmButton = {
@@ -170,12 +172,12 @@ fun ActiveWorkoutPage(
                                             showDialog = false
                                             navController.popBackStack()
                                         }) {
-                                            Text("Finish Workout")
+                                            Text(text = stringResource(R.string.finish_workout))
                                         }
                                     },
                                     dismissButton = {
                                         TextButton(onClick = { showDialog = false }) {
-                                            Text("Cancel")
+                                            Text(text = stringResource(R.string.cancel))
                                         }
                                     }
                                 )
@@ -213,7 +215,7 @@ fun ActiveWorkoutPage(
                                         modifier = TextFieldModifier(height = h.dp * y)
                                     ) {
                                         Text(
-                                            "SETS",
+                                            text = stringResource(R.string.sets),
                                             fontSize = 10.sp,
                                             modifier = Modifier
                                         )
@@ -230,7 +232,7 @@ fun ActiveWorkoutPage(
                                         modifier = TextFieldModifier(height = h.dp * y)
                                     ) {
                                         WorkoutTextField(
-                                            label = "KG",
+                                            label = stringResource(R.string.kg),
                                             exSet = exSet
                                         )
                                     }
@@ -240,7 +242,7 @@ fun ActiveWorkoutPage(
                                         modifier = TextFieldModifier(height = h.dp * y)
                                     ) {
                                         WorkoutTextField(
-                                            label = "SETS",
+                                            label = stringResource(R.string.sets),
                                             exSet = exSet
                                         )
                                     }
@@ -252,7 +254,7 @@ fun ActiveWorkoutPage(
                                     ) {
                                         Icon(
                                             Icons.Default.Check,
-                                            contentDescription = "Done set",
+                                            contentDescription = stringResource(R.string.done_set),
                                             tint = cs.onBackground
                                         )
                                         repeat(y) {

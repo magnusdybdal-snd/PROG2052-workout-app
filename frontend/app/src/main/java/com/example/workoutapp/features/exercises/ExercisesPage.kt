@@ -9,8 +9,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.ExerciseDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
@@ -42,7 +44,7 @@ fun ExercisesPage(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 PageHeading(
-                    displayText = "Exercises"
+                    displayText = stringResource(R.string.exercises)
                 )
                 Column( // All exercises
                     modifier = Modifier.verticalScroll(rememberScrollState()),
