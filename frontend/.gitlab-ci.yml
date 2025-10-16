@@ -12,13 +12,13 @@ variables:
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
-    - .gradle/
+    - ./
 
 build_android_debug:
   stage: build
   before_script:
-    - test -d "$ANDROID_PROJECT_DIR" || (echo "Folder '$ANDROID_PROJECT_DIR' not found"; ls -la; exit 1)
-    - cd "$ANDROID_PROJECT_DIR"
+#    - test -d "$ANDROID_PROJECT_DIR" || (echo "Folder '$ANDROID_PROJECT_DIR' not found"; ls -la; exit 1)
+#    - cd "$ANDROID_PROJECT_DIR"
     - chmod +x ./gradlew
     - ./gradlew --version
   script:
