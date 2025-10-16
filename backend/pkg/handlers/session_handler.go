@@ -34,6 +34,7 @@ func HandleSession(serv *services.SessionService) http.HandlerFunc {
 
 		// POST /sessions
 		case http.MethodPost:
+			/*
 			payload, problems, err := utils.DecodeValid[*domain.Session](r)
 			if err != nil {
 				if problems != nil {
@@ -43,7 +44,13 @@ func HandleSession(serv *services.SessionService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.PostSession(ctx, payload)
+			*/
+			payload, err := utils.Decode[domain.Session](r)
+			if err != nil {
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
+				return
+			}
+			id, err := serv.PostSession(ctx, &payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
