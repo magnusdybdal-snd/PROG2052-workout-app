@@ -264,7 +264,7 @@ fun ActiveWorkoutPage(
                                         modifier = TextFieldModifier(height = h.dp * y)
                                     ) {
                                         WorkoutTextField(
-                                            label = stringResource(R.string.sets),
+                                            label = stringResource(R.string.reps),
                                             exSet = exSet
                                         )
                                     }
@@ -282,6 +282,7 @@ fun ActiveWorkoutPage(
 
                                         exSet.sets.forEachIndexed { setIndex, _ ->
                                             Checkbox(
+                                                colors = AppCheckBox.checkBoxColor(),
                                                 checked = completedSets.value[exerciseIndex][setIndex],
                                                 onCheckedChange = { isChecked ->
                                                     isAnyChecked = isAnyChecked || isChecked
