@@ -19,6 +19,6 @@ data class Session (
 )
 @Serializable
 data class SessionExercise(
-    val exerciseId: String,
+    val exercise: Exercise,
     val sets: List<Set>
 )

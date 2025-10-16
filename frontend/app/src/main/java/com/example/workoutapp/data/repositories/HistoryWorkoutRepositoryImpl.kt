@@ -172,21 +172,33 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
     }
 
     override suspend fun postHistoryWorkout(session: Session) {
-        val entity = HistoryWorkoutEntity(
+        val workoutEntity = HistoryWorkoutEntity(
             id = session.sessionId,
             name = session.name,
             date = session.date,
             duration = session.duration,
             note = session.note,
-            isSynced = true
+            isSynced = false
         )
-        dao.insert(entity)
+
+        val exerciseEntities = session.exercises.map { workoutExercise ->
+            WorkoutExerciseEntity(
+                id = UUID.randomUUID().toString(),
+                workoutId = session.sessionId,
+                exerciseId = workoutExercise.exercise.exerciseId,
+
+            )
+        }
+
+
+        dao.insert(workoutEntity)
 
         // Try to push new session
         try {
             api.postHistoryWorkout(session)
             dao.markAsSynced(session.sessionId)
         } catch (_: Exception) {
+            // Workout remains marked as unsynced, will sync later
             Log.w("Repo", "Workout queued for sync: ${session.sessionId}")
         }
 
