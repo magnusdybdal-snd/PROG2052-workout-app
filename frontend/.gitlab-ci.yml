@@ -15,7 +15,7 @@ cache:
 build_android_debug:
   stage: build
   before_script:
-#    - cd "$ANDROID_PROJECT_DIR"
+    - cd "$ANDROID_PROJECT_DIR"
     - chmod +x gradlew
     - ./gradlew --version
   script:
