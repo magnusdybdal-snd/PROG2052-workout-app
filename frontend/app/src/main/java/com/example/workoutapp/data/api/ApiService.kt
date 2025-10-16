@@ -3,6 +3,7 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Session
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -26,7 +27,7 @@ class ApiService @Inject constructor(
      * Gets all the exercises (library) from the backend API
      */
     suspend fun getExercises(): List<ExerciseDto> {
-        return client.get("$baseUrl/exercises").body()
+        return client.get("$baseUrl/exercises?limit=30").body()
     }
 
     /**
@@ -50,10 +51,10 @@ class ApiService @Inject constructor(
         }
     }
 
-    suspend fun postWorkoutTemplate(workoutTemplateDto: WorkoutTemplateDto) {
+    suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
         client.post("$baseUrl/templates") {
             contentType(ContentType.Application.Json)
-            setBody(workoutTemplateDto)
+            setBody(newTemplate)
         }
     }
     // More API calls like getWorkoutTemplates will be added here

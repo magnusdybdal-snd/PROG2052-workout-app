@@ -3,8 +3,6 @@ package com.example.workoutapp.domain.models
 import com.example.workoutapp.data.serializers.DurationSerializer
 import com.example.workoutapp.data.serializers.LocalDateSerializer
 import kotlinx.serialization.Serializable
-import java.time.Duration
-import java.time.LocalDate
 
 @Serializable
 data class Session (

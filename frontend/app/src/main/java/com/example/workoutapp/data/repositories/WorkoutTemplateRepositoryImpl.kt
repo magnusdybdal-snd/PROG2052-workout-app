@@ -4,6 +4,7 @@ import com.example.workoutapp.data.api.ApiService
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.Exercise
+import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
@@ -52,7 +53,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postWorkoutTemplate(workoutTemplateDto: WorkoutTemplateDto) {
-        api.postWorkoutTemplate(workoutTemplateDto)
+    override suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
+        api.postWorkoutTemplate(newTemplate)
     }
 }

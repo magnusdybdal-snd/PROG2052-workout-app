@@ -16,14 +16,23 @@ func addRoutes(
 	// Home route
 	mux.Handle(API_ROUTE,handlers.HandleHome())
 
-	// Endpoints
+	/*
+		Endpoints
+	*/
+	// GET /exercises
 	mux.Handle(EXERCISES_ROUTE,handlers.GetAllExercises(exerciseService))
+	// GET /exercises/{exerciseId}
 	mux.Handle(EXERCISES_ID_ROUTE,handlers.GetOneExercise(exerciseService))
 
+	// GET, POST /sessions
 	mux.Handle(SESSIONS_ROUTE, handlers.HandleSession(sessionService))
+	// DELETE /sessions
+	mux.Handle(SESSIONS_ID_ROUTE, handlers.HandleOneSession(sessionService))
 
+	// GET, POST /templates
 	mux.Handle(TEMPLATES_ROUTE, handlers.HandleTemplate(templateService))
-	mux.Handle(TEMPLATES_ID_ROUTE,handlers.GetOneTemplate(templateService))
+	// GET /templates/{templateId}
+	mux.Handle(TEMPLATES_ID_ROUTE,handlers.HandleOneTemplate(templateService))
 
 	// Media
 	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/exercises"))))

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -24,14 +25,23 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
+import com.example.workoutapp.core.core_ui.theme.AppNavBar
+import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
-import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
-//import com.example.workoutapp.features.new_template.NewTemplatePage
+import com.example.workoutapp.features.new_template.NewTemplatePage
 
+/**
+ * Main screen
+ * @param modifier
+ * @param navController
+ */
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
 
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
@@ -49,8 +59,12 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
 
     Scaffold(
         bottomBar = {
+            val cs = MaterialTheme.colorScheme
             if (showBottomBar) { // check if condition is true (show/hide bottom-bar)
-                NavigationBar {
+                NavigationBar(
+                    containerColor = cs.surface,
+                    contentColor = cs.onSurface
+                ) {
                     navItemList.forEach { item ->
                         NavigationBarItem(
                             selected = currentDestination.isOnRoute(item.route),
@@ -64,7 +78,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                                 }
                             },
                             icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
+                            label = { Text(item.label) },
+                            colors = AppNavBar.itemColors()
                         )
                     }
                 }
@@ -79,7 +94,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
-            //composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
+            composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
             composable(
                 route = Routes.WORKTEMP,
                 arguments = listOf(navArgument("tempId") { type = NavType.StringType })
