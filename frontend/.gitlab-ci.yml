@@ -1,0 +1,35 @@
+# Pipeline to check if gradle builds before merge_request_event.
+
+stages: [build]
+
+# Run only for Merge Requests
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+image: mobiledevops/android-sdk-image:35.0.0
+
+variables:
+  # Put Gradle cache inside the project dir so GitLab can cache it
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx2g'"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/
+
+build_android_debug:
+  stage: build
+  script:
+    - chmod +x ./gradlew
+    - ./gradlew --version
+    # Clean is optional but helps catch config issues
+    - ./gradlew clean
+    # Build a debug APK just to verify it compiles/links. No tests, no emulator.
+    - ./gradlew assembleDebug --stacktrace --no-daemon -x test
+  artifacts:
+    when: on_failure   # keep logs on failure to debug
+    paths:
+      - app/build/outputs/**/*
+    expire_in: 1 day
