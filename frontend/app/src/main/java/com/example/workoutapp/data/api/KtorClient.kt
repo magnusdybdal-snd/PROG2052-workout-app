@@ -13,6 +13,7 @@ object KtorClient {
             json(Json {
                 ignoreUnknownKeys = true
                 prettyPrint = false
+                encodeDefaults = true
             })
         }
 

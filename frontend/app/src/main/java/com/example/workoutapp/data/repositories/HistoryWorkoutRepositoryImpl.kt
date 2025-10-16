@@ -215,13 +215,6 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         // Insert all nested data at once
         dao.insertFullWorkout(workoutEntity, exerciseEntities, setEntities)
 
-        // 🔍 LOG THE JSON BEING SENT
-        val json = Json { prettyPrint = true }
-        val jsonString = json.encodeToString(Session.serializer(), session)
-        Log.d("Repo", "=== POSTING WORKOUT JSON ===")
-        Log.d("Repo", jsonString)
-        Log.d("Repo", "=== END JSON ===")
-
         // Try to push new session to API
         try {
             api.postHistoryWorkout(session)
