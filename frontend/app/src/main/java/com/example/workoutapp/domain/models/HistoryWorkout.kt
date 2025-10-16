@@ -26,7 +26,8 @@ data class HistoryWorkout(
  * @see Exercise
  */
 data class WorkoutExercise(
-    val exercise: Exercise,
+    val exerciseId: String,
+    val name: String,
     val sets: List<Set>
 ) { // Computed value, not stored but computed at access time
     val volume: Int

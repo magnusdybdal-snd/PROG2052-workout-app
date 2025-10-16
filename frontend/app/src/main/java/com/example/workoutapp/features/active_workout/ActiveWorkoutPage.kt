@@ -177,10 +177,10 @@ fun ActiveWorkoutPage(
                                             val finishedWorkout = Session(
                                                 sessionId = UUID.randomUUID().toString(),
                                                 name = template.name,
-                                                exercises = template.exercises.mapIndexed { index,
-                                                                                            exSet ->
+                                                exercises = template.exercises.map { exSet ->
                                                     SessionExercise(
                                                         exerciseId = exSet.exercise.exerciseId,
+                                                        name = exSet.exercise.name,
                                                         sets = exSet.sets.map { set ->
                                                             Set(
                                                                 rep = set.rep,

@@ -6,9 +6,9 @@ import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
 import com.example.workoutapp.data.database.entities.SetEntity
 import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
-import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutExercise
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
@@ -19,6 +19,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 import javax.inject.Inject
+import kotlinx.serialization.json.Json
 
 /**
  * Repository that provides access to workout history from both local Room DB and remote API.
@@ -46,16 +47,8 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     note = fullWorkout.workout.note,
                     exercises = fullWorkout.exercises.map { exerciseWithSets ->
                         WorkoutExercise(
-                            exercise = Exercise(
-                                exerciseId = exerciseWithSets.exercise.exerciseId,
-                                name = exerciseWithSets.exercise.name,
-                                targetMuscles = exerciseWithSets.exercise.targetMuscles,
-                                bodyParts = exerciseWithSets.exercise.bodyParts,
-                                equipments = exerciseWithSets.exercise.equipments,
-                                secondaryMuscles = exerciseWithSets.exercise.secondaryMuscles,
-                                gifUrl = exerciseWithSets.exercise.gifUrl,
-                                instructions = exerciseWithSets.exercise.instructions
-                            ),
+                            exerciseId = exerciseWithSets.exercise.exerciseId,
+                            name = exerciseWithSets.exercise.name,
                             sets = exerciseWithSets.sets.map { setEntity ->
                                 Set(
                                     rep = setEntity.rep,
@@ -79,19 +72,38 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         // Step 1: Post unsynced workouts to API
         val unsyncedWorkouts = dao.getUnsyncedWorkouts()
         unsyncedWorkouts.forEach { local ->
-            val session = Session(
-                sessionId = local.id,
-                name = local.name,
-                exercises = emptyList(), //TODO: add nested data later
-                duration = local.duration,
-                date = local.date,
-                note = local.note ?: ""
-            )
-            try {
-                api.postHistoryWorkout(session)
-                dao.markAsSynced(local.id)
-            } catch (_: Exception) {
-                Log.w("Repo", "Failed to sync workout ${local.id}")
+
+            // Fetch the full workout with exercises from room
+            val fullWorkout = dao.getWorkoutHistoryWithExercises(local.id)
+
+            if (fullWorkout != null) {
+                val session = Session(
+                    sessionId = local.id,
+                    name = local.name,
+                    exercises = fullWorkout.exercises.map { exerciseWithSets ->
+                        SessionExercise(
+                            exerciseId = exerciseWithSets.exercise.exerciseId,
+                            name = exerciseWithSets.exercise.name,
+                            sets = exerciseWithSets.sets.map { setEntity ->
+                                Set(
+                                    rep = setEntity.rep,
+                                    kg = setEntity.kg,
+                                    typeSet = setEntity.typeSet
+                                )
+                            }
+                        )
+                    },
+                    duration = local.duration,
+                    date = local.date,
+                    note = local.note
+                )
+
+                try {
+                    api.postHistoryWorkout(session)
+                    dao.markAsSynced(local.id)
+                } catch (_: Exception) {
+                    Log.w("Repo", "Failed to sync workout ${local.id}")
+                }
             }
         }
 
@@ -116,13 +128,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                         id = UUID.randomUUID().toString(),
                         workoutId = dto.historyWorkoutId,
                         exerciseId = exDto.exercise.exerciseId,
-                        name = exDto.exercise.name,
-                        targetMuscles = exDto.exercise.targetMuscles,
-                        bodyParts = exDto.exercise.bodyParts,
-                        equipments = exDto.exercise.equipments,
-                        secondaryMuscles = exDto.exercise.secondaryMuscles,
-                        gifUrl = exDto.exercise.gifUrl,
-                        instructions = exDto.exercise.instructions
+                        name = exDto.exercise.name
                     )
                 }
 
@@ -181,25 +187,49 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
             isSynced = false
         )
 
-        val exerciseEntities = session.exercises.map { workoutExercise ->
+        // Create exercise entities
+        val exerciseEntities = session.exercises.map { sessionExercise ->
             WorkoutExerciseEntity(
                 id = UUID.randomUUID().toString(),
                 workoutId = session.sessionId,
-                exerciseId = workoutExercise.exercise.exerciseId,
-
+                exerciseId = sessionExercise.exerciseId,
+                name = sessionExercise.name
             )
         }
 
+        // Create set entities
+        val setEntities = session.exercises.flatMapIndexed { idx, sessionExercise ->
+            val parentExerciseId = exerciseEntities[idx].id
 
-        dao.insert(workoutEntity)
+            sessionExercise.sets.map { set ->
+                SetEntity(
+                    id = UUID.randomUUID().toString(),
+                    exerciseEntityId = parentExerciseId,
+                    rep = set.rep,
+                    kg = set.kg,
+                    typeSet = set.typeSet
+                )
+            }
+        }
 
-        // Try to push new session
+        // Insert all nested data at once
+        dao.insertFullWorkout(workoutEntity, exerciseEntities, setEntities)
+
+        // 🔍 LOG THE JSON BEING SENT
+        val json = Json { prettyPrint = true }
+        val jsonString = json.encodeToString(Session.serializer(), session)
+        Log.d("Repo", "=== POSTING WORKOUT JSON ===")
+        Log.d("Repo", jsonString)
+        Log.d("Repo", "=== END JSON ===")
+
+        // Try to push new session to API
         try {
             api.postHistoryWorkout(session)
             dao.markAsSynced(session.sessionId)
-        } catch (_: Exception) {
+            Log.d("Repo", "Workout ${session.sessionId} synced successfully")
+        } catch (e: Exception) {
             // Workout remains marked as unsynced, will sync later
-            Log.w("Repo", "Workout queued for sync: ${session.sessionId}")
+            Log.e("Repo", "Workout queued for sync: ${session.sessionId}, error: ${e.message}")
         }
 
     }
