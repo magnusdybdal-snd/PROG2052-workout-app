@@ -41,7 +41,7 @@ data class HistoryWorkoutEntity(
     val duration: Duration,
 
     /** Optional personal note for the workout. */
-    val note: String? = null,
+    val note: String = "",
 
     /** Whether this workout is synced with the remote backend. */
     val isSynced: Boolean = false,

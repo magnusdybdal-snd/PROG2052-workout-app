@@ -15,7 +15,7 @@ data class Session (
     val duration: Duration,
     @Serializable(with = LocalDateSerializer::class)
     val date: LocalDate,
-    val note: String? = ""
+    val note: String = ""
 )
 @Serializable
 data class SessionExercise(

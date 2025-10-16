@@ -13,7 +13,7 @@ data class HistoryWorkout(
     val date: LocalDate,
     val duration: Duration,
     val exercises: List<WorkoutExercise>,
-    val note: String?
+    val note: String = ""
 ) { // Computed value, not stored but computed at access time
     val totalVolume: Int
         get() = exercises.sumOf { it.volume }

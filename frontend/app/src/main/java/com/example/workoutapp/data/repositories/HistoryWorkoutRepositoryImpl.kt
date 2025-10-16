@@ -118,7 +118,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     name = dto.name,
                     date = LocalDate.parse(dto.date),
                     duration = duration,
-                    note = dto.note,
+                    note = dto.note ?: "",
                     isSynced = true
                 )
 
