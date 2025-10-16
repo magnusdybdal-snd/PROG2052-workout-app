@@ -18,7 +18,7 @@ import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
         HistoryWorkoutEntity::class,
         WorkoutExerciseEntity::class,
         SetEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 // Needs a converter as Room does not support Duration and LocalDate

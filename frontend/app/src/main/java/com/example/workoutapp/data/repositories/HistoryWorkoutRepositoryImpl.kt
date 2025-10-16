@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.map
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -112,6 +113,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 // Nested entities
                 val exerciseEntities = dto.exercises.map { exDto ->
                     WorkoutExerciseEntity(
+                        id = UUID.randomUUID().toString(),
                         workoutId = dto.historyWorkoutId,
                         exerciseId = exDto.exercise.exerciseId,
                         name = exDto.exercise.name,
@@ -125,9 +127,12 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 }
 
                 val setEntities = dto.exercises.flatMapIndexed { idx, exDto ->
+                    val parentExerciseId = exerciseEntities[idx].id
+
                     exDto.sets.map { setDto ->
                         SetEntity(
-                            exerciseEntityId = idx + 1, // temporary — fixed by foreign key later
+                            id = UUID.randomUUID().toString(),
+                            exerciseEntityId = parentExerciseId, // temporary — fixed by foreign key later
                             rep = setDto.rep,
                             kg = setDto.kg,
                             typeSet = setDto.typeSet

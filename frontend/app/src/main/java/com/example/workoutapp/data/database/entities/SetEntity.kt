@@ -3,6 +3,7 @@ package com.example.workoutapp.data.database.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 /**
  * Represents one set performed within a workout exercise.
@@ -29,10 +30,10 @@ import androidx.room.PrimaryKey
 )
 
 data class SetEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
-    val exerciseEntityId: Int,
+    val exerciseEntityId: String,
     val rep: Int,
     val kg: Int,
     val typeSet: Int

@@ -3,6 +3,7 @@ package com.example.workoutapp.data.database.entities
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 /**
  * Represents a single exercise performed within a completed workout.
@@ -28,8 +29,8 @@ import androidx.room.PrimaryKey
 )
 
 data class WorkoutExerciseEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     val workoutId: String,  // FK to parent workout
     val exerciseId: String, // Matches exercise from API
