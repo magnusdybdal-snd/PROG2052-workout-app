@@ -15,8 +15,10 @@ import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.TemplateExercise
 
 /**
+ * Displays text field and corresponding label.
  * @param label Information to user, displayed above set.
- * @param exSet data class of an exercise and list of sets.
+ * @param exSet data class of TemplateExercise
+ * @see WorkoutTextField Overloaded to handle NewTemplateExercise
  */
 @Composable
 fun WorkoutTextField(
@@ -37,6 +39,12 @@ fun WorkoutTextField(
     }
 }
 
+/**
+ * Displays text field and corresponding label.
+ * @param label Information to user, displayed above set.
+ * @param exSet data class of NewTemplateExercise
+ * @see WorkoutTextField Overloaded to handle TemplateExercise instance.
+ */
 @Composable
 fun WorkoutTextField(
     label: String,
