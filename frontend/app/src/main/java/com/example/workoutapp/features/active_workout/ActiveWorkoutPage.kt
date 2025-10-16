@@ -50,6 +50,9 @@ import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 /**viewmodel
@@ -70,9 +73,19 @@ fun ActiveWorkoutPage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-            var isAnyChecked by remember { mutableStateOf(false) }
 
+            val template = state.templates[templateId]
+            val completedSets = remember {
+                mutableStateOf(
+                    template.exercises.mapIndexed { _, exSet ->
+                        MutableList(exSet.sets.size) { false }
+                    }
+                )
+            }
+
+            var isAnyChecked by remember { mutableStateOf(false) }
             var ticks by remember { mutableIntStateOf(60 * 3) }
+
             LaunchedEffect(Unit) {
                 while (true) {
                     delay(1.seconds)
@@ -147,24 +160,33 @@ fun ActiveWorkoutPage(
                                     },
                                     confirmButton = {
                                         TextButton(onClick = {
-                                            val template = state.templates[templateId]
                                             val finishedWorkout = Session(
-                                                sessionId = "sess_003",
+                                                sessionId = UUID.randomUUID().toString(),
                                                 name = template.name,
-                                                exercises = template.exercises.map { exSet ->
-                                                    SessionExercise(
-                                                        exerciseId = exSet.exercise.exerciseId,
-                                                        sets = exSet.sets.map { set ->
-                                                            Set(
-                                                                rep = set.rep,
-                                                                kg = set.kg,
-                                                                typeSet = set.typeSet
-                                                            )
+                                                exercises = template.exercises.mapIndexedNotNull { exerciseIndex, exSet ->
+                                                    val completedSetsForExercise =
+                                                        exSet.sets.filterIndexed { setIndex, _ ->
+                                                            completedSets.value[exerciseIndex][setIndex]
                                                         }
-                                                    )
+
+                                                    if (completedSetsForExercise.isNotEmpty()) {
+                                                        SessionExercise(
+                                                            exerciseId = exSet.exercise.exerciseId,
+                                                            name = exSet.exercise.name,
+                                                            sets = completedSetsForExercise.map { set ->
+                                                                Set(
+                                                                    rep = set.rep,
+                                                                    kg = set.kg,
+                                                                    typeSet = set.typeSet
+                                                                )
+                                                            }
+                                                        )
+                                                    } else {
+                                                        null
+                                                    }
                                                 },
-                                                duration = "00:30:00",
-                                                date = LocalDate.now().toString(),
+                                                duration = java.time.Duration.ofHours(1).plusMinutes(15).plusSeconds(45), // TODO THIS IS MOCK DATA
+                                                date = LocalDate.now(),
                                                 note = notes
                                             )
 
@@ -195,7 +217,7 @@ fun ActiveWorkoutPage(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                         ) {
-                            state.templates[templateId].exercises.forEach { exSet ->
+                            state.templates[templateId].exercises.forEachIndexed { exerciseIndex, exSet ->
                                 Text(
                                     exSet.exercise.name,
                                     fontSize = 15.sp
@@ -242,7 +264,7 @@ fun ActiveWorkoutPage(
                                         modifier = TextFieldModifier(height = h.dp * y)
                                     ) {
                                         WorkoutTextField(
-                                            label = stringResource(R.string.sets),
+                                            label = stringResource(R.string.reps),
                                             exSet = exSet
                                         )
                                     }
@@ -257,14 +279,19 @@ fun ActiveWorkoutPage(
                                             contentDescription = stringResource(R.string.done_set),
                                             tint = cs.onBackground
                                         )
-                                        repeat(y) {
-                                            var checked by remember { mutableStateOf(false) }
+
+                                        exSet.sets.forEachIndexed { setIndex, _ ->
                                             Checkbox(
-                                                checked, {
-                                                isAnyChecked = isAnyChecked || it
-                                                checked = it
-                                            },
-                                                colors = AppCheckBox.checkBoxColor()
+                                                colors = AppCheckBox.checkBoxColor(),
+                                                checked = completedSets.value[exerciseIndex][setIndex],
+                                                onCheckedChange = { isChecked ->
+                                                    isAnyChecked = isAnyChecked || isChecked
+                                                    completedSets.value = completedSets.value.toMutableList().apply {
+                                                        this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
+                                                            this[setIndex] = isChecked
+                                                        }
+                                                    }
+                                                }
                                             )
                                         }
                                     }

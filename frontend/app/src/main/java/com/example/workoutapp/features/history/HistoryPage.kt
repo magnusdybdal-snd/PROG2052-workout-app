@@ -47,7 +47,7 @@ fun HistoryPage(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     LaunchedEffect(currentBackStackEntry) {
         if (currentBackStackEntry?.destination?.route == "history") {
-            viewModel.loadHistory()
+            viewModel.observeHistoryWorkouts()
         }
     }
 
