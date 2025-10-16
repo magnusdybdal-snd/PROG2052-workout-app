@@ -19,7 +19,7 @@ build_android_debug:
   before_script:
 #    - test -d "$ANDROID_PROJECT_DIR" || (echo "Folder '$ANDROID_PROJECT_DIR' not found"; ls -la; exit 1)
 #    - cd "$ANDROID_PROJECT_DIR"
-    - chmod +x .frontend/gradlew
+    - chmod +x gradlew
     - ./gradlew --version
   script:
     - ./gradlew clean
