@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 // UI state holder: represents what's shown on the "Active workout" screen.
@@ -61,5 +63,10 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
                 _uiState.update { it.copy(error = e.message ?: "Failed to save workout") }
             }
         }
+    }
+    fun getCurrentTimeString(): String {
+        val currentTime = LocalTime.now() // current time
+        val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
+        return currentTime.format(formatter)
     }
 }
