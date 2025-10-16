@@ -43,6 +43,7 @@ import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
+import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
 import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
@@ -206,9 +207,7 @@ fun NewTemplatePage(
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
+                                    modifier = TextFieldModifier(height = h.dp * y)
                                 ) {
                                     Text(
                                         "SETS",
@@ -237,9 +236,7 @@ fun NewTemplatePage(
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
+                                    modifier = TextFieldModifier(height = h.dp * y)
                                 ) {
                                     WorkoutTextField(
                                         label = "SETS",
