@@ -21,6 +21,9 @@ build_android_debug:
   script:
     - ./gradlew clean
     - ./gradlew assembleDebug --stacktrace --no-daemon -x test
+    # -x test excludes the test task
+    # --stacktrace gives good debug info 
+    # --no-daemon prevents background process from interveinging.
   artifacts:
     when: on_failure
     paths:
