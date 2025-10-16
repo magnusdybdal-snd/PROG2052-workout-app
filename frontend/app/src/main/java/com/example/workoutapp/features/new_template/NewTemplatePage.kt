@@ -41,6 +41,7 @@ import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
+import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
@@ -228,18 +229,10 @@ fun NewTemplatePage(
                                         .height(h.dp * y)
                                         .fillMaxHeight()
                                 ) {
-                                    Text("KG", fontSize = 10.sp)
-                                    exSet.sets.forEach { set ->
-                                        TextField(
-                                            value = set.kg.toString(),
-                                            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = AppTextField.fieldColors(),
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .height(50.dp)
-                                        )
-                                    }
+                                    WorkoutTextField(
+                                        label = "KG",
+                                        exSet = exSet
+                                    )
                                 }
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
@@ -248,18 +241,10 @@ fun NewTemplatePage(
                                         .height(h.dp * y)
                                         .fillMaxHeight()
                                 ) {
-                                    Text("REPS", fontSize = 10.sp)
-                                    exSet.sets.forEach { set ->
-                                        TextField(
-                                            value = set.rep.toString(),
-                                            onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = AppTextField.fieldColors(),
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .height(50.dp)
-                                        )
-                                    }
+                                    WorkoutTextField(
+                                        label = "SETS",
+                                        exSet = exSet
+                                    )
                                 }
                             }
                             IconButton (
