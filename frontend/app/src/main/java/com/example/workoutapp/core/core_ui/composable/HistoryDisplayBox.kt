@@ -20,47 +20,47 @@ import com.example.workoutapp.domain.models.HistoryWorkout
 
 
 @Composable
-fun HistoryDisplayBox(it : HistoryWorkout){
+fun HistoryDisplayBox(it: HistoryWorkout) {
     val padding = Modifier.padding(start = 8.dp)
-        Row(
-            modifier = BorderBoxModifier(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text( // Workout name
-                    text = it.name,
-                    fontSize = 20.sp
+    Row(
+        modifier = BorderBoxModifier(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text( // Workout name
+                text = it.name,
+                fontSize = 20.sp
+            )
+            Row {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Time Icon",
+                )
+                Text(
+                    text = "%02d:%02d:%02d".format(
+                        it.duration.toHours(),
+                        it.duration.toMinutes() % 60,
+                        it.duration.toSeconds() % 60
+                    ),
+                    modifier = padding
                 )
                 Row {
                     Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "Time Icon",
-                    )
-                    Text(
-                        text = "%02d:%02d:%02d".format(
-                            it.duration.toHours(),
-                            it.duration.toMinutes() % 60,
-                            it.duration.toSeconds() % 60
-                        ),
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "",
                         modifier = padding
                     )
-                    Row {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "",
-                            modifier = padding
-                        )
-                        Text( // Total volume
-                            text = it.totalVolume.toString(),
-                            modifier = padding
-                        )
-                    }
+                    Text( // Total volume
+                        text = it.totalVolume.toString(),
+                        modifier = padding
+                    )
                 }
-            } // end column 1 "workout text
-            Text(
-                text = it.date.toString(),
-                textAlign = TextAlign.End
-            )
-        }
+            }
+        } // end column 1 "workout text
+        Text(
+            text = it.date.toString(),
+            textAlign = TextAlign.End
+        )
     }
+}
