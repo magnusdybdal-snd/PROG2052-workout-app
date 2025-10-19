@@ -1,7 +1,5 @@
 # Pipeline to check if gradle builds before merge_request_event.
 
-stages: [build]
-
 image: mobiledevops/android-sdk-image:34.0.1
 
 variables:

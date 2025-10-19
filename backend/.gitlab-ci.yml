@@ -1,7 +1,3 @@
-stages:
-  - test
-  - deploy
-
 variables:
   GO_VERSION: "1.25-alpine"
   APP_NAME: "backend"
