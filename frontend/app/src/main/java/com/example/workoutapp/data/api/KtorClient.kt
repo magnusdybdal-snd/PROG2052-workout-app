@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import io.ktor.client.plugins.logging.*
 
 object KtorClient {
     val instance: HttpClient = HttpClient(CIO) {
@@ -12,7 +13,13 @@ object KtorClient {
             json(Json {
                 ignoreUnknownKeys = true
                 prettyPrint = false
+                encodeDefaults = true
             })
+        }
+
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.ALL
         }
     }
 }

@@ -1,0 +1,30 @@
+# Pipeline to check if gradle builds before merge_request_event.
+
+stages: [build]
+
+image: mobiledevops/android-sdk-image:34.0.1
+
+variables:
+  ANDROID_PROJECT_DIR: "frontend"   
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx2g'"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+
+build_android_debug:
+  stage: build
+  before_script:
+    - cd "$ANDROID_PROJECT_DIR"
+    - chmod +x gradlew
+    - ./gradlew --version
+  script:
+    - ./gradlew clean
+    - ./gradlew assembleDebug --stacktrace --no-daemon -x test
+    # -x test excludes the test task
+    # --stacktrace gives good debug info 
+    # --no-daemon prevents background process from interveinging.
+  artifacts:
+    when: on_failure
+    paths:
+      - $ANDROID_PROJECT_DIR/app/build/outputs/**/*

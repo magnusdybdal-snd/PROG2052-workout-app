@@ -43,6 +43,14 @@ android {
 }
 
 dependencies {
+    val roomVersion = "2.8.2"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +67,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.3.12")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
+    implementation("io.ktor:ktor-client-logging:2.3.12")
 
     // Kotlinx Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
@@ -72,6 +81,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation(libs.androidx.foundation)
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Coroutines (stable)

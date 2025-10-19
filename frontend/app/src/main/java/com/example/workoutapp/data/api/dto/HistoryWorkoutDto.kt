@@ -22,7 +22,7 @@ data class HistoryWorkoutDto(
     val exercises: List<WorkoutExerciseDto>,
     val duration: String, //"01:10:00"
     val date: String, //"2025-10-01"
-    val note: String
+    val note: String? = ""
 )
 
 /**

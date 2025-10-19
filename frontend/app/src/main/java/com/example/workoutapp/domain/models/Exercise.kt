@@ -1,5 +1,8 @@
 package com.example.workoutapp.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Exercise(
     val exerciseId: String,
     val name: String,
@@ -7,6 +10,6 @@ data class Exercise(
     val bodyParts: List<String>,
     val equipments: List<String>,
     val secondaryMuscles: List<String>,
-    val gifUrl: String,
+    val gifUrl: String?,
     val instructions: List<String>
 )

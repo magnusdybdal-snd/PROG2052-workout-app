@@ -1,6 +1,7 @@
 package com.example.workoutapp.di
 
 import com.example.workoutapp.data.api.ApiService
+import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.repositories.HistoryWorkoutRepositoryImpl
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
 import com.example.workoutapp.domain.usecases.GetHistoryWorkoutUseCase
@@ -17,8 +18,9 @@ object HistoryWorkoutModule {
     @Provides
     @Singleton
     fun provideHistoryWorkoutRepository(
-        api: ApiService
-    ): HistoryWorkoutRepository = HistoryWorkoutRepositoryImpl(api)
+        api: ApiService,
+        dao: HistoryWorkoutDao
+    ): HistoryWorkoutRepository = HistoryWorkoutRepositoryImpl(api, dao)
 
     @Provides
     @Singleton
