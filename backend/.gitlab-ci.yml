@@ -45,17 +45,21 @@ deploy_backend:
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    - ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script:
     - |
-      cat > id_rsa <<'EOF'
+      cat > ~/.ssh/id_rsa <<'EOF'
       $SSH_KEY
       EOF
-    - chmod 600 id_rsa
+    - chmod 600 ~/.ssh/id_rsa
 
-    - head -5 id_rsa
-    - file id_rsa
+    - head -5 ~/.ssh/id_rsa
 
-    - ssh -o StrictHostKeyChecking=no -i id_rsa $SSH_USER@$HOST "
+    - ssh -i ~/.ssh/id_rsa $SSH_USER@$HOST "
         cd /home/$SSH_USER/$APP_NAME &&
         git fetch origin &&
         git checkout $CI_COMMIT_REF_NAME &&
