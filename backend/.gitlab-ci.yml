@@ -45,7 +45,7 @@ deploy_backend:
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
   script:
-    - echo "Key preview:" > ~/.ssh/id_ed25519
+    - echo "Key preview:" && head -2 ~/.ssh/id_ed25519
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SSH_USER@$HOST "
         cd /home/$SSH_USER/$APP_NAME &&
         git fetch origin &&
