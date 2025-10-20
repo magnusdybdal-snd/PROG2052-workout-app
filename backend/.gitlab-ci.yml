@@ -4,7 +4,7 @@ variables:
   APP_NAME: "backend"
   HOST: "10.212.168.186"
   SSH_USER: "ubuntu"
-  SSH_KEY: $SSH_PRIVATE_KEY  
+  SSH_KEY: $SSH_PRIVATE_KEY_B64  
 
 # ---------- BUILD STAGE ----------
 build_go:
