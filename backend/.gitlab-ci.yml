@@ -38,15 +38,22 @@ unit-test:
     - dev
     - main
 
-# ---------- DEPLOY (DEV OR MAIN) ----------
+# ---------- DEPLOY STAGE (DEV) ----------
 deploy_backend:
   stage: deploy
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh
   script:
-    - echo "$SSH_KEY" | sed 's/\\n/\n/g' > id_rsa
+    - |
+      cat > id_rsa <<'EOF'
+      $SSH_KEY
+      EOF
     - chmod 600 id_rsa
+
+    - head -5 id_rsa
+    - file id_rsa
+
     - ssh -o StrictHostKeyChecking=no -i id_rsa $SSH_USER@$HOST "
         cd /home/$SSH_USER/$APP_NAME &&
         git fetch origin &&
@@ -56,5 +63,6 @@ deploy_backend:
         docker compose down &&
         docker compose up -d --build
       "
+
   only:
     - dev
