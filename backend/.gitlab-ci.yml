@@ -38,23 +38,15 @@ unit-test:
 # ---------- DEPLOY STAGE (DEV) ----------
 deploy_backend:
   stage: deploy
-  image: alpine:latest
-
+  image: debian:stable-slim
   before_script:
-    - apk add --no-cache openssh
+    - apt update && apt install -y openssh-client git
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
     - ssh-keyscan -H $HOST >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
-
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
   script:
-    # Decode base64 -> private key
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-
-    # Debug info (remove later)
-    - echo "Key preview:" && head -2 ~/.ssh/id_rsa
-
-    # Deploy over SSH
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$HOST "
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SSH_USER@$HOST "
         cd /home/$SSH_USER/$APP_NAME &&
         git fetch origin &&
         git checkout $CI_COMMIT_REF_NAME &&
@@ -65,3 +57,4 @@ deploy_backend:
       "
   only:
     - backend
+
