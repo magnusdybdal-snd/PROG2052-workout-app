@@ -1,4 +1,5 @@
 variables:
+  GIT_DEPTH: 0
   GO_VERSION: "1.25-alpine"
   APP_NAME: "backend"
   HOST: "10.212.168.186"
