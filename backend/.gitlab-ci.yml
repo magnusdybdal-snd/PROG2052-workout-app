@@ -51,13 +51,10 @@ deploy_backend:
     - ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - |
-      cat > ~/.ssh/id_rsa <<'EOF'
-      $SSH_KEY
-      EOF
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan -H $HOST >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY_B64" | base64 -d > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-
-    - head -5 ~/.ssh/id_rsa
 
     - ssh -i ~/.ssh/id_rsa $SSH_USER@$HOST "
         cd /home/$SSH_USER/$APP_NAME &&
