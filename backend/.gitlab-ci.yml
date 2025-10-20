@@ -56,5 +56,5 @@ deploy_backend:
           docker compose up -d --build
       "
   only:
-    - backend
+    - dev 
 
