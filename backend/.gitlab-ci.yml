@@ -47,13 +47,12 @@ deploy_backend:
   script:
     - echo "Key preview:" && head -1 ~/.ssh/id_ed25519
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SSH_USER@$HOST "
-        cd /home/$SSH_USER &&
-        git fetch origin &&
-        git checkout $CI_COMMIT_REF_NAME &&
-        git pull origin $CI_COMMIT_REF_NAME &&
-        cd backend &&
-        docker compose down &&
-        docker compose up -d --build
+        cd /home/$SSH_USER/$APP_NAME &&
+          git fetch origin &&
+          git checkout $CI_COMMIT_REF_NAME &&
+          git pull origin $CI_COMMIT_REF_NAME &&
+          docker compose down &&
+          docker compose up -d --build
       "
   only:
     - backend
