@@ -9,6 +9,7 @@ import androidx.room.Relation
  *
  * Used for fetching the complete structure from the database in one go.
  * This is not an entity - It's a relationship model combining multiple tables.
+ *
  */
 data class TemplateWithExercises(
     @Embedded

@@ -4,7 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.workoutapp.data.database.entities.templates.TemplateEntity
+import com.example.workoutapp.data.database.entities.templates.TemplateExerciseEntity
+import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
+import com.example.workoutapp.data.database.entities.templates.TemplateWithExercises
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -53,17 +57,51 @@ interface TemplateDao {
     //  Nested relationships
     //--------------------------
 
-    // TODO
+    @Transaction
+    @Query("SELECT * FROM templates ORDER BY createdAt DESC")
+    fun getAllTemplatesWithExercises(): Flow<List<TemplateWithExercises>>
+
+    @Transaction
+    @Query("SELECT * FROM templates WHERE ID = :id LIMIT 1")
+    suspend fun getTemplateWithExercises(id: String): TemplateWithExercises?
 
     //--------------------------
     //  Nested inserts
     //--------------------------
 
-    // TODO
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    suspend fun insertExercise(exercise: TemplateExerciseEntity)
+
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    suspend fun insertExercises(exercises: List<TemplateExerciseEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    suspend fun insertSet(set: TemplateSetEntity)
+
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    suspend fun insertSets(sets: List<TemplateSetEntity>)
 
     //--------------------------
     //  Combined transactional insert
     //--------------------------
 
-    // TODO
+    /**
+     * Inserts a full template (parent + exercises + sets) in one atomic transaction.
+     * Prevents foreign key violations by ensuring the parent is inserted first
+     */
+    @Transaction
+    suspend fun insertFullTemplate(
+        template: TemplateEntity,
+        exercises: List<TemplateExerciseEntity>,
+        sets: List<TemplateSetEntity>
+    ) {
+        // Insert parent first
+        insert(template)
+
+        // Insert exercises (children)
+        insertExercises(exercises)
+
+        // Insert sets (grandchildren)
+        insertSets(sets)
+    }
 }
