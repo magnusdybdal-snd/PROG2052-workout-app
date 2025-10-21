@@ -2,8 +2,8 @@ package com.example.workoutapp.data.repositories
 
 import android.util.Log
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.database.dao.TemplateDao
-import com.example.workoutapp.data.database.entities.TemplateEntity
+import com.example.workoutapp.data.database.dao.templates.TemplateDao
+import com.example.workoutapp.data.database.entities.templates.TemplateEntity
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository

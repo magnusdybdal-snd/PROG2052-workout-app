@@ -2,10 +2,10 @@ package com.example.workoutapp.data.repositories
 
 import android.util.Log
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
-import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
-import com.example.workoutapp.data.database.entities.SetEntity
-import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
+import com.example.workoutapp.data.database.dao.history.HistoryWorkoutDao
+import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
+import com.example.workoutapp.data.database.entities.history.SetEntity
+import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEntity
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
@@ -19,7 +19,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 import javax.inject.Inject
-import kotlinx.serialization.json.Json
 
 /**
  * Repository that provides access to workout history from both local Room DB and remote API.

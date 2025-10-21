@@ -1,18 +1,17 @@
-package com.example.workoutapp.data.database.dao
+package com.example.workoutapp.data.database.dao.templates
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.workoutapp.data.database.entities.TemplateEntity
+import com.example.workoutapp.data.database.entities.templates.TemplateEntity
 import kotlinx.coroutines.flow.Flow
-
 
 /**
  * Data Access Object (DAO) for managing [TemplateEntity] records in the local Rooom database.
  *
  * This interface providees methods for:
- * - Observing all stored templates as a [Flow] for reactive UI updates
+ * - Observing all stored templates as a [kotlinx.coroutines.flow.Flow] for reactive UI updates
  * - Inserting or replacing templates
  * - Retrieving templates that haven't been synced with the backend API
  * - Marking records as synced once the API confirms successful upload
@@ -31,10 +30,10 @@ interface TemplateDao {
     @Query("SELECT * FROM templates ORDER BY createdAt DESC")
     fun getAllTemplates(): Flow<List<TemplateEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(template: TemplateEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(templates: List<TemplateEntity>)
 
     @Query("SELECT * FROM templates WHERE isSynced = 0")

@@ -3,11 +3,11 @@ package com.example.workoutapp.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
-import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
-import com.example.workoutapp.data.database.entities.SetEntity
-import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
-import com.example.workoutapp.data.database.entities.TemplateEntity
+import com.example.workoutapp.data.database.dao.history.HistoryWorkoutDao
+import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
+import com.example.workoutapp.data.database.entities.history.SetEntity
+import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEntity
+import com.example.workoutapp.data.database.entities.templates.TemplateEntity
 
 /**
  * The main Room database for the Workout app.

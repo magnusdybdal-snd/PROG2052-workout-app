@@ -1,21 +1,21 @@
-package com.example.workoutapp.data.database.dao
+package com.example.workoutapp.data.database.dao.history
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
-import com.example.workoutapp.data.database.entities.HistoryWorkoutWithExercises
-import com.example.workoutapp.data.database.entities.SetEntity
-import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
+import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
+import com.example.workoutapp.data.database.entities.history.HistoryWorkoutWithExercises
+import com.example.workoutapp.data.database.entities.history.SetEntity
+import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Data Access Object (DAO) for managing [HistoryWorkoutEntity] records in the local Room database.
  *
  * This interface provides methods for:
- * - Observing all stored workouts as a [Flow] for reactive UI updates
+ * - Observing all stored workouts as a [kotlinx.coroutines.flow.Flow] for reactive UI updates
  * - Inserting or replacing workouts, individually or in bulk
  * - Retrieving workouts that haven’t been synced with the backend API
  * - Marking records as synced once the API confirms successful upload
@@ -34,10 +34,10 @@ interface HistoryWorkoutDao {
     @Query("SELECT * FROM history_workouts ORDER BY date DESC")
     fun getAllHistoryWorkouts(): Flow<List<HistoryWorkoutEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(workout: HistoryWorkoutEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(workouts: List<HistoryWorkoutEntity>)
 
     @Query("SELECT * FROM history_workouts WHERE isSynced = 0")
@@ -69,16 +69,16 @@ interface HistoryWorkoutDao {
     //  Nested inserts
     //--------------------------
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertExercise(exercise: WorkoutExerciseEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertExercises(exercises: List<WorkoutExerciseEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertSet(set: SetEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertSets(sets: List<SetEntity>)
 
     //--------------------------

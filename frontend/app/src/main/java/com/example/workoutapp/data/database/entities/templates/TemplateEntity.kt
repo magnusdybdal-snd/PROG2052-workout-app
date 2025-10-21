@@ -1,9 +1,7 @@
-package com.example.workoutapp.data.database.entities
+package com.example.workoutapp.data.database.entities.templates
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
