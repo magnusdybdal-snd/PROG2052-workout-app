@@ -68,7 +68,7 @@ fun ExercisesPage(
                     value = searchString,
                     onValueChange = { searchString = it },
                     label = { Text(
-                        "Enter something",
+                        "Search exercise",
                         color = cs.onBackground
                     ) },
                     modifier = Modifier

@@ -11,5 +11,6 @@ class NewTemplate (
 @Serializable
 data class NewTemplateExercise(
     val exerciseId: String,
+    val name: String,
     val sets: MutableList<Set>
 )
