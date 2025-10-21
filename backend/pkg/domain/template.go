@@ -12,6 +12,7 @@ type Template struct {
 	Exercises  []ExerciseIdTemplate `bson:"exercises" json:"exercises"`
 }
 
+
 func (t *Template) Valid(ctx context.Context) map[string]string {
 	problems := map[string]string{}
 

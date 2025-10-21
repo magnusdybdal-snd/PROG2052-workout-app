@@ -14,7 +14,7 @@ type ExerciseRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *ExerciseRepository) GetAllExercises(ctx context.Context, limit int) ([]domain.Exercises, error) {
+func (r *ExerciseRepository) FindAll(ctx context.Context, limit int) ([]domain.Exercises, error) {
 	var data []domain.Exercises
 	filterOpts := options.Find().SetLimit(int64(limit))
 
@@ -33,7 +33,7 @@ func (r *ExerciseRepository) GetAllExercises(ctx context.Context, limit int) ([]
 	return data, nil
 }
 
-func (r *ExerciseRepository) GetOneExercise(ctx context.Context, id string) (domain.Exercises, error) {
+func (r *ExerciseRepository) FindOne(ctx context.Context, id string) (domain.Exercises, error) {
 	var data domain.Exercises
 	filter := bson.M{"exerciseId": id}
 
