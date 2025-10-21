@@ -1,5 +1,7 @@
 package com.example.workoutapp.domain.models
 
+import java.time.LocalDateTime
+
 /**
  * Data class for a WorkoutTemplate.
  * Contains a list of TemplateExercise, not to be mixed with WorkoutExercise or Exercise
@@ -9,6 +11,7 @@ package com.example.workoutapp.domain.models
 data class WorkoutTemplate(
     val templateId: String,
     val name: String,
+    val createdAt: LocalDateTime,
     val exercises: List<TemplateExercise>
 )
 

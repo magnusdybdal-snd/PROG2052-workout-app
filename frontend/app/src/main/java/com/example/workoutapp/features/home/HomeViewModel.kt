@@ -9,6 +9,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,18 +30,41 @@ class WorkoutTemplatesViewModel @Inject constructor(
     val uiState: StateFlow<WorkoutTemplatesUiState> = _uiState.asStateFlow()
 
     init {
-        loadWorkoutTemplates()
+        observeWorkoutTemplates()
+        syncFromApi()
     }
 
-    fun loadWorkoutTemplates() {
+    /**
+     * Observe templates reactively from local Room DB
+     * This automatically updates UI when Room changes.
+     */
+    private fun observeWorkoutTemplates() {
         viewModelScope.launch {
-            _uiState.value = WorkoutTemplatesUiState(isLoading = true)
+            getWorkoutTemplatesUseCase()
+                .onEach { templates ->
+                    Log.d("TemplateViewmodel", "Received ${templates.size} templates from flow")
+
+                    _uiState.value = WorkoutTemplatesUiState(
+                        isLoading = false,
+                        workoutTemplates = templates.sortedBy { it.name }, // TODO: sort by created at
+                    )
+                }
+                .catch { e ->
+                    _uiState.value = WorkoutTemplatesUiState(
+                        isLoading = false,
+                        error = e.message ?: "Unknown error"
+                    )
+                }
+                .collect()
+        }
+    }
+
+    private fun syncFromApi() {
+        viewModelScope.launch {
             try {
-                val data = getWorkoutTemplatesUseCase()
-                Log.d("WorkoutTemplatesViewModel", "Fetched ${data.size} workout templates")
-                _uiState.value = WorkoutTemplatesUiState(workoutTemplates = data.sortedBy { it.name.lowercase() })
+                getWorkoutTemplatesUseCase.syncNow()
             } catch (e: Exception) {
-                _uiState.value = WorkoutTemplatesUiState(error = e.message ?: "Unknown error")
+                Log.e("TemplateViewModel", "Sync failed: ${e.message}")
             }
         }
     }

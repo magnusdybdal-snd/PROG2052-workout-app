@@ -42,7 +42,7 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch {
             getHistoryWorkoutUseCase()
                 .onEach { workouts ->
-                    Log.d("HistoryViewmodel", "Recieved ${workouts.size} workouts from flow")
+                    Log.d("HistoryViewmodel", "Received ${workouts.size} workouts from flow")
 
                     val grouped = workouts
                         .sortedByDescending { it.date }
