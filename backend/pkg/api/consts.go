@@ -12,7 +12,7 @@ const (
 	SESSIONS_ROUTE = API_ROUTE + "/sessions"
 	SESSIONS_ID_ROUTE = SESSIONS_ROUTE + "/{sessionId}" 
 
-	MEDIA_ROUTE = API_ROUTE + "/media"
+	MEDIA_ROUTE = API_ROUTE + "/media/"
 )
 
 // middleware keys
