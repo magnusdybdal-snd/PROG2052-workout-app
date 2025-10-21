@@ -33,6 +33,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = AppColor.white,
     secondaryContainer = AppColor.fadedTeal,
     onSecondaryContainer = AppColor.white,
+    outline = AppColor.lightGrey
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -49,6 +50,7 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = AppColor.white,
     secondaryContainer = AppColor.fadedTeal,
     onSecondaryContainer = AppColor.black,
+    outline = AppColor.darkGrey
 )
 
 @Composable
