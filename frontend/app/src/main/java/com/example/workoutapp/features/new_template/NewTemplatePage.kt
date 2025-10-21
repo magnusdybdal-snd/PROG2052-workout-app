@@ -49,6 +49,7 @@ import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
+import java.util.UUID
 
 /**
  * Displays Workout page
@@ -108,7 +109,7 @@ fun NewTemplatePage(
                                 confirmButton = {
                                     TextButton(onClick = {
                                         val newTemplate = NewTemplate(
-                                            templateId = "tmp_000",
+                                            templateId = UUID.randomUUID().toString(),
                                             name = name,
                                             exercises = exercises
                                         )

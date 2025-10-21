@@ -8,12 +8,15 @@ import com.example.workoutapp.data.database.entities.templates.TemplateExerciseE
 import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
 import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.NewTemplate
+import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
+import com.example.workoutapp.features.exercises.ExercisesPage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.builtins.SetSerializer
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
@@ -35,6 +38,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 WorkoutTemplate(
                     templateId = fullTemplate.template.id,
                     name = fullTemplate.template.name,
+                    createdAt = fullTemplate.template.createdAt,
                     exercises = fullTemplate.exercises.map { exerciseWithSets ->
                         TemplateExercise(
                             exercise = Exercise(
@@ -70,17 +74,34 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         // Step 1: Post unsynced templates to API
         val unsyncedTemplates = dao.getUnsyncedTemplates()
         unsyncedTemplates.forEach { local ->
-            try {
-                api.postWorkoutTemplate(
-                    newTemplate = NewTemplate(
-                        templateId = local.id,
-                        name = local.name,
-                        exercises = emptyList() // TODO: Nested structure
-                    )
+
+            val fullTemplate = dao.getTemplateWithExercises(local.id)
+
+            if (fullTemplate != null) {
+                val newTemplate = NewTemplate(
+                    templateId = fullTemplate.template.id,
+                    name = fullTemplate.template.name,
+                    //createdAt = local.createdAt,
+                    exercises = fullTemplate.exercises.map { exerciseWithSets ->
+                        NewTemplateExercise(
+                            exerciseId = exerciseWithSets.exercise.id,
+                            sets = exerciseWithSets.sets.map { setEntity ->
+                                Set(
+                                    rep = setEntity.rep,
+                                    kg = setEntity.kg,
+                                    typeSet = setEntity.typeSet
+                                )
+                            }.toMutableList()
+                        )
+                    }
                 )
-                dao.markAsSynced(local.id)
-            } catch (e: Exception) {
-                Log.w("TemplateRepo", "failed to sync template ${local.id}: ${e.message}")
+
+                try {
+                    api.postWorkoutTemplate(newTemplate)
+                    dao.markAsSynced(local.id)
+                } catch (e: Exception) {
+                    Log.w("TemplateRepo", "failed to sync template ${local.id}: ${e.message}")
+                }
             }
         }
 
@@ -94,6 +115,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                     createdAt = LocalDateTime.now() // TODO: Backend does not implement this atm
                 )
 
+                // Map exercises
                 val exerciseEntities = dto.exercises.map { exerciseDto ->
                     TemplateExerciseEntity(
                         id = UUID.randomUUID().toString(),
@@ -109,12 +131,12 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                     )
                 }
 
-                val setEntities = dto.exercises.flatMap { exDto ->
-
+                val setEntities = dto.exercises.flatMapIndexed { index, exDto ->
+                    val parentExerciseId = exerciseEntities[index].id
                     exDto.sets.map { setDto ->
                         TemplateSetEntity(
                             id = UUID.randomUUID().toString(),
-                            exerciseEntityId = exDto.exercise.exerciseId, // TODO: Fix later
+                            exerciseEntityId = parentExerciseId,
                             rep = setDto.rep,
                             kg = setDto.kg,
                             typeSet = setDto.typeSet
@@ -146,11 +168,11 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             WorkoutTemplate(
                 templateId = entity.id,
                 name = entity.name,
+                createdAt = entity.createdAt,
                 exercises = emptyList() // exercises are handled by Flow observers
             )
         }
     }
-
     override suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
         val templateEntity = TemplateEntity(
             id = newTemplate.templateId,

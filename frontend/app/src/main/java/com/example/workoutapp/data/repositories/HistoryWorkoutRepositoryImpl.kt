@@ -137,7 +137,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     exDto.sets.map { setDto ->
                         SetEntity(
                             id = UUID.randomUUID().toString(),
-                            exerciseEntityId = parentExerciseId, // temporary — fixed by foreign key later
+                            exerciseEntityId = parentExerciseId,
                             rep = setDto.rep,
                             kg = setDto.kg,
                             typeSet = setDto.typeSet
