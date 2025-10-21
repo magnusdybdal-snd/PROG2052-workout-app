@@ -3,14 +3,13 @@ package services
 import (
 	"context"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 )
 
 
 type SessionService struct {
-	Repo *repository.SessionRepository
-	RepoExer *repository.ExerciseRepository
+	Repo domain.SessionRepository
+	RepoExer domain.ExercisesRepository
 }
 
 func (s *SessionService) GetAllSession(ctx context.Context, include bool) (interface{}, error) {
