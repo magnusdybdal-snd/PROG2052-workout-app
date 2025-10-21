@@ -46,6 +46,7 @@ interface HistoryWorkoutDao {
     @Query("UPDATE history_workouts SET isSynced = 1 WHERE id = :id")
     suspend fun markAsSynced(id: String)
 
+    @Transaction
     @Query("DELETE FROM history_workouts")
     suspend fun clearAll()
 

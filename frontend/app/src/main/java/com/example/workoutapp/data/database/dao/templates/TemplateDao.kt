@@ -46,6 +46,7 @@ interface TemplateDao {
     @Query("UPDATE templates SET isSynced = 1 WHERE id = :id")
     suspend fun markAsSynced(id: String)
 
+    @Transaction
     @Query("DELETE FROM templates")
     suspend fun clearAll()
 
@@ -62,23 +63,23 @@ interface TemplateDao {
     fun getAllTemplatesWithExercises(): Flow<List<TemplateWithExercises>>
 
     @Transaction
-    @Query("SELECT * FROM templates WHERE ID = :id LIMIT 1")
+    @Query("SELECT * FROM templates WHERE id = :id LIMIT 1")
     suspend fun getTemplateWithExercises(id: String): TemplateWithExercises?
 
     //--------------------------
     //  Nested inserts
     //--------------------------
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExercise(exercise: TemplateExerciseEntity)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExercises(exercises: List<TemplateExerciseEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSet(set: TemplateSetEntity)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSets(sets: List<TemplateSetEntity>)
 
     //--------------------------
@@ -90,18 +91,13 @@ interface TemplateDao {
      * Prevents foreign key violations by ensuring the parent is inserted first
      */
     @Transaction
-    suspend fun insertFullTemplate(
-        template: TemplateEntity,
-        exercises: List<TemplateExerciseEntity>,
-        sets: List<TemplateSetEntity>
+    suspend fun insertFullTemplates(
+        templates: List<Triple<TemplateEntity, List<TemplateExerciseEntity>, List<TemplateSetEntity>>>
     ) {
-        // Insert parent first
-        insert(template)
-
-        // Insert exercises (children)
-        insertExercises(exercises)
-
-        // Insert sets (grandchildren)
-        insertSets(sets)
+        templates.forEach { (template, exercises, sets) ->
+            insert(template)
+            insertExercises(exercises)
+            insertSets(sets)
+        }
     }
 }
