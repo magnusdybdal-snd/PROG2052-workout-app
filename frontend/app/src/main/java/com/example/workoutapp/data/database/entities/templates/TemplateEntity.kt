@@ -34,5 +34,5 @@ data class TemplateEntity(
     val isSynced: Boolean = false,
 
     /** Created timestamp. */
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime
 )

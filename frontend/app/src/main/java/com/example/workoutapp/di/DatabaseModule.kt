@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.workoutapp.data.database.AppDatabase
 import com.example.workoutapp.data.database.dao.history.HistoryWorkoutDao
+import com.example.workoutapp.data.database.dao.templates.TemplateDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,4 +41,8 @@ object DatabaseModule {
     @Provides
     fun provideHistoryWorkoutDao(db: AppDatabase): HistoryWorkoutDao =
         db.historyWorkoutDao()
+
+    @Provides
+    fun provideWorkoutTemplateDao(db: AppDatabase): TemplateDao =
+        db.workoutTemplateDao()
 }

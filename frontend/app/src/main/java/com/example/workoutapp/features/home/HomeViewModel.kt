@@ -46,7 +46,7 @@ class WorkoutTemplatesViewModel @Inject constructor(
 
                     _uiState.value = WorkoutTemplatesUiState(
                         isLoading = false,
-                        workoutTemplates = templates.sortedBy { it.name }, // TODO: sort by created at
+                        workoutTemplates = templates.sortedBy { it.createdAt },
                     )
                 }
                 .catch { e ->

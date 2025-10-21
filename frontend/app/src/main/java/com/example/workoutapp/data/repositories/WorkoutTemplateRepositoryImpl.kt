@@ -160,8 +160,8 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             }
         }
 
-        Log.d("Repo", "Fetched ${remoteTemplate.size} remote workouts")
-        Log.d("Repo", "Local DB now has ${dao.getAllTemplatesSnapshot().size} workouts")
+        Log.d("Repo", "Fetched ${remoteTemplate.size} remote templates")
+        Log.d("Repo", "Local DB now has ${dao.getAllTemplatesSnapshot().size} templates")
 
         // Step 4: Return local data from DB (local first)
         return dao.getAllTemplatesSnapshot().map { entity ->

@@ -6,6 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class Converters {
@@ -15,6 +16,7 @@ class Converters {
      * types for ROOM storage, and back again
      */
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
 
     /*
@@ -24,13 +26,29 @@ class Converters {
     // Converts a LocalDate type into a string
     @TypeConverter
     fun fromLocalDate(date: LocalDate?): String? {
-        return date?.toString()
+        return date?.format(dateFormatter)
     }
 
     // Converts a date as string into a LocalDate type
     @TypeConverter
     fun toLocalDate(dateString: String?): LocalDate? {
         return dateString?.let { LocalDate.parse(it, dateFormatter) }
+    }
+
+    /*
+     * LocalDateTime converters
+     */
+
+    // Converts a LocalDateTime type into a string
+    @TypeConverter
+    fun fromLocalDateTime(dateTime: LocalDateTime?): String? {
+        return dateTime?.format(dateTimeFormatter)
+    }
+
+    // Converts a date and time as string into a LocalDateType type
+    @TypeConverter
+    fun toLocalDateTime(dateTimeString: String?): LocalDateTime? {
+        return dateTimeString?.let { LocalDateTime.parse(it, dateTimeFormatter) }
     }
 
     /*
