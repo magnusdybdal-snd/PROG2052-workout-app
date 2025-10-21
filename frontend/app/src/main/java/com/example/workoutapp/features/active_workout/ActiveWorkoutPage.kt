@@ -157,7 +157,7 @@ fun ActiveWorkoutPage(
                                     textContentColor = cs.onTertiary,
                                     titleContentColor = cs.onTertiary,
                                     onDismissRequest = { showDialog = false },
-                                    title = { Text(text = "Add a note before finishing?")},
+                                    title = { Text(text = "Add a note before finishing?") },
                                     text = {
                                         OutlinedTextField(
                                             colors = outlinedFieldColors(),

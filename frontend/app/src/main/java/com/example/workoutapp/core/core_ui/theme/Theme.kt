@@ -120,13 +120,13 @@ object AppOutlinedTextField {
     fun outlinedFieldColors(): TextFieldColors {
         val cs = MaterialTheme.colorScheme
         return OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = cs.primary,
-            unfocusedBorderColor = cs.outline,
-            cursorColor = cs.primary,
-            focusedLabelColor = cs.primary,
+            focusedBorderColor = cs.onSurfaceVariant,
+            unfocusedBorderColor = cs.onSurfaceVariant,
+            cursorColor = cs.onSurfaceVariant,
+            focusedLabelColor = cs.onSurfaceVariant,
             unfocusedLabelColor = cs.onSurfaceVariant,
-            focusedTextColor = cs.onSurface,
-            unfocusedTextColor = cs.onSurface,
+            focusedTextColor = cs.onSurfaceVariant,
+            unfocusedTextColor = cs.onSurfaceVariant,
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         )
