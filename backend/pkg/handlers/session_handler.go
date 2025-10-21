@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 )
 
@@ -16,7 +15,7 @@ HandleSession()
 GET /sessions - retrieves all sessions
 POST /session - Insert one session
 */
-func HandleSession(serv *services.SessionService) http.HandlerFunc {
+func HandleSession(serv domain.SessionService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
@@ -73,7 +72,7 @@ HandleOneSession
 PUT /sessions/{sessionId}
 DELETE /sessions/{sessionId}
 */
-func HandleOneSession(serv *services.SessionService) http.HandlerFunc {
+func HandleOneSession(serv domain.SessionService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("sessionId")
 		if id == "" {
@@ -104,7 +103,7 @@ func HandleOneSession(serv *services.SessionService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			result, err := serv.Repo.UpdateOneSession(ctx, id, payload)
+			result, err := serv.PutSession(ctx, id, payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return

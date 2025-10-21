@@ -14,13 +14,14 @@ import (
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 )
 
 func newServer(
-	exerciseService *services.ExerciseService,
+	exerciseService domain.ExercisesServices,
 	templateService *services.TemplateService,
-	SessionService *services.SessionService,
+	SessionService domain.SessionService,
 ) http.Handler {
 	mux := http.NewServeMux()
 	addRoutes(
@@ -63,13 +64,13 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	}
 
 	// Starting up Services
-	exerciseService := &services.ExerciseService{
+	exerciseService := &services.ExerciseServiceImpl{
 		Repo: exerciseRepo,
 	}
 	
 	templateService := services.NewTemplateService(templateRepo, exerciseRepo)
 
-	SessionService := &services.SessionService{
+	SessionService := &services.SessionServiceImpl{
 		Repo: sessionRepo,
 		RepoExer: exerciseRepo,
 	}

@@ -6,13 +6,12 @@ import (
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 )
 
-
-type SessionService struct {
+type SessionServiceImpl struct {
 	Repo domain.SessionRepository
 	RepoExer domain.ExercisesRepository
 }
 
-func (s *SessionService) GetAllSession(ctx context.Context, include bool) (interface{}, error) {
+func (s *SessionServiceImpl) GetAllSession(ctx context.Context, include bool) (interface{}, error) {
 	sess, err := s.Repo.GetAllSession(ctx)
 	if err != nil {
 		return nil, err
@@ -46,7 +45,7 @@ func (s *SessionService) GetAllSession(ctx context.Context, include bool) (inter
 	return expandedSession, nil
 }
 
-func (s *SessionService) PostSession(ctx context.Context, payload *domain.Session) (string, error) {
+func (s *SessionServiceImpl) PostSession(ctx context.Context, payload *domain.Session) (string, error) {
 	result, err := s.Repo.InsertSession(ctx,*payload)
 	if err != nil {
 		return "",err 
@@ -54,7 +53,7 @@ func (s *SessionService) PostSession(ctx context.Context, payload *domain.Sessio
 	return result, nil
 }
 
-func (s *SessionService) PutSession(ctx context.Context, id string, payload interface{}) (string, error) {
+func (s *SessionServiceImpl) PutSession(ctx context.Context, id string, payload interface{}) (string, error) {
 	result, err := s.Repo.UpdateOneSession(ctx, id, payload)
 	if err != nil {
 		return "", err
@@ -62,7 +61,7 @@ func (s *SessionService) PutSession(ctx context.Context, id string, payload inte
 	return result, nil
 }
 
-func (s *SessionService) DeleteSession(ctx context.Context, id string) (string, error) {
+func (s *SessionServiceImpl) DeleteSession(ctx context.Context, id string) (string, error) {
 	result, err := s.Repo.DeleteSession(ctx,id)
 	if err != nil {
 		return "", err
