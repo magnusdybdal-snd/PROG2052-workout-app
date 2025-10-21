@@ -101,7 +101,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     api.postHistoryWorkout(session)
                     dao.markAsSynced(local.id)
                 } catch (_: Exception) {
-                    Log.w("Repo", "Failed to sync workout ${local.id}")
+                    Log.w("HistoryRepo", "Failed to sync workout ${local.id}")
                 }
             }
         }
@@ -109,8 +109,13 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         // Step 2: Pull latest from API
         val remoteWorkouts = try {
             api.getHistoryWorkouts().map { dto ->
-                val localTime = LocalTime.parse(dto.duration)
-                val duration = Duration.ofSeconds(localTime.toSecondOfDay().toLong())
+                val duration = try {
+                    Duration.parse(dto.duration)
+                } catch (e: Exception) {
+                    Log.w("HistoryRepo", "parsing og duration failed: ${e.message}, got duration: ${dto.duration}")
+                    val localTime = LocalTime.parse(dto.duration)
+                    Duration.ofSeconds(localTime.toSecondOfDay().toLong())
+                }
 
                 val workoutEntity = HistoryWorkoutEntity(
                     id = dto.historyWorkoutId,
@@ -147,21 +152,19 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                 Triple(workoutEntity, exerciseEntities, setEntities)
             }
         } catch (e: Exception) {
-            Log.e("Repo", "Error fetching workouts from API: ${e.message}")
+            Log.e("HistoryRepo", "Error fetching workouts from API: ${e.message}")
             emptyList()
         }
 
         // Step 3: Insert locally (nested)
-        remoteWorkouts.forEach { (workout, exercises, sets) ->
-            try {
-                dao.insertFullWorkout(workout, exercises, sets)
-            } catch (e: Exception) {
-                Log.e("Repo", "Failed to insert full workout ${workout.id}: ${e.message}")
-            }
+        try {
+            dao.insertFullWorkout(remoteWorkouts)
+        } catch (e: Exception) {
+            Log.e("HistoryRepo", "Failed to insert full workout: ${e.message}")
         }
 
-        Log.d("Repo", "Fetched ${remoteWorkouts.size} remote workouts")
-        Log.d("Repo", "Local DB now has ${dao.getAllHistoryWorkoutsSnapshot().size} workouts")
+        Log.d("HistoryRepo", "Fetched ${remoteWorkouts.size} remote workouts")
+        Log.d("HistoryRepo", "Local DB now has ${dao.getAllHistoryWorkoutsSnapshot().size} workouts")
 
         // Step 4: Return local data from DB (Local first)
         return dao.getAllHistoryWorkoutsSnapshot().map { entity ->
@@ -212,16 +215,16 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         }
 
         // Insert all nested data at once
-        dao.insertFullWorkout(workoutEntity, exerciseEntities, setEntities)
+        dao.insert(workoutEntity)
 
         // Try to push new session to API
         try {
             api.postHistoryWorkout(session)
             dao.markAsSynced(session.sessionId)
-            Log.d("Repo", "Workout ${session.sessionId} synced successfully")
+            Log.d("HistoryRepo", "Workout ${session.sessionId} synced successfully")
         } catch (e: Exception) {
             // Workout remains marked as unsynced, will sync later
-            Log.e("Repo", "Workout queued for sync: ${session.sessionId}, error: ${e.message}")
+            Log.e("HistoryRepo", "Workout queued for sync: ${session.sessionId}, error: ${e.message}")
         }
     }
 }

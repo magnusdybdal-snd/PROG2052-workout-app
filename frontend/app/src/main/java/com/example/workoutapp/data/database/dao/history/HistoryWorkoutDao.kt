@@ -92,20 +92,12 @@ interface HistoryWorkoutDao {
      */
     @Transaction
     suspend fun insertFullWorkout(
-        workout: HistoryWorkoutEntity,
-        exercises: List<WorkoutExerciseEntity>,
-        sets: List<SetEntity>
+        workouts: List<Triple<HistoryWorkoutEntity, List<WorkoutExerciseEntity>, List<SetEntity>>>
     ) {
-        // Insert parent first
-        insert(workout)
-
-        // Insert exercises (children)
-        insertExercises(exercises)
-
-        // Insert sets (grandchildren)
-        insertSets(sets)
+        workouts.forEach { (workout, exercises, sets) ->
+            insert(workout)
+            insertExercises(exercises)
+            insertSets(sets)
+        }
     }
-
-
-
 }

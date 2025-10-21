@@ -56,6 +56,7 @@ class WorkoutTemplatesViewModel @Inject constructor(
                     )
                 }
                 .collect()
+
         }
     }
 
