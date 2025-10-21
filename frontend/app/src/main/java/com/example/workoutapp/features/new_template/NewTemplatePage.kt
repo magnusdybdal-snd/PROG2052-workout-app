@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -68,6 +69,7 @@ fun NewTemplatePage(
         else -> {
             var name by remember { mutableStateOf("") }
             val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
+            val exerciseNames = remember { mutableStateListOf<String>() }
 
             Column(
                 modifier = modifier.verticalScroll(
@@ -171,7 +173,7 @@ fun NewTemplatePage(
                                         exercises.add(
                                             NewTemplateExercise(
                                                 exerciseId = exercise.exerciseId,
-                                                sets = mutableListOf(
+                                                sets = mutableStateListOf(
                                                     Set (
                                                         rep = 0,
                                                         kg = 0,
@@ -180,6 +182,7 @@ fun NewTemplatePage(
                                                 )
                                             )
                                         )
+                                        exerciseNames.add(exercise.name)
                                         expanded = !expanded
                                     }
                                 )
@@ -191,11 +194,29 @@ fun NewTemplatePage(
                         modifier = Modifier
                             .padding(top = 10.dp),
                     ) {
-                        exercises.forEach { exSet ->
-                            Text(
-                                text = exSet.exerciseId,
-                                fontSize = 15.sp
-                            )
+                        exercises.forEachIndexed { index, exSet ->
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+
+                            ) {
+                                Text(
+                                    exerciseNames[index],
+                                    fontSize = 15.sp
+                                )
+                                IconButton (
+                                    onClick = {
+                                        exercises.removeAt(index)
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove exercise"
+                                    )
+                                }
+                            }
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
@@ -244,6 +265,27 @@ fun NewTemplatePage(
                                         exSet = exSet
                                     )
                                 }
+                                Column(
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .height(h.dp * y)
+                                        .fillMaxHeight()
+                                ) {
+                                    Text("", fontSize = 10.sp)
+                                    exSet.sets.forEachIndexed {index, set ->
+                                        IconButton (
+                                            onClick = {
+                                                exSet.sets.removeAt(index)
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Remove set"
+                                            )
+                                        }
+                                    }
+                                }
                             }
                             IconButton (
                                 onClick = {
@@ -268,5 +310,3 @@ fun NewTemplatePage(
         }
     }
 }
-
-

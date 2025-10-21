@@ -9,7 +9,7 @@ package com.example.workoutapp.domain.models
 data class WorkoutTemplate(
     val templateId: String,
     val name: String,
-    val exercises: List<TemplateExercise>
+    val exercises: MutableList<TemplateExercise>
 )
 
 /**
@@ -21,5 +21,5 @@ data class WorkoutTemplate(
  */
 data class TemplateExercise(
     val exercise: Exercise,
-    val sets: List<Set>
+    val sets: MutableList<Set>
 )

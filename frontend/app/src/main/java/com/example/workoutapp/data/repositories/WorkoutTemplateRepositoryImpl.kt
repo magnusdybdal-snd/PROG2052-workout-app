@@ -46,9 +46,9 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                                 kg = setDto.kg,
                                 typeSet = setDto.typeSet
                             )
-                        }
+                        } as MutableList<Set>
                     )
-                }
+                } as MutableList<TemplateExercise>
             )
         }
     }
