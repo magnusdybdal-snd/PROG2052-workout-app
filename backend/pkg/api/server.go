@@ -20,7 +20,7 @@ import (
 
 func newServer(
 	exerciseService domain.ExerciseService,
-	templateService *services.TemplateService,
+	templateService domain.TemplateService,
 	SessionService domain.SessionService,
 ) http.Handler {
 	mux := http.NewServeMux()

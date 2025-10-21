@@ -5,13 +5,12 @@ import (
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/handlers"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 )
 
 func addRoutes(
 	mux *http.ServeMux, 
 	exerciseService domain.ExerciseService,
-	templateService *services.TemplateService,
+	templateService domain.TemplateService,
 	sessionService domain.SessionService,
 ) {
 	// Home route
