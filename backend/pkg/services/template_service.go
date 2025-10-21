@@ -3,27 +3,26 @@ package services
 import (
 	"context"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 )
 
-type TemplateService struct {
-	RepoTempl *repository.TemplateRepository
-	RepoExer *repository.ExerciseRepository
+type TemplateServiceImpl struct {
+	RepoTempl domain.TemplateRepository
+	RepoExer domain.ExerciseRepository
 }
 
 func NewTemplateService(
-	rTempl *repository.TemplateRepository, 
-	rExer *repository.ExerciseRepository,
-) *TemplateService {
-	return &TemplateService{
+	rTempl domain.TemplateRepository, 
+	rExer domain.ExerciseRepository,
+) *TemplateServiceImpl {
+	return &TemplateServiceImpl{
 		RepoTempl: rTempl,
 		RepoExer: rExer,
 	}
 }
 
-func (s *TemplateService) GetAllTemplates(ctx context.Context, include bool) (interface{}, error) {
-	templ, err := s.RepoTempl.GetAllTemplates(ctx)
+func (s *TemplateServiceImpl) GetAll(ctx context.Context, include bool) (interface{}, error) {
+	templ, err := s.RepoTempl.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +53,8 @@ func (s *TemplateService) GetAllTemplates(ctx context.Context, include bool) (in
 	return expandedTempl, nil
 }
 
-func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include bool) (interface{}, error) {
-	templ,err := s.RepoTempl.GetOneTemplate(ctx,id)
+func (s *TemplateServiceImpl) GetOne(ctx context.Context,id string, include bool) (interface{}, error) {
+	templ,err := s.RepoTempl.FindOne(ctx,id)
 	if err != nil {
 		return nil, err
 	}
@@ -81,24 +80,24 @@ func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include 
 	return expandedTempl,nil
 }
 
-func (s *TemplateService) PostOneTemplate(ctx context.Context, payload *domain.Template) (string, error) {
-	result, err := s.RepoTempl.InsertOneTemplate(ctx, *payload)
+func (s *TemplateServiceImpl) Create(ctx context.Context, payload *domain.Template) (string, error) {
+	result, err := s.RepoTempl.Insert(ctx, *payload)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func (s *TemplateService) PatchTemplate(ctx context.Context, id string, payload interface{}) (string, error) {
-	result, err := s.RepoTempl.UpdateOneTemplate(ctx, id, payload)
+func (s *TemplateServiceImpl) Update(ctx context.Context, id string, payload interface{}) (string, error) {
+	result, err := s.RepoTempl.Update(ctx, id, payload)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func (s *TemplateService) DeleteTemplate(ctx context.Context, id string) (string, error) {
-	result, err := s.RepoTempl.DeleteOneTemplate(ctx, id)
+func (s *TemplateServiceImpl) Delete(ctx context.Context, id string) (string, error) {
+	result, err := s.RepoTempl.Delete(ctx, id)
 	if err != nil {
 		return "", err
 	}
