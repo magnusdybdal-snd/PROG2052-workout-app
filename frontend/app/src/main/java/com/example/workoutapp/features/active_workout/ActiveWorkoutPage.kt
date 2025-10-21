@@ -3,7 +3,6 @@ package com.example.workoutapp.features.active_workout
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import java.time.ZoneId
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,13 +18,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedButton
@@ -59,6 +60,7 @@ import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.seconds
 
@@ -227,11 +229,19 @@ fun ActiveWorkoutPage(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                         ) {
-                            state.templates[templateId].exercises.forEach { exSet ->
-                                Text(
-                                    exSet.exercise.name,
-                                    fontSize = 15.sp
-                                )
+                            state.templates[templateId].exercises.forEachIndexed { index, exSet ->
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+
+                                ) {
+                                    Text(
+                                        exSet.exercise.name,
+                                        fontSize = 15.sp
+                                    )
+                                }
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier
@@ -239,7 +249,7 @@ fun ActiveWorkoutPage(
                                         .padding(horizontal = 8.dp)
 
                                 ) {
-                                    val y = exSet.sets.size
+                                    val y = exSet.sets.size //icon
                                     val h = 75
                                     Column(
                                         verticalArrangement = Arrangement.SpaceBetween,
@@ -254,10 +264,16 @@ fun ActiveWorkoutPage(
                                             modifier = Modifier
                                         )
                                         for (i in 1..y) {
-                                            Text(
-                                                "$i\n",
-                                                fontSize = 15.sp,
-                                            )
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier
+                                                    .height(50.dp)
+                                            ) {
+                                                Text(
+                                                    "$i",
+                                                    fontSize = 15.sp
+                                                )
+                                            }
                                         }
                                     }
                                     Column(
@@ -325,6 +341,23 @@ fun ActiveWorkoutPage(
                                             )
                                         }
                                     }
+                                }
+
+                                IconButton (
+                                    onClick = {
+                                        exSet.sets.add(
+                                            Set(
+                                                rep = 0,
+                                                kg = 0,
+                                                typeSet = 0,
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add set"
+                                    )
                                 }
                             }
                         }

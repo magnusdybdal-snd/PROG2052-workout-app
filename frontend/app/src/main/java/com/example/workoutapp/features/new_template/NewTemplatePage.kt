@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,6 +78,7 @@ fun NewTemplatePage(
         else -> {
             var name by remember { mutableStateOf("") }
             val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
+            val exerciseNames = remember { mutableStateListOf<String>() }
 
             Column(
                 modifier = modifier
@@ -103,66 +106,65 @@ fun NewTemplatePage(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(width = 2.dp, color = cs.onBackground)
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    var showDialog by remember { mutableStateOf(false) }
+                    Button(
+                        onClick = {
+                            showDialog = true
+                        },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = cs.tertiary
+                        ),
                     ) {
-                        Text(getCurrentTimeString(), fontSize = 20.sp)
-                        var showDialog by remember { mutableStateOf(false) }
-                        Button(
-                            onClick = {
-                                showDialog = true
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = cs.tertiary
-                            ),
-                        ) {
-                            Text("Add template", color = cs.onTertiary)
-                        }
+                        Text("Add template", color = cs.onTertiary)
+                    }
 
-                        if (showDialog &&
-                            name != "" &&
-                            exercises.isNotEmpty()) {
-                            AlertDialog(
-                                onDismissRequest = { showDialog = false },
-                                title = {
+                    if (showDialog &&
+                        name != "" &&
+                        exercises.isNotEmpty()) {
+                        AlertDialog(
+                            onDismissRequest = { showDialog = false },
+                            title = {
+                                Text(
+                                    text = "Complete template?",
+                                    color = cs.onBackground
+                                )
+                            },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    val newTemplate = NewTemplate(
+                                        templateId = "tmp_000",
+                                        name = name,
+                                        exercises = exercises.map { ex ->
+                                            ex.copy(
+                                                sets = ex.sets.map { s ->
+                                                    s.copy(
+                                                        rep = s.repState,
+                                                        kg = s.kgState
+                                                    )
+                                                }.toMutableList()
+                                            )
+                                        }.toMutableList()
+                                    )
+                                    viewModel.postWorkout(newTemplate)
+                                    showDialog = false
+                                    navController.popBackStack()
+                                }) {
                                     Text(
-                                        text = "Complete template?",
+                                        text ="Add template",
                                         color = cs.onBackground
                                     )
-                                },
-                                confirmButton = {
-                                    TextButton(onClick = {
-                                        val newTemplate = NewTemplate(
-                                            templateId = "tmp_000",
-                                            name = name,
-                                            exercises = exercises
-                                        )
-                                        viewModel.postWorkout(newTemplate)
-                                        showDialog = false
-                                        navController.popBackStack()
-                                    }) {
-                                        Text(
-                                            text ="Add template",
-                                            color = cs.onBackground
-                                        )
-                                    }
-                                },
-                                dismissButton = {
-                                    TextButton(onClick = { showDialog = false }) {
-                                        Text(
-                                            text = "Cancel",
-                                            color = cs.onBackground
-                                        )
-                                    }
                                 }
-                            )
-                        }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDialog = false }) {
+                                    Text(
+                                        text = "Cancel",
+                                        color = cs.onBackground
+                                    )
+                                }
+                            }
+                        )
                     }
 
                     TextField(
@@ -211,6 +213,7 @@ fun NewTemplatePage(
                                                 )
                                             )
                                         )
+                                        exerciseNames.add(exercise.name)
                                         expanded = !expanded
                                     }
                                 )
@@ -222,11 +225,29 @@ fun NewTemplatePage(
                         modifier = Modifier
                             .padding(top = 10.dp),
                     ) {
-                        exercises.forEach { exSet ->
-                            Text(
-                                exSet.exerciseId,
-                                fontSize = 15.sp
-                            )
+                        exercises.forEachIndexed { index, exSet ->
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+
+                            ) {
+                                Text(
+                                    exerciseNames[index],
+                                    fontSize = 15.sp
+                                )
+                                IconButton (
+                                    onClick = {
+                                        exercises.removeAt(index)
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove exercise"
+                                    )
+                                }
+                            }
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
@@ -265,8 +286,8 @@ fun NewTemplatePage(
                                     Text("KG", fontSize = 10.sp)
                                     exSet.sets.forEach { set ->
                                         TextField(
-                                            value = set.kg.toString(),
-                                            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
+                                            value = set.kgState.toString(),
+                                            onValueChange = { set.kgState = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
                                             colors = AppTextField.fieldColors(),
                                             modifier = Modifier
@@ -274,7 +295,7 @@ fun NewTemplatePage(
                                                 .height(50.dp)
                                         )
                                     }
-                                } //icon
+                                }
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
                                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -285,14 +306,35 @@ fun NewTemplatePage(
                                     Text("REPS", fontSize = 10.sp)
                                     exSet.sets.forEach { set ->
                                         TextField(
-                                            value = set.rep.toString(),
-                                            onValueChange = { set.rep = it.toIntOrNull() ?: 0 },
+                                            value = set.repState.toString(),
+                                            onValueChange = { set.repState = it.toIntOrNull() ?: 0 },
                                             shape = RoundedCornerShape(12.dp),
                                             colors = AppTextField.fieldColors(),
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .height(50.dp)
                                         )
+                                    }
+                                }
+                                Column(
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .height(h.dp * y)
+                                        .fillMaxHeight()
+                                ) {
+                                    Text("", fontSize = 10.sp)
+                                    exSet.sets.forEachIndexed {index, set ->
+                                        IconButton (
+                                            onClick = {
+                                                exSet.sets.removeAt(index)
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Remove set"
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -309,7 +351,7 @@ fun NewTemplatePage(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
-                                    contentDescription = "Add workout"
+                                    contentDescription = "Add set"
                                 )
                             }
                         }
@@ -318,10 +360,4 @@ fun NewTemplatePage(
             }
         }
     }
-}
-
-fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now() // current time
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
-    return currentTime.format(formatter)
 }
