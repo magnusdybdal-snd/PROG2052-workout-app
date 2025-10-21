@@ -223,6 +223,5 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
             // Workout remains marked as unsynced, will sync later
             Log.e("Repo", "Workout queued for sync: ${session.sessionId}, error: ${e.message}")
         }
-
     }
 }

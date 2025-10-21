@@ -30,9 +30,6 @@ data class TemplateEntity(
     /** User-facing name of the template. */
     val name: String,
 
-    /** Optional personal note for the template. */
-    val note: String = "",
-
     /** Whether this workout is synced with the remote backend. */
     val isSynced: Boolean = false,
 
