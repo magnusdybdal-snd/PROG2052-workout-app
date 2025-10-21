@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TemplateDao {
 
-
     //--------------------------
     //  Basic operations
     //--------------------------
@@ -35,6 +34,9 @@ interface TemplateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(template: TemplateEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(templates: List<TemplateEntity>)
+
     @Query("SELECT * FROM templates WHERE isSynced = 0")
     suspend fun getUnsyncedTemplates(): List<TemplateEntity>
 
@@ -44,6 +46,25 @@ interface TemplateDao {
     @Query("DELETE FROM templates")
     suspend fun clearAll()
 
+    // Get all templates from Room once (not reactive)
     @Query("SELECT * FROM templates ORDER BY createdAt DESC")
     suspend fun getAllTemplatesSnapshot(): List<TemplateEntity>
+
+    //--------------------------
+    //  Nested relationships
+    //--------------------------
+
+    // TODO
+
+    //--------------------------
+    //  Nested inserts
+    //--------------------------
+
+    // TODO
+
+    //--------------------------
+    //  Combined transactional insert
+    //--------------------------
+
+    // TODO
 }
