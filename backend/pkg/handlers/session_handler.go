@@ -11,7 +11,11 @@ import (
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 )
 
-// Get all sessions
+/*
+HandleSession()
+GET /sessions - retrieves all sessions
+POST /session - Insert one session
+*/
 func HandleSession(serv *services.SessionService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
@@ -30,6 +34,7 @@ func HandleSession(serv *services.SessionService) http.HandlerFunc {
 
 		// POST /sessions
 		case http.MethodPost:
+			/*
 			payload, problems, err := utils.DecodeValid[*domain.Session](r)
 			if err != nil {
 				if problems != nil {
@@ -39,17 +44,75 @@ func HandleSession(serv *services.SessionService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.PostSession(ctx, payload)
+			*/
+			payload, err := utils.Decode[domain.Session](r)
 			if err != nil {
-				utils.HandleError(w,http.StatusInternalServerError,err, utils.ErrMsgInternal)
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			utils.Encode(w,http.StatusOK,map[string]string{
-				"id": id,
+			id, err := serv.PostSession(ctx, &payload)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      id,
 				"message": "session created successfully",
 			})
 
 		// default case
+		default:
+			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
+			return
+		}
+	}
+}
+
+/*
+HandleOneSession
+PUT /sessions/{sessionId}
+DELETE /sessions/{sessionId}
+*/
+func HandleOneSession(serv *services.SessionService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("sessionId")
+		if id == "" {
+			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
+			return
+		}
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		switch r.Method {
+		case http.MethodDelete:
+			result, err := serv.DeleteSession(ctx, id)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      result,
+				"message": "successfuly deleted document on id",
+			})
+		case http.MethodPut:
+			payload, problems, err := utils.DecodeValid[*domain.Session](r)
+			if err != nil {
+				if problems != nil {
+					utils.Encode(w, http.StatusBadRequest, problems)
+					return
+				}
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
+				return
+			}
+			result, err := serv.Repo.UpdateOneSession(ctx, id, payload)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      result,
+				"message": "successfuly patched document on id",
+			})
 		default:
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
 			return

@@ -16,9 +16,13 @@ GET ALL TEMPLATES
 GET ONE TEMPLATE
 POST ONE TEMPLATE
 POST LIST TEMPLATE
+DELETE ONE TEMPLATE
 */
 
-// Handles template/ and template/{templateId}
+/*
+GET /template
+POST /template
+*/
 func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
@@ -26,7 +30,7 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodGet:
-			include := utils.ParseInclude(r,"exercises")
+			include := utils.ParseInclude(r, "exercises")
 			data, err := serv.GetAllTemplates(ctx, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
@@ -60,27 +64,63 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 	}
 }
 
-func GetOneTemplate(serv *services.TemplateService) http.HandlerFunc {
+/*
+GET /template/{templateId}
+PUT /template/{templateId}
+DELETE /template/{templateId}
+*/
+func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
-			return
-		}
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
 		id := r.PathValue("templateId")
 		if id == "" {
 			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
 			return
 		}
 
-		include := utils.ParseInclude(r, "exercises")
-		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-		defer cancel()
-
-		data, err := serv.GetOneTemplate(ctx, id, include)
-		if err != nil {
-			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
+		switch r.Method {
+		case http.MethodGet:
+			include := utils.ParseInclude(r, "exercises")
+			data, err := serv.GetOneTemplate(ctx, id, include)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
+				return
+			}
+			utils.Encode(w, http.StatusOK, data)
+		case http.MethodPut:
+			payload, problems, err := utils.DecodeValid[*domain.Template](r)
+			if err != nil {
+				if problems != nil {
+					utils.Encode(w, http.StatusBadRequest, problems)
+					return
+				}
+				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
+				return
+			}
+			result, err := serv.RepoTempl.UpdateOneTemplate(ctx, id, payload)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK,map[string]string{
+				"id":      result,
+				"message": "successfuly patched document on id",
+			})
+		case http.MethodDelete:
+			result, err := serv.DeleteTemplate(ctx, id)
+			if err != nil {
+				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
+				return
+			}
+			utils.Encode(w, http.StatusOK, map[string]string{
+				"id":      result,
+				"message": "successfuly deleted document on id",
+			})
+		default:
+			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
 			return
 		}
-		utils.Encode(w, http.StatusOK, data)
 	}
 }

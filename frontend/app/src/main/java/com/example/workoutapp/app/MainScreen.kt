@@ -32,8 +32,16 @@ import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.new_template.NewTemplatePage
 
+/**
+ * Main screen
+ * @param modifier
+ * @param navController
+ */
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController
+) {
 
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
@@ -53,10 +61,10 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
         bottomBar = {
             val cs = MaterialTheme.colorScheme
             if (showBottomBar) { // check if condition is true (show/hide bottom-bar)
-                NavigationBar (
+                NavigationBar(
                     containerColor = cs.surface,
                     contentColor = cs.onSurface
-                ){
+                ) {
                     navItemList.forEach { item ->
                         NavigationBarItem(
                             selected = currentDestination.isOnRoute(item.route),
@@ -72,7 +80,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                             icon = { Icon(item.icon, contentDescription = item.label) },
                             label = { Text(item.label) },
                             colors = AppNavBar.itemColors()
-                            )
+                        )
                     }
                 }
             }

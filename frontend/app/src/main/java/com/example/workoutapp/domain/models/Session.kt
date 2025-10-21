@@ -1,18 +1,25 @@
 package com.example.workoutapp.domain.models
 
+import com.example.workoutapp.data.serializers.DurationSerializer
+import com.example.workoutapp.data.serializers.LocalDateSerializer
 import kotlinx.serialization.Serializable
+import java.time.Duration
+import java.time.LocalDate
 
 @Serializable
-class Session (
+data class Session (
     val sessionId: String,
     val name: String,
     val exercises: List<SessionExercise>,
-    val duration: String,
-    val date: String,
-    val note: String
+    @Serializable(with = DurationSerializer::class)
+    val duration: Duration,
+    @Serializable(with = LocalDateSerializer::class)
+    val date: LocalDate,
+    val note: String = ""
 )
 @Serializable
 data class SessionExercise(
     val exerciseId: String,
+    val name: String,
     val sets: List<Set>
 )

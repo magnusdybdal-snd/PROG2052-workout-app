@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">workoutApp</string>
+
+    <string name="reps">REPS</string>
+    <string name="sets">SETS</string>
+    <string name="kg">KG</string>
+
+    <string name="add_exercise">Add exercise</string>
+    <string name="add_workout">Add workout</string>
+    <string name="add_template">Add template</string>
+
+    <string name="workouts">Workouts</string>
+    <string name="history">History</string>
+    <string name="exercises">Exercises</string>
+
+    <string name="set_template_name">Set Template Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="done_set">Done set</string>
+    <string name="finish">Finish</string>
+    <string name="finish_workout">Finish workout</string>
+    <string name="workout_notes">Workout notes</string>
 </resources>

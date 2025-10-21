@@ -54,3 +54,19 @@ func (s *SessionService) PostSession(ctx context.Context, payload *domain.Sessio
 	}
 	return result, nil
 }
+
+func (s *SessionService) PutSession(ctx context.Context, id string, payload interface{}) (string, error) {
+	result, err := s.Repo.UpdateOneSession(ctx, id, payload)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
+
+func (s *SessionService) DeleteSession(ctx context.Context, id string) (string, error) {
+	result, err := s.Repo.DeleteSession(ctx,id)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}

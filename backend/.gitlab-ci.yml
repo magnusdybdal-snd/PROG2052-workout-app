@@ -1,0 +1,60 @@
+variables:
+  GIT_DEPTH: 0
+  GO_VERSION: "1.25-alpine"
+  APP_NAME: "backend"
+  HOST: "10.212.168.186"
+  SSH_USER: "ubuntu"
+
+# ---------- BUILD STAGE ----------
+build_go:
+  stage: build
+  image: golang:${GO_VERSION}
+  before_script:
+    - cd backend
+  script:
+    - go mod tidy
+    - go mod download
+    - go build -o backend-api ./cmd/api
+  artifacts:
+    paths:
+      - backend/backend-api
+    expire_in: 1 week
+  only:
+    - merge_requests
+
+# ---------- TEST STAGE ----------
+unit-test:
+  stage: test
+  image: golang:${GO_VERSION}
+  before_script:
+    - cd backend
+  script:
+    - go mod tidy
+    - go test ./... -v
+  only:
+    - merge_requests
+
+# ---------- DEPLOY STAGE (DEV) ----------
+deploy_backend:
+  stage: deploy
+  image: debian:stable-slim
+  before_script:
+    - apt update && apt install -y openssh-client git
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan -H $HOST >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+  script:
+    - echo "Key preview:" && head -1 ~/.ssh/id_ed25519
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 $SSH_USER@$HOST "
+        cd /home/$SSH_USER/$APP_NAME &&
+          git fetch origin &&
+          git checkout $CI_COMMIT_REF_NAME &&
+          git pull origin $CI_COMMIT_REF_NAME &&
+          cd backend &&
+          docker compose down &&
+          docker compose up -d --build
+      "
+  only:
+    - dev 
+
