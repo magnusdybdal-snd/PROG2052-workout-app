@@ -2,11 +2,13 @@ package com.example.workoutapp.core.core_ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.darkColorScheme
@@ -111,6 +113,23 @@ object AppTextField {
         )
     }
 }
+object AppOutlinedTextField {
+    @Composable
+    fun outlinedFieldColors(): TextFieldColors {
+        val cs = MaterialTheme.colorScheme
+        return OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = cs.primary,
+            unfocusedBorderColor = cs.outline,
+            cursorColor = cs.primary,
+            focusedLabelColor = cs.primary,
+            unfocusedLabelColor = cs.onSurfaceVariant,
+            focusedTextColor = cs.onSurface,
+            unfocusedTextColor = cs.onSurface,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
+        )
+    }
+}
 
 object AppCheckBox {
     @Composable
@@ -122,6 +141,20 @@ object AppCheckBox {
             checkmarkColor = cs.onBackground,
             disabledCheckedColor = cs.surfaceVariant.copy(alpha = 0.3f),
             disabledUncheckedColor = cs.surfaceVariant.copy(alpha = 0.3f)
+        )
+
+    }
+}
+
+object AppTextButton {
+    @Composable
+    fun textButtonColor(): ButtonColors {
+        val cs = MaterialTheme.colorScheme
+        return ButtonColors(
+            containerColor = cs.tertiary,
+            contentColor =cs.onTertiary,
+            disabledContainerColor = cs.secondaryContainer,
+            disabledContentColor = cs.onSecondaryContainer
         )
 
     }

@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,6 +46,9 @@ import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
+import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
+import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
+import com.example.workoutapp.core.core_ui.theme.AppTextField.fieldColors
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
@@ -149,13 +153,18 @@ fun ActiveWorkoutPage(
 
                             if (showDialog) {
                                 AlertDialog(
+                                    containerColor = cs.tertiary,
+                                    textContentColor = cs.onTertiary,
+                                    titleContentColor = cs.onTertiary,
                                     onDismissRequest = { showDialog = false },
-                                    title = { Text("Add a note before finishing?") },
+                                    title = { Text(text = "Add a note before finishing?")},
                                     text = {
                                         OutlinedTextField(
+                                            colors = outlinedFieldColors(),
                                             value = notes,
                                             onValueChange = { notes = it },
-                                            label = { Text(text = stringResource(R.string.workout_notes)) }
+                                            label = { Text(text = stringResource(R.string.workout_notes)) },
+
                                         )
                                     },
                                     confirmButton = {
@@ -193,12 +202,14 @@ fun ActiveWorkoutPage(
                                             viewModel.postWorkout(finishedWorkout)
                                             showDialog = false
                                             navController.popBackStack()
-                                        }) {
+                                        },
+                                            colors = textButtonColor()) {
                                             Text(text = stringResource(R.string.finish_workout))
                                         }
                                     },
                                     dismissButton = {
-                                        TextButton(onClick = { showDialog = false }) {
+                                        TextButton(onClick = { showDialog = false },
+                                            colors = textButtonColor()) {
                                             Text(text = stringResource(R.string.cancel))
                                         }
                                     }
