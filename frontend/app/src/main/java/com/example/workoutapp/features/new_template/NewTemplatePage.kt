@@ -148,6 +148,7 @@ fun NewTemplatePage(
                     )
 
                     var expanded by remember { mutableStateOf(false) }
+                    var searchString by remember { mutableStateOf("") }
 
                     Box(
                         modifier = Modifier
@@ -158,10 +159,32 @@ fun NewTemplatePage(
                         }
                         DropdownMenu(
                             expanded = expanded,
-                            onDismissRequest = { expanded = false },
+                            onDismissRequest = {
+                                expanded = false
+                                searchString = "" // Reset search when closing
+                            },
                             containerColor = cs.tertiary
                         ) {
-                            state.exercises.forEach { exercise ->
+                            // Search TextField inside the dropdown
+                            TextField(
+                                value = searchString,
+                                onValueChange = { searchString = it },
+                                placeholder = { Text(
+                                    text = "Search exercise",
+                                    color = cs.onBackground
+                                ) },
+                                singleLine = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            )
+
+                            // Filter exercises based on search query
+                            val filteredExercises = state.exercises.filter {
+                                it.name.contains(searchString, ignoreCase = true)
+                            }
+
+                            filteredExercises.forEach { exercise ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -173,6 +196,7 @@ fun NewTemplatePage(
                                         exercises.add(
                                             NewTemplateExercise(
                                                 exerciseId = exercise.exerciseId,
+                                                name = exercise.name,
                                                 sets = mutableStateListOf(
                                                     Set (
                                                         rep = 0,
@@ -184,7 +208,16 @@ fun NewTemplatePage(
                                         )
                                         exerciseNames.add(exercise.name)
                                         expanded = !expanded
+                                        searchString = ""
                                     }
+                                )
+                            }
+
+                            if (filteredExercises.isEmpty()) {
+                                Text(
+                                    text = "No exercises found",
+                                    color = cs.onTertiary,
+                                    modifier = Modifier.padding(8.dp)
                                 )
                             }
                         }
