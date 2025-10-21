@@ -13,7 +13,7 @@ type TemplateRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *TemplateRepository) GetAllTemplates(ctx context.Context) ([]domain.Template, error) {
+func (r *TemplateRepository) FindAll(ctx context.Context) ([]domain.Template, error) {
 	var data []domain.Template
 	cursor, err := r.Coll.Find(ctx, bson.M{})
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *TemplateRepository) GetAllTemplates(ctx context.Context) ([]domain.Temp
 	return data, nil
 }
 
-func (r *TemplateRepository) GetOneTemplate(ctx context.Context, id string) (domain.Template, error) {
+func (r *TemplateRepository) FindOne(ctx context.Context, id string) (domain.Template, error) {
 	var data domain.Template
 	filter := bson.M{"templateId": id}
 
@@ -43,7 +43,7 @@ func (r *TemplateRepository) GetOneTemplate(ctx context.Context, id string) (dom
 	return data, nil
 }
 
-func (r *TemplateRepository) InsertOneTemplate(ctx context.Context, data domain.Template) (string, error) {
+func (r *TemplateRepository) Insert(ctx context.Context, data domain.Template) (string, error) {
 	result, err := r.Coll.InsertOne(ctx, data)
 	if err != nil {
 		return "", err
@@ -52,7 +52,7 @@ func (r *TemplateRepository) InsertOneTemplate(ctx context.Context, data domain.
 	return id, nil
 }
 
-func (r *TemplateRepository) UpdateOneTemplate(ctx context.Context, id string, data interface{}) (string, error) {
+func (r *TemplateRepository) Update(ctx context.Context, id string, data interface{}) (string, error) {
 	filter := bson.M{"templateId": id}
 	result, err := r.Coll.ReplaceOne(ctx, filter, data)
 	if err != nil {
@@ -64,7 +64,7 @@ func (r *TemplateRepository) UpdateOneTemplate(ctx context.Context, id string, d
 	return id, nil
 }
 
-func (r *TemplateRepository) DeleteOneTemplate(ctx context.Context, id string) (string, error) {
+func (r *TemplateRepository) Delete(ctx context.Context, id string) (string, error) {
 	filter := bson.M{"templateId": id}
 	result, err := r.Coll.DeleteOne(ctx, filter)
 	if err != nil {

@@ -80,15 +80,6 @@ fun HomePage(modifier: Modifier = Modifier,
                             contentDescription = stringResource(R.string.add_workout)
                         )
                     }
-                    IconButton (
-                        onClick = {/*TODO*/ }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search " +
-                                    stringResource(R.string.workouts).lowercase()
-                        )
-                    }
                 }
                 Column {
                     state.workoutTemplates.forEachIndexed { index, workoutTemplate: WorkoutTemplate ->

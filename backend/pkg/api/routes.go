@@ -3,15 +3,15 @@ package api
 import (
 	"net/http"
 
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/handlers"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 )
 
 func addRoutes(
 	mux *http.ServeMux, 
-	exerciseService *services.ExerciseService,
-	templateService *services.TemplateService,
-	sessionService *services.SessionService,
+	exerciseService domain.ExerciseService,
+	templateService domain.TemplateService,
+	sessionService domain.SessionService,
 ) {
 	// Home route
 	mux.Handle(API_ROUTE,handlers.HandleHome())

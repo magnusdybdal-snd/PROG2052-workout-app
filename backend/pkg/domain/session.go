@@ -15,6 +15,22 @@ type Session struct {
 	Note      string               `bson:"note" json:"note"`
 }
 
+// Repository implementation
+type SessionRepository interface {
+	FindAll(ctx context.Context) ([]Session, error)
+	Insert(ctx context.Context, data Session) (string, error)
+	Update(ctx context.Context, id string, data interface{}) (string, error)
+	Delete(ctx context.Context, id string) (string, error)
+}
+
+// Service implementation
+type SessionService interface {
+	GetAll(ctx context.Context, include bool) (interface{}, error)
+	Create(ctx context.Context, payload *Session) (string, error)
+	Update(ctx context.Context, id string, payload interface{}) (string, error)
+	Delete(ctx context.Context, id string) (string, error)
+}
+
 func (s *Session) Valid(ctx context.Context) map[string]string {
 	problems := map[string]string{}
 	

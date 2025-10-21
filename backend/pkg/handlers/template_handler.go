@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 )
 
@@ -23,7 +22,7 @@ DELETE ONE TEMPLATE
 GET /template
 POST /template
 */
-func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
+func HandleTemplate(serv domain.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
@@ -31,7 +30,7 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
-			data, err := serv.GetAllTemplates(ctx, include)
+			data, err := serv.GetAll(ctx, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -48,7 +47,7 @@ func HandleTemplate(serv *services.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.PostOneTemplate(ctx, payload)
+			id, err := serv.Create(ctx, payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -69,7 +68,7 @@ GET /template/{templateId}
 PUT /template/{templateId}
 DELETE /template/{templateId}
 */
-func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
+func HandleOneTemplate(serv domain.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
@@ -83,7 +82,7 @@ func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
-			data, err := serv.GetOneTemplate(ctx, id, include)
+			data, err := serv.GetOne(ctx, id, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -99,7 +98,7 @@ func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			result, err := serv.RepoTempl.UpdateOneTemplate(ctx, id, payload)
+			result, err := serv.Update(ctx, id, payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return
@@ -109,7 +108,7 @@ func HandleOneTemplate(serv *services.TemplateService) http.HandlerFunc {
 				"message": "successfuly patched document on id",
 			})
 		case http.MethodDelete:
-			result, err := serv.DeleteTemplate(ctx, id)
+			result, err := serv.Delete(ctx, id)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return

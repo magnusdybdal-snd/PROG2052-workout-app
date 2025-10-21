@@ -12,7 +12,7 @@ data class WorkoutTemplate(
     val templateId: String,
     val name: String,
     val createdAt: LocalDateTime,
-    val exercises: List<TemplateExercise>
+    val exercises: MutableList<TemplateExercise>
 )
 
 /**
@@ -25,5 +25,5 @@ data class WorkoutTemplate(
 data class TemplateExercise(
     val exerciseId: String,
     val name: String,
-    val sets: List<Set>
+    val sets: MutableList<Set>
 )
