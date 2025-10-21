@@ -40,11 +40,15 @@ type Set struct {
 	Type TypeSet `bson:"typeSet" json:"typeSet"`
 }
 
+
+// Exercises with id and name
 type ExerciseIdTemplate struct {
-	ExerciseId string `bson:"exerciseId" json:"exerciseId"` // Changed in service layer to exericise
+	ExerciseId string `bson:"exerciseId" json:"exerciseId"` 
+	Name string `bson:"name" json:"name"`
 	Sets       []Set  `bson:"sets" json:"sets"`
 }
 
+// Exercise with everything
 type ExpandedExerciseTemplate struct {
 	Exercise Exercises `bson:"exercise" json:"exercise"`
 	Set      []Set     `bson:"sets" json:"sets"`
