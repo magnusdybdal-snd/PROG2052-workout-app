@@ -6,17 +6,14 @@ import com.example.workoutapp.data.database.dao.templates.TemplateDao
 import com.example.workoutapp.data.database.entities.templates.TemplateEntity
 import com.example.workoutapp.data.database.entities.templates.TemplateExerciseEntity
 import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
-import com.example.workoutapp.domain.models.Exercise
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
-import com.example.workoutapp.features.exercises.ExercisesPage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.builtins.SetSerializer
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
@@ -33,24 +30,16 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
 
     override fun observeTemplates(): Flow<List<WorkoutTemplate>> {
 
-        return dao.getAllTemplatesWithExercises().map { templateWithExercises ->
-            templateWithExercises.map { fullTemplate ->
+        return dao.getAllTemplatesWithExercises().map { templates ->
+            templates.map { fullTemplate ->
                 WorkoutTemplate(
                     templateId = fullTemplate.template.id,
                     name = fullTemplate.template.name,
                     createdAt = fullTemplate.template.createdAt,
                     exercises = fullTemplate.exercises.map { exerciseWithSets ->
                         TemplateExercise(
-                            exercise = Exercise(
-                                exerciseId = exerciseWithSets.exercise.exerciseId,
-                                name = exerciseWithSets.exercise.name,
-                                targetMuscles = exerciseWithSets.exercise.targetMuscles,
-                                bodyParts = exerciseWithSets.exercise.bodyParts,
-                                equipments = exerciseWithSets.exercise.equipments,
-                                secondaryMuscles = exerciseWithSets.exercise.secondaryMuscles,
-                                gifUrl = exerciseWithSets.exercise.gifUrl,
-                                instructions = exerciseWithSets.exercise.instructions
-                            ),
+                            exerciseId = exerciseWithSets.exercise.exerciseId,
+                            name = exerciseWithSets.exercise.name,
                             sets = exerciseWithSets.sets.map { setEntity ->
                                 Set(
                                     rep = setEntity.rep,
@@ -64,6 +53,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             }
         }
     }
+
 
     /**
      * Fetch templates from the API and update the local database with fresh API data
@@ -84,7 +74,8 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                     //createdAt = local.createdAt,
                     exercises = fullTemplate.exercises.map { exerciseWithSets ->
                         NewTemplateExercise(
-                            exerciseId = exerciseWithSets.exercise.id,
+                            exerciseId = exerciseWithSets.exercise.exerciseId,
+                            name = exerciseWithSets.exercise.name,
                             sets = exerciseWithSets.sets.map { setEntity ->
                                 Set(
                                     rep = setEntity.rep,
@@ -121,13 +112,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                         id = UUID.randomUUID().toString(),
                         templateId = dto.templateId,
                         exerciseId = exerciseDto.exercise.exerciseId,
-                        name = exerciseDto.exercise.name,
-                        targetMuscles = exerciseDto.exercise.targetMuscles,
-                        bodyParts = exerciseDto.exercise.bodyParts,
-                        equipments = exerciseDto.exercise.equipments,
-                        secondaryMuscles = exerciseDto.exercise.secondaryMuscles,
-                        gifUrl = exerciseDto.exercise.gifUrl,
-                        instructions = exerciseDto.exercise.instructions
+                        name = exerciseDto.exercise.name
                     )
                 }
 
@@ -174,13 +159,39 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
     }
     override suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
+
         val templateEntity = TemplateEntity(
             id = newTemplate.templateId,
             name = newTemplate.name,
             isSynced = false,
             createdAt = LocalDateTime.now()
         )
-        dao.insert(templateEntity)
+
+        // Create exercise entities
+        val exerciseEntities = newTemplate.exercises.map { templateExercise ->
+            TemplateExerciseEntity(
+                id = UUID.randomUUID().toString(),
+                templateId = newTemplate.templateId,
+                exerciseId = templateExercise.exerciseId,
+                name = templateExercise.name
+            )
+        }
+
+        // Create set entities
+        val setEntities = newTemplate.exercises.flatMapIndexed { idx, templateExercise ->
+            val parentExerciseId = exerciseEntities[idx].id
+
+            templateExercise.sets.map { set ->
+                TemplateSetEntity(
+                    id = UUID.randomUUID().toString(),
+                    exerciseEntityId = parentExerciseId,
+                    rep = set.rep,
+                    kg = set.kg,
+                    typeSet = set.typeSet
+                )
+            }
+        }
+        dao.insertFullTemplates(listOf(Triple(templateEntity, exerciseEntities, setEntities)))
 
         try {
             api.postWorkoutTemplate(newTemplate)

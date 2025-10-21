@@ -23,6 +23,7 @@ data class WorkoutTemplate(
  * @see Exercise
  */
 data class TemplateExercise(
-    val exercise: Exercise,
+    val exerciseId: String,
+    val name: String,
     val sets: List<Set>
 )

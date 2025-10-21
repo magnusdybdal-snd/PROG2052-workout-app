@@ -215,7 +215,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         }
 
         // Insert all nested data at once
-        dao.insert(workoutEntity)
+        dao.insertFullWorkout(listOf(Triple(workoutEntity, exerciseEntities, setEntities)))
 
         // Try to push new session to API
         try {
