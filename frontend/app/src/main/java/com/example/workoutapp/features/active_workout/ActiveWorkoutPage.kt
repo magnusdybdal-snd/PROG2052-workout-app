@@ -169,8 +169,8 @@ fun ActiveWorkoutPage(
 
                                                     if (completedSetsForExercise.isNotEmpty()) {
                                                         SessionExercise(
-                                                            exerciseId = exSet.exercise.exerciseId,
-                                                            name = exSet.exercise.name,
+                                                            exerciseId = exSet.exerciseId,
+                                                            name = exSet.name,
                                                             sets = completedSetsForExercise.map { set ->
                                                                 Set(
                                                                     rep = set.rep,
@@ -217,7 +217,7 @@ fun ActiveWorkoutPage(
                         ) {
                             state.templates[templateId].exercises.forEachIndexed { exerciseIndex, exSet ->
                                 Text(
-                                    exSet.exercise.name,
+                                    exSet.name,
                                     fontSize = 15.sp
                                 )
                                 Row(
@@ -302,4 +302,3 @@ fun ActiveWorkoutPage(
         }
     }
 }
-

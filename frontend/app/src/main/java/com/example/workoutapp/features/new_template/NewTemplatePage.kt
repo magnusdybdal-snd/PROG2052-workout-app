@@ -172,6 +172,7 @@ fun NewTemplatePage(
                                         exercises.add(
                                             NewTemplateExercise(
                                                 exerciseId = exercise.exerciseId,
+                                                name = exercise.name,
                                                 sets = mutableListOf(
                                                     Set (
                                                         rep = 0,

@@ -149,7 +149,9 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         Log.d("TemplateRepo", "Local DB now has ${dao.getAllTemplatesSnapshot().size} templates")
 
         // Step 4: Return local data from DB (local first)
-        return dao.getAllTemplatesSnapshot().map { entity ->
+        return dao.getAllTemplatesSnapshot()
+            .sortedByDescending { it.createdAt }
+            .map { entity ->
             WorkoutTemplate(
                 templateId = entity.id,
                 name = entity.name,

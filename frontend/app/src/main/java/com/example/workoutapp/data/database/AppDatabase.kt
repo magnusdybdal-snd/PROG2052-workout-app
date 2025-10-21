@@ -29,7 +29,7 @@ import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
         TemplateExerciseEntity::class,
         TemplateSetEntity::class
        ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 // Needs a converter as Room does not support Duration and LocalDate
