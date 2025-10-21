@@ -13,7 +13,7 @@ type SessionRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *SessionRepository) GetAllSession(ctx context.Context) ([]domain.Session, error) {
+func (r *SessionRepository) FindAll(ctx context.Context) ([]domain.Session, error) {
 	var data []domain.Session
 	cursor, err := r.Coll.Find(ctx, bson.M{})
 	if err != nil {
@@ -30,7 +30,7 @@ func (r *SessionRepository) GetAllSession(ctx context.Context) ([]domain.Session
 	return data, nil
 }
 
-func (r *SessionRepository) InsertSession(ctx context.Context, data domain.Session) (string, error) {
+func (r *SessionRepository) Insert(ctx context.Context, data domain.Session) (string, error) {
 	result, err := r.Coll.InsertOne(ctx, data)
 	if err != nil {
 		return "", err
@@ -39,7 +39,7 @@ func (r *SessionRepository) InsertSession(ctx context.Context, data domain.Sessi
 	return id, nil
 }
 
-func (r *SessionRepository) UpdateOneSession(ctx context.Context, id string, data interface{}) (string, error) {
+func (r *SessionRepository) Update(ctx context.Context, id string, data interface{}) (string, error) {
 	filter := bson.M{"sessionId": id}
 	result, err := r.Coll.ReplaceOne(ctx,filter, data)
 	if err != nil {
@@ -51,7 +51,7 @@ func (r *SessionRepository) UpdateOneSession(ctx context.Context, id string, dat
 	return id, nil
 }
 
-func (r *SessionRepository) DeleteSession(ctx context.Context, id string) (string, error) {
+func (r *SessionRepository) Delete(ctx context.Context, id string) (string, error) {
 	filter := bson.M{"sessionId": id}
 	result, err := r.Coll.DeleteOne(ctx,filter)
 	if err != nil {

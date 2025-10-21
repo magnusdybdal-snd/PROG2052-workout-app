@@ -45,9 +45,13 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
         viewModelScope.launch {
             _uiState.value = ActiveWorkoutUiState(isLoading = true)
             try {
-                val data = getWorkoutTemplatesUseCase()
                 // On success update the state with data in exercises
-                _uiState.value = ActiveWorkoutUiState(templates = data.sortedBy { it.name.lowercase() })
+                getWorkoutTemplatesUseCase().collect { data ->
+                    _uiState.value = ActiveWorkoutUiState(
+                        templates = data.sortedBy { it.createdAt },
+                        isLoading = false
+                    )
+                }
                 // On failure update the state with an error message
             } catch (e: Exception) {
                 _uiState.value = ActiveWorkoutUiState(error = e.message ?: "Unknown error")

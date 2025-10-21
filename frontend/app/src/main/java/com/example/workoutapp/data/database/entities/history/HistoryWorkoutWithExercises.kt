@@ -1,4 +1,4 @@
-package com.example.workoutapp.data.database.entities
+package com.example.workoutapp.data.database.entities.history
 
 import androidx.room.Embedded
 import androidx.room.Relation

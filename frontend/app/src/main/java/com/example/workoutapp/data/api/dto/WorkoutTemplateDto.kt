@@ -2,6 +2,8 @@ package com.example.workoutapp.data.api.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 /**
  * Data transfer object for a workout template consisting of id, name

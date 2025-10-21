@@ -30,3 +30,5 @@ build_android_debug:
     when: on_failure
     paths:
       - $ANDROID_PROJECT_DIR/app/build/outputs/**/*
+  only:
+    - merge_requests

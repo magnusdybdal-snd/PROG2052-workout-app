@@ -9,14 +9,14 @@ import (
 
 
 
-type ExerciseService struct {
+type ExerciseServiceImpl struct {
 	Repo *repository.ExerciseRepository
 }
 
-func (s *ExerciseService) GetAllExercises(ctx context.Context, limit int) ([]domain.Exercises, error) {
-	return s.Repo.GetAllExercises(ctx, limit)
+func (s *ExerciseServiceImpl) GetAll(ctx context.Context, limit int) ([]domain.Exercises, error) {
+	return s.Repo.FindAll(ctx, limit)
 }
 
-func (s *ExerciseService) GetOneExercise(ctx context.Context, id string) (domain.Exercises,error) {
-	return s.Repo.GetOneExercise(ctx,id)
+func (s *ExerciseServiceImpl) GetOne(ctx context.Context, id string) (domain.Exercises,error) {
+	return s.Repo.FindOne(ctx,id)
 }

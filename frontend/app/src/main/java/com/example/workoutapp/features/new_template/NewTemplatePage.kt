@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -51,6 +52,7 @@ import com.example.workoutapp.core.core_ui.theme.AppTextField.fieldColors
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
+import java.util.UUID
 
 /**
  * Displays Workout page
@@ -70,6 +72,7 @@ fun NewTemplatePage(
         else -> {
             var name by remember { mutableStateOf("") }
             val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
+            val exerciseNames = remember { mutableStateListOf<String>() }
 
             Column(
                 modifier = modifier.verticalScroll(
@@ -111,13 +114,12 @@ fun NewTemplatePage(
                                     )
                                 },
                                 confirmButton = {
-                                    TextButton(
-                                        onClick = {
-                                            val newTemplate = NewTemplate(
-                                                templateId = "tmp_000",
-                                                name = name,
-                                                exercises = exercises
-                                            )
+                                    TextButton(onClick = {
+                                        val newTemplate = NewTemplate(
+                                            templateId = UUID.randomUUID().toString(),
+                                            name = name,
+                                            exercises = exercises
+                                        )
                                         viewModel.postWorkout(newTemplate)
                                         showDialog = false
                                         navController.popBackStack()
@@ -158,6 +160,7 @@ fun NewTemplatePage(
                     )
 
                     var expanded by remember { mutableStateOf(false) }
+                    var searchString by remember { mutableStateOf("") }
 
                     Box(
                         modifier = Modifier
@@ -168,10 +171,32 @@ fun NewTemplatePage(
                         }
                         DropdownMenu(
                             expanded = expanded,
-                            onDismissRequest = { expanded = false },
+                            onDismissRequest = {
+                                expanded = false
+                                searchString = "" // Reset search when closing
+                            },
                             containerColor = cs.tertiary
                         ) {
-                            state.exercises.forEach { exercise ->
+                            // Search TextField inside the dropdown
+                            TextField(
+                                value = searchString,
+                                onValueChange = { searchString = it },
+                                placeholder = { Text(
+                                    text = "Search exercise",
+                                    color = cs.onBackground
+                                ) },
+                                singleLine = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            )
+
+                            // Filter exercises based on search query
+                            val filteredExercises = state.exercises.filter {
+                                it.name.contains(searchString, ignoreCase = true)
+                            }
+
+                            filteredExercises.forEach { exercise ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -183,7 +208,8 @@ fun NewTemplatePage(
                                         exercises.add(
                                             NewTemplateExercise(
                                                 exerciseId = exercise.exerciseId,
-                                                sets = mutableListOf(
+                                                name = exercise.name,
+                                                sets = mutableStateListOf(
                                                     Set (
                                                         rep = 0,
                                                         kg = 0,
@@ -192,8 +218,18 @@ fun NewTemplatePage(
                                                 )
                                             )
                                         )
+                                        exerciseNames.add(exercise.name)
                                         expanded = !expanded
+                                        searchString = ""
                                     }
+                                )
+                            }
+
+                            if (filteredExercises.isEmpty()) {
+                                Text(
+                                    text = "No exercises found",
+                                    color = cs.onTertiary,
+                                    modifier = Modifier.padding(8.dp)
                                 )
                             }
                         }
@@ -203,11 +239,29 @@ fun NewTemplatePage(
                         modifier = Modifier
                             .padding(top = 10.dp),
                     ) {
-                        exercises.forEach { exSet ->
-                            Text(
-                                text = exSet.exerciseId,
-                                fontSize = 15.sp
-                            )
+                        exercises.forEachIndexed { index, exSet ->
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+
+                            ) {
+                                Text(
+                                    exerciseNames[index],
+                                    fontSize = 15.sp
+                                )
+                                IconButton (
+                                    onClick = {
+                                        exercises.removeAt(index)
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove exercise"
+                                    )
+                                }
+                            }
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
@@ -255,6 +309,27 @@ fun NewTemplatePage(
                                         label = stringResource(R.string.reps),
                                         exSet = exSet
                                     )
+                                }
+                                Column(
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .height(h.dp * y)
+                                        .fillMaxHeight()
+                                ) {
+                                    Text("", fontSize = 10.sp)
+                                    exSet.sets.forEachIndexed {index, set ->
+                                        IconButton (
+                                            onClick = {
+                                                exSet.sets.removeAt(index)
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Remove set"
+                                            )
+                                        }
+                                    }
                                 }
                             }
                             IconButton (

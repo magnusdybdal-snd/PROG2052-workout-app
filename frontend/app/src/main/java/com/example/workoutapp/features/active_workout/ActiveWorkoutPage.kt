@@ -6,14 +6,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedTextField
@@ -55,6 +60,7 @@ import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
@@ -180,8 +186,8 @@ fun ActiveWorkoutPage(
 
                                                     if (completedSetsForExercise.isNotEmpty()) {
                                                         SessionExercise(
-                                                            exerciseId = exSet.exercise.exerciseId,
-                                                            name = exSet.exercise.name,
+                                                            exerciseId = exSet.exerciseId,
+                                                            name = exSet.name,
                                                             sets = completedSetsForExercise.map { set ->
                                                                 Set(
                                                                     rep = set.rep,
@@ -229,10 +235,18 @@ fun ActiveWorkoutPage(
                                 .padding(top = 10.dp),
                         ) {
                             state.templates[templateId].exercises.forEachIndexed { exerciseIndex, exSet ->
-                                Text(
-                                    exSet.exercise.name,
-                                    fontSize = 15.sp
-                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+
+                                ) {
+                                    Text(
+                                        exSet.name,
+                                        fontSize = 15.sp
+                                    )
+                                }
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier
@@ -240,7 +254,7 @@ fun ActiveWorkoutPage(
                                         .padding(horizontal = 8.dp)
 
                                 ) {
-                                    val y = exSet.sets.size
+                                    val y = exSet.sets.size //icon
                                     val h = 75
                                     Column(
                                         verticalArrangement = Arrangement.SpaceBetween,
@@ -253,10 +267,16 @@ fun ActiveWorkoutPage(
                                             modifier = Modifier
                                         )
                                         for (i in 1..y) {
-                                            Text(
-                                                "$i\n",
-                                                fontSize = 15.sp,
-                                            )
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier
+                                                    .height(50.dp)
+                                            ) {
+                                                Text(
+                                                    "$i",
+                                                    fontSize = 15.sp
+                                                )
+                                            }
                                         }
                                     }
                                     Column(
@@ -316,3 +336,8 @@ fun ActiveWorkoutPage(
     }
 }
 
+fun getCurrentTimeString(): String {
+    val currentTime = LocalTime.now(ZoneId.systemDefault()) // current time
+    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
+    return currentTime.format(formatter)
+}
