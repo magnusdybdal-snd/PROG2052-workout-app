@@ -50,8 +50,6 @@ import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
 import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 

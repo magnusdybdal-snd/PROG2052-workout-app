@@ -7,6 +7,7 @@ import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.HistoryWorkoutEntity
 import com.example.workoutapp.data.database.entities.SetEntity
 import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
+import com.example.workoutapp.data.database.entities.TemplateEntity
 
 /**
  * The main Room database for the Workout app.
@@ -17,8 +18,9 @@ import com.example.workoutapp.data.database.entities.WorkoutExerciseEntity
     entities = [
         HistoryWorkoutEntity::class,
         WorkoutExerciseEntity::class,
-        SetEntity::class],
-    version = 6,
+        SetEntity::class,
+        TemplateEntity::class],
+    version = 7,
     exportSchema = false
 )
 // Needs a converter as Room does not support Duration and LocalDate
