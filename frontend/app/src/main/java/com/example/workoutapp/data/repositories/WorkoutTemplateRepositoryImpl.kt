@@ -46,9 +46,9 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                                     kg = setEntity.kg,
                                     typeSet = setEntity.typeSet
                                 )
-                            }
+                            }.toMutableList()
                         )
-                    }
+                    }.toMutableList()
                 )
             }
         }
@@ -156,7 +156,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 templateId = entity.id,
                 name = entity.name,
                 createdAt = entity.createdAt,
-                exercises = emptyList() // exercises are handled by Flow observers
+                exercises = mutableListOf() // exercises are handled by Flow observers
             )
         }
     }
