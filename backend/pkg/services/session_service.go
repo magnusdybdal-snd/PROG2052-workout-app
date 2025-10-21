@@ -8,11 +8,11 @@ import (
 
 type SessionServiceImpl struct {
 	Repo domain.SessionRepository
-	RepoExer domain.ExercisesRepository
+	RepoExer domain.ExerciseRepository
 }
 
-func (s *SessionServiceImpl) GetAllSession(ctx context.Context, include bool) (interface{}, error) {
-	sess, err := s.Repo.GetAllSession(ctx)
+func (s *SessionServiceImpl) GetAll(ctx context.Context, include bool) (interface{}, error) {
+	sess, err := s.Repo.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (s *SessionServiceImpl) GetAllSession(ctx context.Context, include bool) (i
 		newSession.Date = se.Date
 		newSession.Note = se.Note
 		for _, et := range se.Exercises {
-			ex, err := s.RepoExer.GetOneExercise(ctx,et.ExerciseId)
+			ex, err := s.RepoExer.FindOne(ctx,et.ExerciseId)
 			if err != nil {
 				return nil, err
 			}
@@ -45,24 +45,24 @@ func (s *SessionServiceImpl) GetAllSession(ctx context.Context, include bool) (i
 	return expandedSession, nil
 }
 
-func (s *SessionServiceImpl) PostSession(ctx context.Context, payload *domain.Session) (string, error) {
-	result, err := s.Repo.InsertSession(ctx,*payload)
+func (s *SessionServiceImpl) Create(ctx context.Context, payload *domain.Session) (string, error) {
+	result, err := s.Repo.Insert(ctx,*payload)
 	if err != nil {
 		return "",err 
 	}
 	return result, nil
 }
 
-func (s *SessionServiceImpl) PutSession(ctx context.Context, id string, payload interface{}) (string, error) {
-	result, err := s.Repo.UpdateOneSession(ctx, id, payload)
+func (s *SessionServiceImpl) Update(ctx context.Context, id string, payload interface{}) (string, error) {
+	result, err := s.Repo.Update(ctx, id, payload)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func (s *SessionServiceImpl) DeleteSession(ctx context.Context, id string) (string, error) {
-	result, err := s.Repo.DeleteSession(ctx,id)
+func (s *SessionServiceImpl) Delete(ctx context.Context, id string) (string, error) {
+	result, err := s.Repo.Delete(ctx,id)
 	if err != nil {
 		return "", err
 	}

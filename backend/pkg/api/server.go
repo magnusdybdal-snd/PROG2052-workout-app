@@ -19,7 +19,7 @@ import (
 )
 
 func newServer(
-	exerciseService domain.ExercisesServices,
+	exerciseService domain.ExerciseService,
 	templateService *services.TemplateService,
 	SessionService domain.SessionService,
 ) http.Handler {

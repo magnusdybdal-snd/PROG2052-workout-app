@@ -10,7 +10,7 @@ import (
 
 func addRoutes(
 	mux *http.ServeMux, 
-	exerciseService domain.ExercisesServices,
+	exerciseService domain.ExerciseService,
 	templateService *services.TemplateService,
 	sessionService domain.SessionService,
 ) {

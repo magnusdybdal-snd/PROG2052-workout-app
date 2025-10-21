@@ -38,7 +38,7 @@ func (s *TemplateService) GetAllTemplates(ctx context.Context, include bool) (in
 		newTemplate.TemplateId = te.TemplateId
 		newTemplate.Name = te.Name
 		for _, et := range te.Exercises {
-			ex, err := s.RepoExer.GetOneExercise(ctx, et.ExerciseId)
+			ex, err := s.RepoExer.FindOne(ctx, et.ExerciseId)
 			if err != nil {
 				return nil, err
 			}
@@ -68,7 +68,7 @@ func (s *TemplateService) GetOneTemplate(ctx context.Context,id string, include 
 	expandedTempl.Name = templ.Name
 
 	for _, et := range templ.Exercises {
-		ex, err := s.RepoExer.GetOneExercise(ctx,et.ExerciseId)
+		ex, err := s.RepoExer.FindOne(ctx,et.ExerciseId)
 		if err != nil {
 			return nil, err
 		}
