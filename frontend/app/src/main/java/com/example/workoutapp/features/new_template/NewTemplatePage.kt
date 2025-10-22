@@ -285,8 +285,9 @@ fun NewTemplatePage(
                                         .fillMaxHeight()
                                 ) {
                                     WorkoutTextField(
-                                        label = stringResource(R.string.sets),
-                                        exSet = exSet
+                                        label = stringResource(R.string.kg),
+                                        exSet = exSet,
+                                        type = "kg"
                                     )
                                 }
                                 Column(
@@ -296,7 +297,8 @@ fun NewTemplatePage(
                                 ) {
                                     WorkoutTextField(
                                         label = stringResource(R.string.reps),
-                                        exSet = exSet
+                                        exSet = exSet,
+                                        type = "reps"
                                     )
                                 }
                                 Column(

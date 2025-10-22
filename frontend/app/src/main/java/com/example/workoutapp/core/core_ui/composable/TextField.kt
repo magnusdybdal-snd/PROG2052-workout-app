@@ -28,12 +28,30 @@ import com.example.workoutapp.domain.models.TemplateExercise
 fun WorkoutTextField(
     label: String,
     exSet: TemplateExercise,
+    type: String
 ){
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
+        var text by remember {
+            mutableStateOf(
+                when (type.lowercase()) {
+                    "kg" -> set.kg.toString()
+                    "reps" -> set.rep.toString()
+                    else -> "0"
+                }
+            )
+        }
+
         TextField(
-            value = set.kg.toString(),
-            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
+            value = text,
+            onValueChange = {
+                text = it
+                val value = it.toIntOrNull() ?: 0
+                when (type.lowercase()) {
+                    "kg" -> set.kg = value
+                    "reps" -> set.rep = value
+                }
+            },
             shape = RoundedCornerShape(size = 12.dp),
             colors = AppTextField.fieldColors(),
             modifier = Modifier
@@ -53,16 +71,28 @@ fun WorkoutTextField(
 fun WorkoutTextField(
     label: String,
     exSet: NewTemplateExercise,
-) {
+    type: String
+){
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
-        var text by remember { mutableStateOf(set.kg.toString()) }
-
+        var text by remember {
+            mutableStateOf(
+                when (type.lowercase()) {
+                    "kg" -> set.kg.toString()
+                    "reps" -> set.rep.toString()
+                    else -> "0"
+                }
+            )
+        }
         TextField(
             value = text,
             onValueChange = {
                 text = it
-                set.kg = it.toIntOrNull() ?: 0
+                val value = it.toIntOrNull() ?: 0
+                when (type.lowercase()) {
+                    "kg" -> set.kg = value
+                    "reps" -> set.rep = value
+                }
             },
             shape = RoundedCornerShape(size = 12.dp),
             colors = AppTextField.fieldColors(),
