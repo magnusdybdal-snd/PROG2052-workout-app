@@ -83,11 +83,15 @@ fun ExerciseDetailPage(
                     Column {
                         Text( // EQUIPMENT
                             text = "Instructions: ",
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = cs.onTertiary
                         )
                         exercise.instructions.forEach { instruction ->
                             Row {
-                                Text(instruction)
+                                Text(
+                                    text = instruction,
+                                    color = cs.onTertiary
+                                )
 
                             }
                         }
