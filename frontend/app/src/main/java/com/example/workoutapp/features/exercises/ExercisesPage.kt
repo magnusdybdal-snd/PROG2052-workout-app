@@ -1,6 +1,8 @@
 package com.example.workoutapp.features.exercises
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExerciseDetailPage
 import com.example.workoutapp.core.core_ui.composable.ExerciseDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.modifiers.PageColumnModifier
@@ -48,6 +51,8 @@ fun ExercisesPage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+    var showOverlay by remember { mutableStateOf(false) }
+    var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
 
     when {
         state.isLoading -> LoadingStateView()
@@ -67,10 +72,12 @@ fun ExercisesPage(
                 TextField(
                     value = searchString,
                     onValueChange = { searchString = it },
-                    label = { Text(
-                        "Search exercise",
-                        color = cs.onBackground
-                    ) },
+                    label = {
+                        Text(
+                            "Search exercise",
+                            color = cs.onBackground
+                        )
+                    },
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .fillMaxWidth()
@@ -82,16 +89,41 @@ fun ExercisesPage(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     state.exercises.forEach { exercise: Exercise ->
-                        if(searchString != "") {
+                        if (searchString != "") {
                             if (exercise.name.contains(searchString)) {
-                                ExerciseDisplayBox(exercise)
+                                Box(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            selectedExercise = exercise
+                                            showOverlay = true
+                                        }
+                                ) {
+                                    ExerciseDisplayBox(exercise)
+                                }
                             }
                         } else {
-                            ExerciseDisplayBox(exercise)
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        selectedExercise = exercise
+                                        showOverlay = true }
+                            ) {
+                                ExerciseDisplayBox(exercise)
+                            }
                         }
+
                     }
                 }
             }
         }
     }
+    ExerciseDetailPage(
+        showOverlay = showOverlay,
+        onDismiss = {
+            showOverlay = false },
+        cs = cs,
+        exercise = selectedExercise
+    )
 }
