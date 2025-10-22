@@ -102,13 +102,8 @@ fun HistoryPage(
                                 )
                         }
                         // Looping over each workout within the month
-                        workoutsInMonth.forEach { workout ->
-                            Box( // Wrap in box to make it clickable.
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable { showOverlay = true }) {
-                                HistoryDisplayBox(it = workout)
-                            }
+                        workoutsInMonth.forEach {
+                            HistoryDisplayBox(it)
                         }
                     }
                 }
