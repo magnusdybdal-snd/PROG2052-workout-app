@@ -7,6 +7,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposableInferredTarget
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,12 +53,17 @@ fun WorkoutTextField(
 fun WorkoutTextField(
     label: String,
     exSet: NewTemplateExercise,
-){
+) {
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
+        var text by remember { mutableStateOf(set.kg.toString()) }
+
         TextField(
-            value = set.kg.toString(),
-            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
+            value = text,
+            onValueChange = {
+                text = it
+                set.kg = it.toIntOrNull() ?: 0
+            },
             shape = RoundedCornerShape(size = 12.dp),
             colors = AppTextField.fieldColors(),
             modifier = Modifier
