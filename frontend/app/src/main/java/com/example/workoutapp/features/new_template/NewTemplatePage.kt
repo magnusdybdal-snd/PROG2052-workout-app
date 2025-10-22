@@ -46,7 +46,9 @@ import com.example.workoutapp.core.core_ui.composable.RoundedButton
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
+import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
 import com.example.workoutapp.core.core_ui.theme.AppTextField
+import com.example.workoutapp.core.core_ui.theme.AppTextField.fieldColors
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
@@ -101,6 +103,9 @@ fun NewTemplatePage(
                             name != "" &&
                             exercises.isNotEmpty()) {
                             AlertDialog(
+                                containerColor = cs.tertiary,
+                                textContentColor = cs.onTertiary,
+                                titleContentColor = cs.onTertiary,
                                 onDismissRequest = { showDialog = false },
                                 title = {
                                     Text(
@@ -118,15 +123,19 @@ fun NewTemplatePage(
                                         viewModel.postWorkout(newTemplate)
                                         showDialog = false
                                         navController.popBackStack()
-                                    }) {
+                                        },
+                                        colors = textButtonColor()
+                                    ) {
                                         Text(
                                             text =stringResource(R.string.add_template),
-                                            color = cs.onBackground
                                         )
                                     }
                                 },
                                 dismissButton = {
-                                    TextButton(onClick = { showDialog = false }) {
+                                    TextButton(
+                                        onClick = { showDialog = false },
+                                        colors = textButtonColor()
+                                    ) {
                                         Text(
                                             text = stringResource(R.string.cancel),
                                             color = cs.onBackground
@@ -140,12 +149,14 @@ fun NewTemplatePage(
                     TextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text(text = stringResource(R.string.set_template_name),
-                            color = cs.onSecondaryContainer) },
+                        label = {
+                            Text(
+                                text = stringResource(R.string.set_template_name),
+                                color = cs.onSecondaryContainer)
+                        },
                         shape = RoundedCornerShape(12.dp),
-                        colors = AppTextField.fieldColors(),
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
+                        colors = fieldColors(),
+                        modifier = Modifier.padding(vertical = 10.dp)
                     )
 
                     var expanded by remember { mutableStateOf(false) }
@@ -346,3 +357,5 @@ fun NewTemplatePage(
         }
     }
 }
+
+

@@ -2,11 +2,13 @@ package com.example.workoutapp.core.core_ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.darkColorScheme
@@ -31,6 +33,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = AppColor.white,
     secondaryContainer = AppColor.fadedTeal,
     onSecondaryContainer = AppColor.white,
+    outline = AppColor.lightGrey
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -47,6 +50,7 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = AppColor.white,
     secondaryContainer = AppColor.fadedTeal,
     onSecondaryContainer = AppColor.black,
+    outline = AppColor.darkGrey
 )
 
 @Composable
@@ -111,6 +115,23 @@ object AppTextField {
         )
     }
 }
+object AppOutlinedTextField {
+    @Composable
+    fun outlinedFieldColors(): TextFieldColors {
+        val cs = MaterialTheme.colorScheme
+        return OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = cs.onSurfaceVariant,
+            unfocusedBorderColor = cs.onSurfaceVariant,
+            cursorColor = cs.onSurfaceVariant,
+            focusedLabelColor = cs.onSurfaceVariant,
+            unfocusedLabelColor = cs.onSurfaceVariant,
+            focusedTextColor = cs.onSurfaceVariant,
+            unfocusedTextColor = cs.onSurfaceVariant,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
+        )
+    }
+}
 
 object AppCheckBox {
     @Composable
@@ -122,6 +143,20 @@ object AppCheckBox {
             checkmarkColor = cs.onBackground,
             disabledCheckedColor = cs.surfaceVariant.copy(alpha = 0.3f),
             disabledUncheckedColor = cs.surfaceVariant.copy(alpha = 0.3f)
+        )
+
+    }
+}
+
+object AppTextButton {
+    @Composable
+    fun textButtonColor(): ButtonColors {
+        val cs = MaterialTheme.colorScheme
+        return ButtonColors(
+            containerColor = cs.tertiary,
+            contentColor =cs.onTertiary,
+            disabledContainerColor = cs.secondaryContainer,
+            disabledContentColor = cs.onSecondaryContainer
         )
 
     }
