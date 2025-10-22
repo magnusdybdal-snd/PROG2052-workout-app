@@ -35,7 +35,7 @@ func addRoutes(
 	mux.Handle(TEMPLATES_ID_ROUTE,handlers.HandleOneTemplate(templateService))
 
 	// Media
-	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, http.FileServer(http.Dir("assets/exercises"))))
+	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, handlers.HandleMedia()))
 
 	// other 
 	mux.HandleFunc("/",handlers.NotFound())
