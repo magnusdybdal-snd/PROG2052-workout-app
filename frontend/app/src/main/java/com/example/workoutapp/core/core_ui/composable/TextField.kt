@@ -7,6 +7,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposableInferredTarget
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,12 +28,30 @@ import com.example.workoutapp.domain.models.TemplateExercise
 fun WorkoutTextField(
     label: String,
     exSet: TemplateExercise,
+    type: String
 ){
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
+        var text by remember {
+            mutableStateOf(
+                when (type.lowercase()) {
+                    "kg" -> set.kg.toString()
+                    "reps" -> set.rep.toString()
+                    else -> "0"
+                }
+            )
+        }
+
         TextField(
-            value = set.kg.toString(),
-            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
+            value = text,
+            onValueChange = {
+                text = it
+                val value = it.toIntOrNull() ?: 0
+                when (type.lowercase()) {
+                    "kg" -> set.kg = value
+                    "reps" -> set.rep = value
+                }
+            },
             shape = RoundedCornerShape(size = 12.dp),
             colors = AppTextField.fieldColors(),
             modifier = Modifier
@@ -49,12 +71,29 @@ fun WorkoutTextField(
 fun WorkoutTextField(
     label: String,
     exSet: NewTemplateExercise,
+    type: String
 ){
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
+        var text by remember {
+            mutableStateOf(
+                when (type.lowercase()) {
+                    "kg" -> set.kg.toString()
+                    "reps" -> set.rep.toString()
+                    else -> "0"
+                }
+            )
+        }
         TextField(
-            value = set.kg.toString(),
-            onValueChange = { set.kg = it.toIntOrNull() ?: 0 },
+            value = text,
+            onValueChange = {
+                text = it
+                val value = it.toIntOrNull() ?: 0
+                when (type.lowercase()) {
+                    "kg" -> set.kg = value
+                    "reps" -> set.rep = value
+                }
+            },
             shape = RoundedCornerShape(size = 12.dp),
             colors = AppTextField.fieldColors(),
             modifier = Modifier

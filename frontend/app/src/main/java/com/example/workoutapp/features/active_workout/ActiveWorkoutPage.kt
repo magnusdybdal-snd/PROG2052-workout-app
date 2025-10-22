@@ -275,7 +275,8 @@ fun ActiveWorkoutPage(
                                     ) {
                                         WorkoutTextField(
                                             label = stringResource(R.string.kg),
-                                            exSet = exSet
+                                            exSet = exSet,
+                                            type = "kg"
                                         )
                                     }
                                     Column(
@@ -285,7 +286,8 @@ fun ActiveWorkoutPage(
                                     ) {
                                         WorkoutTextField(
                                             label = stringResource(R.string.reps),
-                                            exSet = exSet
+                                            exSet = exSet,
+                                            type = "reps"
                                         )
                                     }
                                     Column(
