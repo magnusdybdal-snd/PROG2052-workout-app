@@ -3,9 +3,10 @@ package api
 import (
 	"log"
 	"net/http"
+	"time"
 )
 
-func newMiddleware() func(h http.Handler) http.Handler {
+func CorsMiddleware() func(h http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -19,6 +20,16 @@ func newMiddleware() func(h http.Handler) http.Handler {
 			}
 			log.Println("Setting Cors")
 			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func LoggingMiddleware() func(h http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			log.Println("")
+			log.Printf("Completed in %v", time.Since(start))
 		})
 	}
 }

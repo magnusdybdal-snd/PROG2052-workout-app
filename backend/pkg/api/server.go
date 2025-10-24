@@ -31,7 +31,7 @@ func newServer(
 		SessionService,
 	)
 
-	middleware := newMiddleware() // top level middleware
+	middleware := CorsMiddleware() // top level middleware
 	var handler http.Handler = mux
 	handler = middleware(handler)
 
