@@ -1,6 +1,8 @@
 package com.example.workoutapp.features.history
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,10 +29,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExerciseDetailPage
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.modifiers.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
+
 /**
  * Displays History page
  * @param modifier
@@ -42,6 +49,7 @@ fun HistoryPage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+    var showOverlay by remember { mutableStateOf(false) }
 
     // Checks if user navigates back to history and reloads the composable (refreshes histories)
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -62,7 +70,8 @@ fun HistoryPage(
                 PageHeading(
                     displayText = stringResource(R.string.history)
                 )
-                Column( // Boxes
+                Column(
+                    // Boxes
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
                 ) {
@@ -90,17 +99,17 @@ fun HistoryPage(
                                 fontSize = 14.sp,
                                 color = cs.secondary,
 
-                            )
+                                )
                         }
                         // Looping over each workout within the month
                         workoutsInMonth.forEach {
                             HistoryDisplayBox(it)
-                            }
                         }
                     }
                 }
             }
         }
     }
+}
 
 
