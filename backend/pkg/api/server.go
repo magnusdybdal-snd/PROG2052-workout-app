@@ -13,27 +13,22 @@ import (
 	"time"
 
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/di"
 )
 
 func newServer(
-	exerciseService domain.ExerciseService,
-	templateService domain.TemplateService,
-	SessionService domain.SessionService,
+	container *di.ServiceContainer,
 ) http.Handler {
 	mux := http.NewServeMux()
 	addRoutes(
 		mux, 
-		exerciseService,
-		templateService,
-		SessionService,
+		container,
 	)
 
-	middleware := CorsMiddleware() // top level middleware
 	var handler http.Handler = mux
-	handler = middleware(handler)
+
+	handler = CorsMiddleware()(handler) 
+	handler = LoggingMiddleware()(handler) 
 
 	return handler
 }
@@ -44,39 +39,16 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	defer cancel()
 
 	// load .env file
-	cfg := LoadConfig()
+	cfg := di.LoadConfig()
 
-	// Connect to the database
-	mongoDB, err := db.InitDB(cfg.UriDB)
+	// Initlize services
+	container, err := di.NewContainer(cfg)
 	if err != nil {
 		return err
 	}
-
-	// Starting up repositories
-	exerciseRepo := &repository.ExerciseRepository{
-		Coll: mongoDB.Database("TrainingApp").Collection("exercises"),
-	}
-	templateRepo := &repository.TemplateRepository{
-		Coll: mongoDB.Database("TrainingApp").Collection("templates"),
-	}
-	sessionRepo := &repository.SessionRepository{
-		Coll: mongoDB.Database("TrainingApp").Collection("sessions"),
-	}
-
-	// Starting up Services
-	exerciseService := &services.ExerciseServiceImpl{
-		Repo: exerciseRepo,
-	}
-	
-	templateService := services.NewTemplateService(templateRepo, exerciseRepo)
-
-	SessionService := &services.SessionServiceImpl{
-		Repo: sessionRepo,
-		RepoExer: exerciseRepo,
-	}
 	
 	// Setting up routes and starting http server
-	srv := newServer(exerciseService,  templateService, SessionService)
+	srv := newServer(container) // injecting services
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler: srv,
@@ -105,6 +77,6 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	}()
 	wg.Wait()
 
-	db.CloseDB(mongoDB)
+	db.CloseDB(container.DB)
 	return nil
 }
