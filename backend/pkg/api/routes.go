@@ -18,9 +18,9 @@ func addRoutes(
 		Endpoints
 	*/
 	// GET /exercises
-	mux.Handle(EXERCISES_ROUTE,handlers.GetAllExercises(container.ExerciseService))
+	mux.Handle(EXERCISES_ROUTE,handlers.HandleExercises(container.ExerciseService))
 	// GET /exercises/{exerciseId}
-	mux.Handle(EXERCISES_ID_ROUTE,handlers.GetOneExercise(container.ExerciseService))
+	mux.Handle(EXERCISES_ID_ROUTE,handlers.HandleOneExercise(container.ExerciseService))
 
 	// GET, POST /sessions
 	mux.Handle(SESSIONS_ROUTE, handlers.HandleSession(container.SessionService))

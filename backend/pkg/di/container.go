@@ -1,6 +1,7 @@
 package di
 
 import (
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/api/config"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
@@ -20,7 +21,7 @@ type ServiceContainer struct {
 	DB *mongo.Client
 }
 
-func NewContainer(cfg *Config) (*ServiceContainer, error) {
+func NewContainer(cfg *config.Config) (*ServiceContainer, error) {
 	mongoDB, err := db.InitDB(cfg.UriDB)
 	if err != nil {
 		return nil,err

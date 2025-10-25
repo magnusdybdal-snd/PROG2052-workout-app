@@ -20,7 +20,7 @@ POST /exercises      -> create new
 handler for GET /exercises
 returns all exercises in database
 */
-func GetAllExercises(serv domain.ExerciseService) http.HandlerFunc {
+func HandleExercises(serv domain.ExerciseService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
@@ -42,7 +42,7 @@ func GetAllExercises(serv domain.ExerciseService) http.HandlerFunc {
 	}
 }
 
-func GetOneExercise(serv domain.ExerciseService) http.HandlerFunc {
+func HandleOneExercise(serv domain.ExerciseService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)

@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+/*
+	Top level Middleware
+	used in all endpoints
+*/
 func CorsMiddleware() func(h http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +32,7 @@ func LoggingMiddleware() func(h http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
-			log.Println("")
+			log.Printf("Started %s %s", r.Method, r.URL.Path)
 			next.ServeHTTP(w,r)
 			log.Printf("Completed in %v", time.Since(start))
 		})

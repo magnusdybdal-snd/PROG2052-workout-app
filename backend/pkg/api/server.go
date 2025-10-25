@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/api/config"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/di"
 )
@@ -39,9 +40,9 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	defer cancel()
 
 	// load .env file
-	cfg := di.LoadConfig()
+	cfg := config.LoadConfig()
 
-	// Initlize services
+	// Initilize services
 	container, err := di.NewContainer(cfg)
 	if err != nil {
 		return err
