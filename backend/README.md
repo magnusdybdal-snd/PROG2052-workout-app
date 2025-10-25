@@ -207,3 +207,6 @@ docker run -p 8000:8000 --env-file .env backend
 
 [Mongodb](https://mongodb.com)
 - database
+
+[Zap](https://github.com/uber-go/zap?tab=readme-ov-file#readme)
+- For rask å strukturert tilbakemelding

@@ -29,7 +29,7 @@ func newServer(
 	var handler http.Handler = mux
 
 	handler = CorsMiddleware()(handler) 
-	handler = LoggingMiddleware()(handler) 
+	handler = LoggingMiddleware(container.Logger)(handler) 
 
 	return handler
 }
@@ -47,6 +47,7 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	if err != nil {
 		return err
 	}
+	defer container.Logger.Sync()
 	
 	// Setting up routes and starting http server
 	srv := newServer(container) // injecting services

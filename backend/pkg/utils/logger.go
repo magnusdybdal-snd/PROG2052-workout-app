@@ -10,7 +10,10 @@ func NewLogger(mode string) (*zap.Logger,error) {
 		return nil, err
 	}
 	if mode == "DEVELOPMENT" {
-		logger = zap.Must(zap.NewDevelopment())
+		logger,err = zap.NewDevelopment()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	logger.Info("Starting Logger")

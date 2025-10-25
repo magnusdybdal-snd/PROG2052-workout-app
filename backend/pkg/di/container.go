@@ -6,7 +6,9 @@ import (
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/services"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.uber.org/zap"
 )
 
 /*
@@ -19,13 +21,21 @@ type ServiceContainer struct {
 	TemplateService domain.TemplateService
 	SessionService  domain.SessionService
 	DB *mongo.Client
+	Logger *zap.Logger
 }
 
+// Starting up all services and repositories
 func NewContainer(cfg *config.Config) (*ServiceContainer, error) {
 	mongoDB, err := db.InitDB(cfg.UriDB)
 	if err != nil {
 		return nil,err
 	}
+	loggerService, err := utils.NewLogger(cfg.Mode)
+	if err != nil {
+		return nil,err
+	}
+
+	// Starting repository for data access
 	exerciseRepo := &repository.ExerciseRepository{
 		Coll: mongoDB.Database("TrainingApp").Collection("exercises"),
 	}
@@ -52,5 +62,6 @@ func NewContainer(cfg *config.Config) (*ServiceContainer, error) {
 		TemplateService: templateService,
 		SessionService: sessionService,
 		DB: mongoDB,
+		Logger: loggerService,
 	},nil
 }
