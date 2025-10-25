@@ -77,7 +77,7 @@ func TestGetAllExercises(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/exercises", nil)
 	w := httptest.NewRecorder()
 
-	handler := handlers.GetAllExercises(mockSvc)
+	handler := handlers.HandleExercises(mockSvc)
 	handler(w, req)
 
 	if w.Code != http.StatusOK {
@@ -118,7 +118,7 @@ func TestGetOneExercise(t *testing.T) {
 	req.SetPathValue("exerciseId", "gAwDzB3")
 	w := httptest.NewRecorder()
 
-	handler := handlers.GetOneExercise(mockSvc)
+	handler := handlers.HandleOneExercise(mockSvc)
 	handler(w, req)
 
 	if w.Code != http.StatusOK {

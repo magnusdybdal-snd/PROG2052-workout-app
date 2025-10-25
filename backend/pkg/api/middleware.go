@@ -1,11 +1,17 @@
 package api
 
 import (
-	"log"
 	"net/http"
+	"time"
+
+	"go.uber.org/zap"
 )
 
-func newMiddleware() func(h http.Handler) http.Handler {
+/*
+	Top level Middleware
+	used in all endpoints
+*/
+func CorsMiddleware() func(h http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -17,8 +23,32 @@ func newMiddleware() func(h http.Handler) http.Handler {
 				w.WriteHeader(http.StatusOK)
 				return
 			}
-			log.Println("Setting Cors")
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+// Top level logging middleware
+func LoggingMiddleware(logger *zap.Logger) func(h http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+
+			duration := time.Since(start)
+			next.ServeHTTP(w,r)
+			logger.Info("HTTP Request",
+				zap.String("method", r.Method),
+				zap.String("url",r.URL.Path),
+				zap.Duration("duration",duration),
+				zap.String("remote_addr",r.RemoteAddr))
+		})
+	}
+}
+
+// Middleware to authenticate the user
+func AuthenticateUser(h http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request)  {
+		
+		h(w,r)
+	})
 }

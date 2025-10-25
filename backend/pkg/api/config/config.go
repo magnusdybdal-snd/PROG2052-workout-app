@@ -1,4 +1,4 @@
-package api
+package config
 
 import (
 	"log"
@@ -11,6 +11,7 @@ type Config struct {
 	Host string
 	Port string
 	UriDB string 
+	Mode string
 }
 
 func LoadConfig() *Config {
@@ -32,10 +33,15 @@ func LoadConfig() *Config {
 	if port == "" {
 		log.Fatal("MONGO_URI is required but not set")
 	}
+	mode := os.Getenv("MODE")
+	if mode == "" {
+		mode = "PRODUCTION"
+	}
 
 	return &Config{
 		Host: host,
 		Port: port,
 		UriDB: UriDb,
+		Mode: mode,
 	}
 }
