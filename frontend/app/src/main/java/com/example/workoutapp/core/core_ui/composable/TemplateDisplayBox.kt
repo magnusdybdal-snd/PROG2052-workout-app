@@ -10,8 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
+import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.features.home.WorkoutTemplatesViewModel
 
 /**
  * Displays  content of template on HomePage
@@ -21,9 +24,10 @@ import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifie
  */
 @Composable
 fun TemplateDisplayContent (
-    templateName: String,
+    template: WorkoutTemplate,
     navController: NavController,
-    route: String
+    route: String,
+    viewModel: WorkoutTemplatesViewModel = hiltViewModel()
 ) {
     Row(
         modifier = BorderBoxModifier(),
@@ -31,7 +35,7 @@ fun TemplateDisplayContent (
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = templateName,
+            text = template.name,
             fontSize = 20.sp
         )
         Row {
@@ -40,7 +44,7 @@ fun TemplateDisplayContent (
                 navController = navController,
                 route = route
             )
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { viewModel.deleteTemplate(template) }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Extra"
