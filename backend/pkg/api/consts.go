@@ -15,7 +15,7 @@ const (
 	SESSIONS_ROUTE = API_ROUTE + "/sessions"
 	SESSIONS_ID_ROUTE = SESSIONS_ROUTE + "/{sessionId}" 
 
-	LOGIN_ROUTE = API_ROUTE + "/auth/google"
+	AUTH_ROUTE = API_ROUTE + "/auth/google"
 
 	MEDIA_ROUTE = API_ROUTE + "/media/"
 )
