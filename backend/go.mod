@@ -3,12 +3,15 @@ module gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend
 go 1.25.1
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver/v2 v2.3.0
 	go.uber.org/zap v1.27.0
+	golang.org/x/oauth2 v0.32.0
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect

@@ -12,6 +12,7 @@ type Config struct {
 	Port string
 	UriDB string 
 	Mode string
+	JWT_KEY string
 }
 
 func LoadConfig() *Config {
@@ -37,11 +38,16 @@ func LoadConfig() *Config {
 	if mode == "" {
 		mode = "PRODUCTION"
 	}
+	key := os.Getenv("JWT_KEY")
+	if key == "" {
+		log.Fatal("JWT_KEY not found")
+	}
 
 	return &Config{
 		Host: host,
 		Port: port,
 		UriDB: UriDb,
 		Mode: mode,
+		JWT_KEY: key,
 	}
 }
