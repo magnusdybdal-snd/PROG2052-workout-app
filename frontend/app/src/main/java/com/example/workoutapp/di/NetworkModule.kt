@@ -8,6 +8,13 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import javax.inject.Singleton
 
+
+const val server: String = "10.212.168.186:8080"
+// Special emulator localhost port
+const val emulatorHost = "10.0.2.2:8080"
+
+
+
 // Module: Marks this object as a collection of providers (a factory class that tells Hilt how to make things)
 @Module
 // InstallIn(SingletonComponent::class) : "The objects provided here should live in the SingletonComponent.”
@@ -28,6 +35,6 @@ object KtorClient{
     @Singleton
     // Instead of hardcoding the URL everywhere, we provide it once.
     // If you later change servers, only this provider changes.
-    fun provideBaseUrl():String = "http://10.212.168.186:8080/api/v1"
+    fun provideBaseUrl():String = "http://${emulatorHost}/api/v1"
 
 }

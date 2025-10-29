@@ -1,5 +1,6 @@
 package com.example.workoutapp.data.api
 
+import com.example.workoutapp.data.api.dto.Authdto
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
@@ -22,6 +23,16 @@ class ApiService @Inject constructor(
     private val client: HttpClient,
     private val baseUrl: String
 ) {
+    /**
+    *  Request jwt token from the backend.
+     * used for user authenticated data
+    * */
+    suspend fun loginWithGoogle(code: String): Authdto {
+        return client.post("$baseUrl/auth/google") {
+            contentType(ContentType.Application.Json)
+            setBody(mapOf("code" to code))
+        }.body()
+    }
 
     /**
      * Gets all the exercises (library) from the backend API
