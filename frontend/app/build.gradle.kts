@@ -98,6 +98,9 @@ dependencies {
     // Jetpack Compose Navigation
     implementation("androidx.navigation:navigation-compose:2.8.3")
 
+    // Google Oauth
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

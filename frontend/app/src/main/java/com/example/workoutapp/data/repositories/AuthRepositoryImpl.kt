@@ -7,7 +7,8 @@ import javax.inject.Inject
 
 // Implement the authentication request
 class AuthRepositoryImpl @Inject constructor(
-    private val api: ApiService) : AuthRepository {
+    private val api: ApiService
+) : AuthRepository {
 
     override suspend fun loginWithGoogle(code: String) : AuthResponse {
         return api.loginWithGoogle(code)
