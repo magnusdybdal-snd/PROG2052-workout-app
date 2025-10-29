@@ -1,9 +1,9 @@
 package com.example.workoutapp.data.api
 
-import com.example.workoutapp.data.api.dto.Authdto
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.domain.models.AuthResponse
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Session
 import io.ktor.client.HttpClient
@@ -24,10 +24,11 @@ class ApiService @Inject constructor(
     private val baseUrl: String
 ) {
     /**
-    *  Request jwt token from the backend.
-     * used for user authenticated data
+     *  /POST
+     *  Request jwt token from the backend.
+     *  used for user authenticated data
     * */
-    suspend fun loginWithGoogle(code: String): Authdto {
+    suspend fun loginWithGoogle(code: String): AuthResponse {
         return client.post("$baseUrl/auth/google") {
             contentType(ContentType.Application.Json)
             setBody(mapOf("code" to code))
