@@ -11,6 +11,7 @@ import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutExercise
+import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -225,6 +226,17 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             // Workout remains marked as unsynced, will sync later
             Log.e("HistoryRepo", "Workout queued for sync: ${session.sessionId}, error: ${e.message}")
+        }
+    }
+
+    override suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
+        try {
+            api.deleteHistoryWorkout(historyWorkout)
+            dao.deleteWorkoutById(historyWorkout.id)
+            Log.d("HistoryRepo", "Deleted workout ${historyWorkout.id} locally and remotely")
+        } catch (e: Exception) {
+            Log.w("HistoryRepo", "Failed to delete remote, removing locally anyway: ${e.message}")
+            dao.deleteWorkoutById(historyWorkout.id)
         }
     }
 }

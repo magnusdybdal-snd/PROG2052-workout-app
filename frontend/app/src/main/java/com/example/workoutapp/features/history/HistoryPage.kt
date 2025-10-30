@@ -103,7 +103,9 @@ fun HistoryPage(
                         }
                         // Looping over each workout within the month
                         workoutsInMonth.forEach {
-                            HistoryDisplayBox(it)
+                            HistoryDisplayBox(
+                                it,
+                                viewModel)
                         }
                     }
                 }
