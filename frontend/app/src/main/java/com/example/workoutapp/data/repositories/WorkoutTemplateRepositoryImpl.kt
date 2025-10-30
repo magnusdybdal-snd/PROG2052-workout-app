@@ -202,4 +202,8 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             Log.w("TemplateRepo", "Template queued for sync: ${newTemplate.templateId}, error: ${e.message}")
         }
     }
+
+    override suspend fun deleteWorkoutTemplate(template: WorkoutTemplate) {
+        TODO()
+    }
 }
