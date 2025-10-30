@@ -50,6 +50,10 @@ interface HistoryWorkoutDao {
     @Query("DELETE FROM history_workouts")
     suspend fun clearAll()
 
+    @Transaction
+    @Query("DELETE FROM history_workouts WHERE id = :id")
+    suspend fun deleteWorkoutById(id: String)
+
     // Get all workouts from ROOM once (not reactive)
     @Query("SELECT * FROM history_workouts ORDER BY date DESC")
     suspend fun getAllHistoryWorkoutsSnapshot(): List<HistoryWorkoutEntity>

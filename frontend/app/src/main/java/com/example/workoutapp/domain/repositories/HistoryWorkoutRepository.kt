@@ -3,6 +3,7 @@ package com.example.workoutapp.domain.repositories
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.WorkoutTemplate
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -32,4 +33,8 @@ interface HistoryWorkoutRepository {
      * Posts a completed workout to the API and saves it locally.
      */
     suspend fun postHistoryWorkout(session: Session)
+    /**
+     * Deletes a workout to the API and removes it locally.
+     */
+    suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout)
 }

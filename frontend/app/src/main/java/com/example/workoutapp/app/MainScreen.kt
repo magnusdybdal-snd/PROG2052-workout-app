@@ -27,6 +27,7 @@ import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
+import com.example.workoutapp.features.edit_template.EditTemplatePage
 import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
@@ -97,6 +98,13 @@ fun MainScreen(
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }
             composable(Routes.NEWTEMP)   { NewTemplatePage(Modifier, navController) }
+            composable(
+                route = Routes.EDITTEMP,
+                arguments = listOf(navArgument("tempId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
+                EditTemplatePage(templateId.toInt(), Modifier, navController)
+            }
             composable(
                 route = Routes.WORKTEMP,
                 arguments = listOf(navArgument("tempId") { type = NavType.StringType })
