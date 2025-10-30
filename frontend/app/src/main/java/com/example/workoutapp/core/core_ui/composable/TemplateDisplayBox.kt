@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
@@ -40,7 +41,7 @@ import com.example.workoutapp.features.home.WorkoutTemplatesViewModel
 fun TemplateDisplayContent (
     template: WorkoutTemplate,
     navController: NavController,
-    route: String,
+    index: Int,
     viewModel: WorkoutTemplatesViewModel = hiltViewModel()
 ) {
     Row(
@@ -56,7 +57,7 @@ fun TemplateDisplayContent (
             StandardButton(
                 buttonText = "Start",
                 navController = navController,
-                route = route
+                route = "worktemp/$index"
             )
             var expanded by remember { mutableStateOf(false) }
 
@@ -84,6 +85,18 @@ fun TemplateDisplayContent (
                     },
                     onClick = {
                         viewModel.deleteTemplate(template)
+                        expanded = !expanded
+                    }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "Edit template",
+                            //color = cs.onTertiary
+                        )
+                    },
+                    onClick = {
+                        navController.navigate("editTemp/$index")
                         expanded = !expanded
                     }
                 )

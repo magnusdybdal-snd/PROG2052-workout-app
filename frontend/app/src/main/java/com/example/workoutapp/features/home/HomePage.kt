@@ -73,7 +73,7 @@ fun HomePage(modifier: Modifier = Modifier,
                        displayText = "My " + stringResource(R.string.workouts)
                    )
                     IconButton (
-                        onClick = {navController.navigate(Routes.NEWTEMP) }
+                        onClick = { navController.navigate(Routes.NEWTEMP) }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -86,7 +86,7 @@ fun HomePage(modifier: Modifier = Modifier,
                         TemplateDisplayContent(
                             template = workoutTemplate,
                             navController = navController,
-                            route = "worktemp/$index",
+                            index = index,
                             viewModel = viewModel
                         )
                     }
@@ -102,7 +102,7 @@ fun HomePage(modifier: Modifier = Modifier,
                         TemplateDisplayContent(
                             template = state.workoutTemplates[0], //"Example $i",
                             navController = navController,
-                            route = "worktemp/${i - 1}",
+                            route = i - 1,
                             viewModel = viewModel
                         )
                     }*/

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.usecases.DeleteWorkoutTemplateUseCase
+import com.example.workoutapp.domain.usecases.EditWorkoutTemplateUseCase
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +29,8 @@ data class WorkoutTemplatesUiState(
 @HiltViewModel
 class WorkoutTemplatesViewModel @Inject constructor(
     private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase,
-    private val deleteWorkoutTemplatesUseCase: DeleteWorkoutTemplateUseCase
+    private val deleteWorkoutTemplatesUseCase: DeleteWorkoutTemplateUseCase,
+    private val editWorkoutTemplatesUseCase: EditWorkoutTemplateUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutTemplatesUiState())
@@ -75,13 +77,12 @@ class WorkoutTemplatesViewModel @Inject constructor(
         }
     }
 
-
     fun deleteTemplate(workoutTemplate: WorkoutTemplate) {
         viewModelScope.launch {
             try {
                 deleteWorkoutTemplatesUseCase(workoutTemplate)
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "Failed to save workout") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to delete template") }
             }
         }
     }
