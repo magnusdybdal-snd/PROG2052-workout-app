@@ -28,7 +28,6 @@ import java.util.UUID
     ]
 )
 
-@TypeConverters(Converters::class)
 data class TemplateExerciseEntity(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),

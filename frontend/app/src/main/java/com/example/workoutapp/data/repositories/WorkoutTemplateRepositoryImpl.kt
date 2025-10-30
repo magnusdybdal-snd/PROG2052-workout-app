@@ -204,6 +204,35 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteWorkoutTemplate(template: WorkoutTemplate) {
-        TODO()
+        try {
+            // Mark as deleted locally first ( soft delete )
+            dao.markAsDeleted(template.templateId)
+            Log.d("TemplateRepo", "Marked template ${template.templateId} as deleted")
+
+            try {
+                // If API deletion is successful, also delete from ROOM
+                api.deleteWorkoutTemplate(template.templateId)
+                dao.deleteById(template.templateId)
+                Log.d("TemplateRepo", "template ${template.templateId} deleted from API and ROOM")
+            } catch (e: Exception) {
+                Log.w("TemplateRepo", "Failed to delete ${template.templateId} from API. Retry on next sync")
+            }
+        } catch (e: Exception) {
+            Log.e("TemplateRepo", "Failed to delete template: ${template.templateId}")
+        }
+    }
+
+    // Add sync method for deleted items
+    override suspend fun syncDeletedTemplates() {
+        val deletedTemplates = dao.getDeletedAndSyncedTemplates()
+        deletedTemplates.forEach { template ->
+            try {
+                api.deleteWorkoutTemplate(template.id)
+                dao.deleteById(template.id) // Actually delete after API confirms
+                Log.d("TemplateRepo", "Synced delete for template ${template.id}")
+            } catch (e: Exception) {
+                Log.w("TemplateRepo", "Failed to sync delete for ${template.id}: ${e.message}")
+            }
+        }
     }
 }

@@ -38,7 +38,7 @@ interface TemplateDao {
 
     // Gets all templates that are synced to API and marked for delete.
     @Query("SELECT * FROM templates WHERE isDeleted = 1 AND isSynced = 1")
-    fun getDeletedAndSyncedTemplates(): List<TemplateEntity>
+    suspend fun getDeletedAndSyncedTemplates(): List<TemplateEntity>
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(template: TemplateEntity)
@@ -56,8 +56,8 @@ interface TemplateDao {
     @Query("SELECT * FROM templates ORDER BY createdAt DESC")
     suspend fun getAllTemplatesSnapshot(): List<TemplateEntity>
 
-    @Delete
-    suspend fun delete(template: TemplateEntity)
+    @Query("DELETE FROM templates WHERE id = :id")
+    suspend fun deleteById(id: String)
 
     @Query("UPDATE templates SET isDeleted = 1 WHERE id = :id")
     suspend fun markAsDeleted(id: String)

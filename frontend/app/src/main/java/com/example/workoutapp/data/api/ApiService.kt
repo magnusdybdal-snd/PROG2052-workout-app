@@ -7,6 +7,7 @@ import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Session
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -56,6 +57,10 @@ class ApiService @Inject constructor(
             contentType(ContentType.Application.Json)
             setBody(newTemplate)
         }
+    }
+
+    suspend fun deleteWorkoutTemplate(templateId: String) {
+        client.delete("$baseUrl/templates/$templateId")
     }
     // More API calls like getWorkoutTemplates will be added here
 }
