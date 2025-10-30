@@ -3,7 +3,6 @@ package com.example.workoutapp.domain.usecases
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 /**

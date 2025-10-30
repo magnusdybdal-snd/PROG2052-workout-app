@@ -66,7 +66,7 @@ class ApiService @Inject constructor(
     }
 
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
-        client.put("$baseUrl/templates/"{$workoutTemplate.templateId}) {
+        client.put("$baseUrl/templates/{$workoutTemplate.templateId}") {
             contentType(ContentType.Application.Json)
             setBody(workoutTemplate)
         }

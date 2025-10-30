@@ -1,6 +1,5 @@
 package com.example.workoutapp.domain.usecases
 
-import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.repositories.HistoryWorkoutRepository
 import javax.inject.Inject
