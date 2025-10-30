@@ -13,8 +13,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -26,6 +28,7 @@ import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
+import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.edit_template.EditTemplatePage
 import com.example.workoutapp.features.exercises.ExercisesPage
@@ -42,7 +45,8 @@ import com.example.workoutapp.features.new_template.NewTemplatePage
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    preferences: UserPreferences = UserPreferences(LocalContext.current) // for checking if user logged in
 ) {
 
     val navItemList = listOf(
@@ -58,6 +62,8 @@ fun MainScreen(
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
 
+    val token by preferences.token.collectAsState(initial = null)
+    val startDestination = if (token != null) Routes.WORKOUT else Routes.LOGIN
 
     Scaffold(
         bottomBar = {
@@ -90,7 +96,7 @@ fun MainScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.LOGIN, // First page, client would see
+            startDestination = startDestination, // First page, client would see
             modifier = modifier.padding(innerPadding)
         ) {
             composable(Routes.LOGIN)     { LoginPage(Modifier,navController) }
