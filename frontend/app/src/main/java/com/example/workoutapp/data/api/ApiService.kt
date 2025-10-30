@@ -18,42 +18,60 @@ import io.ktor.http.contentType
 import javax.inject.Inject
 
 /**
- * Main API service class.
- * Contains all functions for calls to the API that is used trough the app.
+ * Main API service class for backend communication.
+ *
+ * Provides a centralized interface for all HTTP requests to the backend API.
+ * Uses Ktor HttpClient for network operations and is injected via Hilt.
+ *
+ * @property client Ktor HTTP client for making network requests
+ * @property baseUrl Base URL of the backend API
  */
 class ApiService @Inject constructor(
     private val client: HttpClient,
     private val baseUrl: String
 ) {
 
+    //===========================================
+    // EXERCISE LIBRARY ENDPOINTS
+    //===========================================
+
     /**
-     * Gets all the exercises (library) from the backend API
+     * Fetches the exercise library from the backend.
+     *
+     * Returns a list of available exercises that users can add to their templates
+     * and workouts. Currently limited to 30 exercises for MVP.
+     *
+     * @return List of exercise DTOs containing exercise metadata
      */
     suspend fun getExercises(): List<ExerciseDto> {
         return client.get("$baseUrl/exercises?limit=30").body()
     }
 
+    //===========================================
+    // WORKOUT TEMPLATE ENDPOINTS (CRUD)
+    //===========================================
+
     /**
-     * Gets all the WorkoutTemplates from one user from the backend API.
-     * (MVP currently pulls one specific template)
+     * Fetches all workout templates for the current user.
+     *
+     * Retrieves templates with their associated exercises in a single request.
+     * Templates are used as blueprints for starting new workout sessions.
+     *
+     * @return List of workout template DTOs with nested exercise data
+     * TODO: Add user authentication to fetch only current user's templates
      */
     suspend fun getWorkoutTemplates(): List<WorkoutTemplateDto> {
-        // TODO: URL needs to be changed for one with param to fetch for logged in user
         return client.get("$baseUrl/templates?include=exercises").body()
     }
 
-    suspend fun getHistoryWorkouts(): List<HistoryWorkoutDto> {
-        // TODO: URL needs to be changed for one with param to fetch for logged in user
-        return client.get("$baseUrl/sessions?include=exercises").body()
-    }
-
-    suspend fun postHistoryWorkout(session: Session) {
-        client.post("$baseUrl/sessions") {
-            contentType(ContentType.Application.Json)
-            setBody(session)
-        }
-    }
-
+    /**
+     * Creates a new workout template on the backend.
+     *
+     * Uploads a locally-created template to the backend for cloud storage
+     * and synchronization across devices.
+     *
+     * @param newTemplate The template to create (includes exercises and sets)
+     */
     suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
         client.post("$baseUrl/templates") {
             contentType(ContentType.Application.Json)
@@ -61,15 +79,62 @@ class ApiService @Inject constructor(
         }
     }
 
-    suspend fun deleteWorkoutTemplate(templateId: String) {
-        client.delete("$baseUrl/templates/$templateId")
-    }
-
+    /**
+     * Updates an existing workout template on the backend.
+     *
+     * Syncs local changes to the template (name, exercises, sets) with the backend.
+     *
+     * @param workoutTemplate The template with updated data
+     */
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
-        client.put("$baseUrl/templates/{$workoutTemplate.templateId}") {
+        client.put("$baseUrl/templates/${workoutTemplate.templateId}") {
             contentType(ContentType.Application.Json)
             setBody(workoutTemplate)
         }
     }
-    // More API calls like getWorkoutTemplates will be added here
+
+    /**
+     * Deletes a workout template from the backend.
+     *
+     * Permanently removes the template from cloud storage. This is called after
+     * a local soft-delete and user confirmation. If this fails, the delete will
+     * be retried on the next sync.
+     *
+     * @param templateId UUID of the template to delete
+     */
+    suspend fun deleteWorkoutTemplate(templateId: String) {
+        client.delete("$baseUrl/templates/$templateId")
+    }
+
+    //===========================================
+    // WORKOUT HISTORY/SESSION ENDPOINTS (CRUD)
+    //===========================================
+
+    /**
+     * Fetches all completed workout sessions for the current user.
+     *
+     * Retrieves workout history with exercises and sets performed. Used to
+     * display progress, statistics, and past performance.
+     *
+     * @return List of history workout DTOs with nested exercise and set data
+     * TODO: Add user authentication to fetch only current user's history
+     */
+    suspend fun getHistoryWorkouts(): List<HistoryWorkoutDto> {
+        return client.get("$baseUrl/sessions?include=exercises").body()
+    }
+
+    /**
+     * Uploads a completed workout session to the backend.
+     *
+     * Saves a finished workout to the cloud for backup and cross-device sync.
+     * Includes all exercises performed and sets completed (reps, weight, type).
+     *
+     * @param session The completed workout session with all performance data
+     */
+    suspend fun postHistoryWorkout(session: Session) {
+        client.post("$baseUrl/sessions") {
+            contentType(ContentType.Application.Json)
+            setBody(session)
+        }
+    }
 }
