@@ -244,4 +244,13 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
+        try {
+            api.editWorkoutTemplate(workoutTemplate)
+            dao.markAsSynced(workoutTemplate.templateId)
+        } catch (e: Exception) {
+            Log.w("TemplateRepo", "Template queued for sync: ${workoutTemplate.templateId}, error: ${e.message}")
+        }
+    }
 }

@@ -5,11 +5,13 @@ import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.WorkoutTemplate
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -61,6 +63,13 @@ class ApiService @Inject constructor(
 
     suspend fun deleteWorkoutTemplate(templateId: String) {
         client.delete("$baseUrl/templates/$templateId")
+    }
+
+    suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
+        client.put("$baseUrl/templates/"{$workoutTemplate.templateId}) {
+            contentType(ContentType.Application.Json)
+            setBody(workoutTemplate)
+        }
     }
     // More API calls like getWorkoutTemplates will be added here
 }

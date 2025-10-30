@@ -1,4 +1,4 @@
-package com.example.workoutapp.features.new_template
+package com.example.workoutapp.features.edit_template
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,12 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -22,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,25 +40,22 @@ import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
+import com.example.workoutapp.core.core_ui.composable.WorkoutNameTextField
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
-import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
-import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
-import com.example.workoutapp.core.core_ui.theme.AppTextField
-import com.example.workoutapp.core.core_ui.theme.AppTextField.fieldColors
-import com.example.workoutapp.domain.models.NewTemplate
-import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Set
-import java.util.UUID
+import com.example.workoutapp.domain.models.TemplateExercise
+import com.example.workoutapp.domain.models.WorkoutTemplate
 
-/**
+/**viewmodel
  * Displays Workout page
  */
 @Composable
-fun NewTemplatePage(
+fun EditTemplatePage(
+    templateId: Int,
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: NewTempViewModel = hiltViewModel()
+    viewModel: ActWorkViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
@@ -70,93 +64,42 @@ fun NewTemplatePage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-            var name by remember { mutableStateOf("") }
-            val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
-            val exerciseNames = remember { mutableStateListOf<String>() }
+
+            val template = state.templates.getOrNull(templateId)
+            if (template == null) {
+                LoadingStateView()
+                return
+            }
 
             Column(
-                modifier = modifier.verticalScroll(
-                    state = rememberScrollState()
+                modifier = Modifier.verticalScroll(
+                    state= rememberScrollState()
                 ),
             ) {
                 RoundBackButton(
                     navController = navController,
+                    //modifier = Modifier.padding(innerPadding)
                 )
                 Column(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 ) {
-                    Row(
-                        modifier = BorderBoxModifier(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
-                        var showDialog by remember { mutableStateOf(false) }
-
-                        RoundedButton(
-                            buttonText = stringResource(R.string.add_template),
-                            onClick = {showDialog = true},
-                        )
-
-                        if (showDialog &&
-                            name != "" &&
-                            exercises.isNotEmpty()) {
-                            AlertDialog(
-                                containerColor = cs.tertiary,
-                                textContentColor = cs.onTertiary,
-                                titleContentColor = cs.onTertiary,
-                                onDismissRequest = { showDialog = false },
-                                title = {
-                                    Text(
-                                        text = "Complete template?",
-                                        color = cs.onBackground
-                                    )
-                                },
-                                confirmButton = {
-                                    TextButton(onClick = {
-                                        val newTemplate = NewTemplate(
-                                            templateId = UUID.randomUUID().toString(),
-                                            name = name,
-                                            exercises = exercises
-                                        )
-                                        viewModel.postWorkout(newTemplate)
-                                        showDialog = false
-                                        navController.popBackStack()
-                                        },
-                                        colors = textButtonColor()
-                                    ) {
-                                        Text(
-                                            text =stringResource(R.string.add_template),
-                                        )
-                                    }
-                                },
-                                dismissButton = {
-                                    TextButton(
-                                        onClick = { showDialog = false },
-                                        colors = textButtonColor()
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.cancel),
-                                            color = cs.onBackground
-                                        )
-                                    }
-                                }
+                    RoundedButton(
+                        buttonText = stringResource(R.string.save_template),
+                        onClick = {
+                            val editedWorkout = WorkoutTemplate(
+                                templateId = template.templateId,
+                                name = template.name,
+                                createdAt = template.createdAt,
+                                exercises = template.exercises
                             )
-                        }
-                    }
-                    TextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = {
-                            Text(
-                                text = stringResource(R.string.set_template_name),
-                                color = cs.onSecondaryContainer)
+                            viewModel.editTemplate(editedWorkout)
+                            navController.popBackStack()
                         },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = fieldColors(),
-                        modifier = Modifier.padding(vertical = 10.dp)
                     )
+
+                    WorkoutNameTextField(temp = template)
+
 
                     var expanded by remember { mutableStateOf(false) }
                     var searchString by remember { mutableStateOf("") }
@@ -191,8 +134,9 @@ fun NewTemplatePage(
                             )
 
                             // Filter exercises based on search query
-                            val filteredExercises = state.exercises.filter {
-                                it.name.contains(searchString, ignoreCase = true)
+                            val filteredExercises = state.exercises.filter { ex ->
+                                template.exercises.none { it.exerciseId == ex.exerciseId } &&
+                                        ex.name.contains(searchString, ignoreCase = true)
                             }
 
                             filteredExercises.forEach { exercise ->
@@ -204,12 +148,12 @@ fun NewTemplatePage(
                                         )
                                     },
                                     onClick = {
-                                        exercises.add(
-                                            NewTemplateExercise(
+                                        template.exercises.add(
+                                            TemplateExercise(
                                                 exerciseId = exercise.exerciseId,
                                                 name = exercise.name,
                                                 sets = mutableStateListOf(
-                                                    Set (
+                                                    Set(
                                                         rep = 0,
                                                         kg = 0,
                                                         typeSet = 0,
@@ -217,7 +161,6 @@ fun NewTemplatePage(
                                                 )
                                             )
                                         )
-                                        exerciseNames.add(exercise.name)
                                         expanded = !expanded
                                         searchString = ""
                                     }
@@ -239,7 +182,7 @@ fun NewTemplatePage(
                         modifier = Modifier
                             .padding(top = 10.dp),
                     ) {
-                        exercises.forEachIndexed { index, exSet ->
+                        template.exercises.forEachIndexed { exerciseIndex, exSet ->
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
@@ -248,12 +191,12 @@ fun NewTemplatePage(
 
                             ) {
                                 Text(
-                                    exerciseNames[index],
+                                    exSet.name,
                                     fontSize = 15.sp
                                 )
                                 IconButton (
                                     onClick = {
-                                        exercises.removeAt(index)
+                                        template.exercises.removeAt(exerciseIndex)
                                     }
                                 ) {
                                     Icon(
@@ -267,9 +210,8 @@ fun NewTemplatePage(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp)
-
                             ) {
-                                val y = exSet.sets.size
+                                val y = exSet.sets.size //icon
                                 val h = 75
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
@@ -282,18 +224,22 @@ fun NewTemplatePage(
                                         modifier = Modifier
                                     )
                                     for (i in 1..y) {
-                                        Text(
-                                            text = "$i\n",
-                                            fontSize = 15.sp,
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier
+                                                .height(50.dp)
+                                        ) {
+                                            Text(
+                                                "$i",
+                                                fontSize = 15.sp
+                                            )
+                                        }
                                     }
                                 }
                                 Column(
                                     verticalArrangement = Arrangement.SpaceBetween,
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
+                                    modifier = TextFieldModifier(height = h.dp * y)
                                 ) {
                                     WorkoutTextField(
                                         label = stringResource(R.string.kg),
@@ -336,7 +282,7 @@ fun NewTemplatePage(
                             }
                             IconButton (
                                 onClick = {
-                                    exSet.sets.add(
+                                    template.exercises[exerciseIndex].sets.add(
                                         Set(
                                             rep = 0,
                                             kg = 0,
@@ -357,5 +303,3 @@ fun NewTemplatePage(
         }
     }
 }
-
-
