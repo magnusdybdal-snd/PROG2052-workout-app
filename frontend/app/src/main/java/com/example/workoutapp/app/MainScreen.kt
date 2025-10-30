@@ -31,7 +31,6 @@ import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.login.LoginPage
-import com.example.workoutapp.features.login.LoginScreen
 import com.example.workoutapp.features.new_template.NewTemplatePage
 
 /**
