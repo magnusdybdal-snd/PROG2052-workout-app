@@ -13,6 +13,8 @@ type Config struct {
 	UriDB string 
 	Mode string
 	JWT_KEY string
+	GOOGLE_CLIENT_ID string
+	GOOGLE_CLIENT_SECRET string
 }
 
 func LoadConfig() *Config {
@@ -43,11 +45,23 @@ func LoadConfig() *Config {
 		log.Fatal("JWT_KEY not found")
 	}
 
+	clientId := os.Getenv("GOOGLE_CLIENT_SECRET")
+	if clientId == "" {
+		log.Fatal("No client id found")
+	}
+
+	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
+	if clientSecret == "" {
+		log.Fatal("no client secret found")
+	}
+
 	return &Config{
 		Host: host,
 		Port: port,
 		UriDB: UriDb,
 		Mode: mode,
 		JWT_KEY: key,
+		GOOGLE_CLIENT_SECRET: clientSecret,
+		GOOGLE_CLIENT_ID: clientId,
 	}
 }
