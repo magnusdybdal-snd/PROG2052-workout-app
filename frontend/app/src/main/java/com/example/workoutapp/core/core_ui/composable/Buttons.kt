@@ -57,7 +57,7 @@ fun StandardButton(
 fun RoundBackButton(
     navController: NavController,
     cs: ColorScheme = MaterialTheme.colorScheme,
-    modifier: Modifier = Modifier // Not used but needed in ActiveWorkoutPage to suppress Scaffold error
+    modifier: Modifier = Modifier, // Not used but needed in ActiveWorkoutPage to suppress Scaffold error
 ) {
     OutlinedButton(
         onClick = { navController.popBackStack() },
@@ -73,6 +73,31 @@ fun RoundBackButton(
                 bottom = 40.dp,
                 start = 20.dp
             )
+            .size(50.dp)
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            contentDescription = "go back",
+            tint = cs.onTertiary
+        )
+    }
+}
+@Composable
+fun RoundBackButton(
+    onClick: () -> Unit,
+    cs: ColorScheme = MaterialTheme.colorScheme,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = CircleShape,
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = cs.tertiary,
+            contentColor = cs.onTertiary
+        ),
+        modifier = modifier
+            .padding(top = 20.dp, bottom = 40.dp, start = 20.dp)
             .size(50.dp)
     ) {
         Icon(
