@@ -46,14 +46,14 @@ interface TemplateDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(templates: List<TemplateEntity>)
 
-    @Query("SELECT * FROM templates WHERE isSynced = 0")
+    @Query("SELECT * FROM templates WHERE isSynced = 0 AND isDeleted = 0")
     suspend fun getUnsyncedTemplates(): List<TemplateEntity>
 
     @Query("UPDATE templates SET isSynced = 1 WHERE id = :id")
     suspend fun markAsSynced(id: String)
 
     // Get all templates from Room once (not reactive)
-    @Query("SELECT * FROM templates ORDER BY createdAt DESC")
+    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
     suspend fun getAllTemplatesSnapshot(): List<TemplateEntity>
 
     @Query("DELETE FROM templates WHERE id = :id")
@@ -71,7 +71,7 @@ interface TemplateDao {
     //--------------------------
 
     @Transaction
-    @Query("SELECT * FROM templates ORDER BY createdAt DESC")
+    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
     fun getAllTemplatesWithExercises(): Flow<List<TemplateWithExercises>>
 
     @Transaction

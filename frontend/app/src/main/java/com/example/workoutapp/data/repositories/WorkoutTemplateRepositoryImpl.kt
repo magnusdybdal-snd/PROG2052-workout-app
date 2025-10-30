@@ -61,6 +61,10 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
      * 2. Pull updated templates from the API and merge them locally
      */
     override suspend fun getWorkoutTemplates(): List<WorkoutTemplate> {
+
+        // Step 0 : sync deleted templates ( retry API deletion )
+        syncDeletedTemplates()
+
         // Step 1: Post unsynced templates to API
         val unsyncedTemplates = dao.getUnsyncedTemplates()
         unsyncedTemplates.forEach { local ->
@@ -97,7 +101,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
 
         // Step 2: Pull latest templates from backend
-        val remoteTemplate = try {
+        val remoteTemplates = try {
             api.getWorkoutTemplates().map { dto ->
                 val templateEntity = TemplateEntity(
                     id = dto.templateId,
@@ -137,15 +141,20 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
 
         // Step 3: Insert locally
-        if(remoteTemplate.isNotEmpty()) {
+        val locallyDeletedIds = dao.getDeletedAndSyncedTemplates().map { it.id }.toSet()
+        val templatesToInsert = remoteTemplates.filter { (template, _,_) ->
+            template.id !in locallyDeletedIds
+        }
+
+        if(templatesToInsert.isNotEmpty()) {
             try {
-                dao.insertFullTemplates(remoteTemplate)
+                dao.insertFullTemplates(templatesToInsert)
             } catch (e: Exception) {
                 Log.e("TemplateRepo", "Failed inserting templates: ${e.message}")
             }
         }
 
-        Log.d("TemplateRepo", "Fetched ${remoteTemplate.size} remote templates")
+        Log.d("TemplateRepo", "Fetched ${templatesToInsert.size} remote templates")
         Log.d("TemplateRepo", "Local DB now has ${dao.getAllTemplatesSnapshot().size} templates")
 
         // Step 4: Return local data from DB (local first)
@@ -215,10 +224,10 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 dao.deleteById(template.templateId)
                 Log.d("TemplateRepo", "template ${template.templateId} deleted from API and ROOM")
             } catch (e: Exception) {
-                Log.w("TemplateRepo", "Failed to delete ${template.templateId} from API. Retry on next sync")
+                Log.w("TemplateRepo", "Failed to delete ${template.templateId} from API. Retry on next sync: ${e.message}")
             }
         } catch (e: Exception) {
-            Log.e("TemplateRepo", "Failed to delete template: ${template.templateId}")
+            Log.e("TemplateRepo", "Failed to delete template: ${template.templateId}: ${e.message}")
         }
     }
 
