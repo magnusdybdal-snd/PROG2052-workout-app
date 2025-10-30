@@ -16,7 +16,7 @@ val Context.dataStore by preferencesDataStore("user_prefs")
 
 class UserPreferences(private val context: Context) {
     companion object {
-        private val USER_ID = stringPreferencesKey("user_id")
+        private val USER_ID = stringPreferencesKey("userId")
         private val TOKEN = stringPreferencesKey("token")
     }
 

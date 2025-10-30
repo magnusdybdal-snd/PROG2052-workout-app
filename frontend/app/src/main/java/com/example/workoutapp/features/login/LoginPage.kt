@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.example.workoutapp.R
+import com.example.workoutapp.core.core_navigation.Routes
 
 @Composable
 fun LoginPage(
@@ -50,6 +52,9 @@ fun LoginPage(
     @Suppress("DEPRECATION")
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
+    // state from viewmodel
+    val loginState by viewModel.loginState.collectAsState()
+
     val launcher = rememberLauncherForActivityResult (
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -58,19 +63,22 @@ fun LoginPage(
             try {
                 val account = task.getResult(ApiException::class.java)
                 account.serverAuthCode?.let { code ->
-                    viewModel.loginWithGoogle(code) { userId ->
-                        // Optionally navigate
-                        // navController.navigate("home/$userId")
-                    }
+                    viewModel.loginWithGoogle(code) {}
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-    var userId by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Success) {
+            navController.navigate(Routes.WORKOUT) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
 
-    Surface (
+    Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
@@ -86,23 +94,35 @@ fun LoginPage(
                 text = "Workout App",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(48.dp))
 
-            Button(
-                onClick = { launcher.launch(googleSignInClient.signInIntent) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Sign in with Google")
+            when (loginState) {
+                is LoginState.Loading -> CircularProgressIndicator()
+                else -> Button(
+                    onClick = { launcher.launch(googleSignInClient.signInIntent) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Sign in with Google")
+                }
             }
 
             Spacer(Modifier.height(24.dp))
 
-            userId?.let {
+            if (loginState is LoginState.Error) {
                 Text(
-                    text = "Logged in as:\n$it",
+                    text = "Login failed: ${(loginState as LoginState.Error).message}",
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            if (loginState is LoginState.Success) {
+                Text(
+                    text = "Welcome, ${(loginState as LoginState.Success).userId}",
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp
                 )
