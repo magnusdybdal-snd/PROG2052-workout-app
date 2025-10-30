@@ -1,6 +1,5 @@
 package com.example.workoutapp.features.edit_template
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,31 +9,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,26 +42,10 @@ import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
 import com.example.workoutapp.core.core_ui.composable.WorkoutNameTextField
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
-import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
-import com.example.workoutapp.core.core_ui.theme.AppCheckBox
-import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
-import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
-import com.example.workoutapp.core.core_ui.theme.AppTextField.fieldColors
-import com.example.workoutapp.domain.models.Session
-import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
-import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
-import kotlinx.coroutines.delay
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.UUID
-import kotlin.time.Duration.Companion.seconds
 
 /**viewmodel
  * Displays Workout page
@@ -204,13 +176,6 @@ fun EditTemplatePage(
                             }
                         }
                     }
-
-
-                    Text(
-                        state.templates[templateId].name,
-                        fontSize = 30.sp,
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(5.dp),

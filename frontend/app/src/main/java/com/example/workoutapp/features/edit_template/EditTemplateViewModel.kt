@@ -1,6 +1,7 @@
 package com.example.workoutapp.features.edit_template
 
 import android.util.Log
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.Exercise
@@ -52,13 +53,22 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                getWorkoutTemplatesUseCase().collect { templates ->
-                    _uiState.update { current ->
-                        current.copy(
-                            templates = templates.sortedBy { it.createdAt },
-                            isLoading = false
+                getWorkoutTemplatesUseCase().collect { data ->
+                    val statefulTemplates = data.map { template ->
+                        template.copy(
+                            exercises = template.exercises.map { exercise ->
+                                exercise.copy(
+                                    sets = exercise.sets.toMutableStateList()
+                                )
+                            }.toMutableList()
                         )
                     }
+
+                    _uiState.value = ActiveWorkoutUiState(
+                        templates = statefulTemplates.sortedBy { it.createdAt },
+                        exercises = _uiState.value.exercises,
+                        isLoading = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message ?: "Unknown error") }

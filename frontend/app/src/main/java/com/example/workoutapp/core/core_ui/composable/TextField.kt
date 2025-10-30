@@ -9,6 +9,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposableInferredTarget
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,32 +36,35 @@ fun WorkoutTextField(
 ){
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
-        var text by remember {
-            mutableStateOf(
-                when (type.lowercase()) {
-                    "kg" -> set.kg.toString()
-                    "reps" -> set.rep.toString()
-                    else -> "0"
-                }
+        key(set) {
+            var text by remember(set) {
+                mutableStateOf(
+                    when (type.lowercase()) {
+                        "kg" -> set.kg.toString()
+                        "reps" -> set.rep.toString()
+                        else -> "0"
+                    }
+                )
+            }
+
+            TextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                    val value = it.toIntOrNull() ?: 0
+                    when (type.lowercase()) {
+                        "kg" -> set.kg = value
+                        "reps" -> set.rep = value
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = AppTextField.fieldColors(),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(50.dp)
             )
         }
-
-        TextField(
-            value = text,
-            onValueChange = {
-                text = it
-                val value = it.toIntOrNull() ?: 0
-                when (type.lowercase()) {
-                    "kg" -> set.kg = value
-                    "reps" -> set.rep = value
-                }
-            },
-            shape = RoundedCornerShape(size = 12.dp),
-            colors = AppTextField.fieldColors(),
-            modifier = Modifier
-                .width(100.dp)
-                .height(50.dp)
-        )
     }
 }
 
