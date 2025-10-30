@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.HistoryWorkout
+import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.domain.usecases.DeleteHistoryWorkoutUseCase
 import com.example.workoutapp.domain.usecases.GetHistoryWorkoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.time.format.TextStyle
@@ -27,7 +31,8 @@ data class HistoryUiState(
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val getHistoryWorkoutUseCase: GetHistoryWorkoutUseCase
+    private val getHistoryWorkoutUseCase: GetHistoryWorkoutUseCase,
+    private val deleteHistoryWorkoutUseCase: DeleteHistoryWorkoutUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState(isLoading = true))
@@ -80,6 +85,16 @@ class HistoryViewModel @Inject constructor(
                 getHistoryWorkoutUseCase.syncNow()
             } catch (e: Exception) {
                 Log.e("HistoryViewModel", "Sync failed: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteSession(historyWorkout: HistoryWorkout) {
+        viewModelScope.launch {
+            try {
+                deleteHistoryWorkoutUseCase(historyWorkout)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message ?: "Failed to delete template") }
             }
         }
     }

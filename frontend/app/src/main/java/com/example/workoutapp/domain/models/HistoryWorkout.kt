@@ -1,5 +1,8 @@
 package com.example.workoutapp.domain.models
 
+import com.example.workoutapp.data.serializers.DurationSerializer
+import com.example.workoutapp.data.serializers.LocalDateSerializer
+import kotlinx.serialization.Serializable
 import java.time.Duration
 import java.time.LocalDate
 
@@ -7,11 +10,14 @@ import java.time.LocalDate
  * Data class for a HistoryWorkout (completed / past workout)
  * Contains a list of WorkoutExercise, not to be mixed with TemplateExercise
  */
+@Serializable
 data class HistoryWorkout(
     val id: String,
     val name: String,
-    val date: LocalDate,
+    @Serializable(with = DurationSerializer::class)
     val duration: Duration,
+    @Serializable(with = LocalDateSerializer::class)
+    val date: LocalDate,
     val exercises: List<WorkoutExercise>,
     val note: String = ""
 ) { // Computed value, not stored but computed at access time
@@ -25,6 +31,7 @@ data class HistoryWorkout(
  *
  * @see Exercise
  */
+@Serializable
 data class WorkoutExercise(
     val exerciseId: String,
     val name: String,

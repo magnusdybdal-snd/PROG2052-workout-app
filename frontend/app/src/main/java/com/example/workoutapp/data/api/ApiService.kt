@@ -3,6 +3,7 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.WorkoutTemplate
@@ -51,6 +52,12 @@ class ApiService @Inject constructor(
         client.post("$baseUrl/sessions") {
             contentType(ContentType.Application.Json)
             setBody(session)
+        }
+    }
+
+    suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
+        client.delete("$baseUrl/sessions/" + historyWorkout.id) {
+            contentType(ContentType.Application.Json)
         }
     }
 
