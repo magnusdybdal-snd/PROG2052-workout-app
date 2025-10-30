@@ -21,7 +21,7 @@ var googleOauthConfig = &oauth2.Config{
 	Endpoint:     google.Endpoint,
 }
 
-func HandleAuth() http.HandlerFunc {
+func HandleAuth(secret string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
@@ -54,7 +54,7 @@ func HandleAuth() http.HandlerFunc {
 		googleId := userInfo["id"].(string)
 
 		userId := utils.EnsureInDB(googleId, email)
-		jwt, err := utils.CreateToken(userId)
+		jwt, err := utils.CreateToken(userId,secret)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return

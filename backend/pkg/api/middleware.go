@@ -60,11 +60,11 @@ func AuthenticateUser(cfg *config.Config, next http.HandlerFunc) http.Handler {
 		}
 		tokenStr := authHeader[len("Bearer "):]
 		token, _ := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			return cfg.JWT_KEY, nil
+			return []byte(cfg.JWT_KEY), nil
 		})
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			userId := claims["user_id"].(string)
-			ctx := context.WithValue(r.Context(), "user_id", userId)
+			userId := claims["userId"].(string)
+			ctx := context.WithValue(r.Context(), "userId", userId)
 			next(w, r.WithContext(ctx))
 		} else {
 			utils.HandleError(w, http.StatusUnauthorized, fmt.Errorf("invalid token"), utils.ErrMsgUnauthorized)

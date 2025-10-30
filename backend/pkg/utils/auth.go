@@ -15,13 +15,13 @@ type AuthResponse struct {
 	UserId string `json:"userId"`
 }
 
-func CreateToken(userId string) (string, error) {
+func CreateToken(userId,secret string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userId,
 		"exp":     time.Now().Add(1 * time.Minute).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenStr, err := token.SignedString(token)
+	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", err
 	}

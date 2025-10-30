@@ -35,7 +35,7 @@ func addRoutes(
 	mux.Handle(TEMPLATES_ID_ROUTE,handlers.HandleOneTemplate(container.TemplateService))
 
 	// POST /auth/google
-	mux.Handle(AUTH_ROUTE, handlers.HandleAuth())
+	mux.Handle(AUTH_ROUTE, handlers.HandleAuth(cfg.JWT_KEY))
 
 	mux.Handle(API_ROUTE + "/helloAuth", AuthenticateUser(cfg,handlers.HelloAuth()))
 
