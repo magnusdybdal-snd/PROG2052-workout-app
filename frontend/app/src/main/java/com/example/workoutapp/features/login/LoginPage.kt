@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,17 +31,19 @@ import androidx.navigation.NavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.example.workoutapp.R
 
 @Composable
-fun LoginScreen(
+fun LoginPage(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val clientId = stringResource(R.string.google_client_id)
 
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestServerAuthCode("YOUR_ANDROID_CLIENT_ID")
+        .requestServerAuthCode(clientId)
         .requestEmail()
         .build()
     // Deprecated function, as backend need a temp oauth code

@@ -30,6 +30,8 @@ import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.exercises.ExercisesPage
 import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
+import com.example.workoutapp.features.login.LoginPage
+import com.example.workoutapp.features.login.LoginScreen
 import com.example.workoutapp.features.new_template.NewTemplatePage
 
 /**
@@ -91,6 +93,7 @@ fun MainScreen(
             startDestination = Routes.WORKOUT,
             modifier = modifier.padding(innerPadding)
         ) {
+            composable(Routes.LOGIN)     { LoginPage(Modifier,navController) }
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
             composable(Routes.HISTORY)   { HistoryPage(Modifier, navController) }

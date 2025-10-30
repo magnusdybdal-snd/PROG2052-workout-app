@@ -1,4 +1,5 @@
 <resources>
+    <string name="google_client_id">740030101338-gpklbhni7t410n2pf3rguc252mo1hi45.apps.googleusercontent.com</string>
     <string name="app_name">workoutApp</string>
 
     <string name="reps">REPS</string>
