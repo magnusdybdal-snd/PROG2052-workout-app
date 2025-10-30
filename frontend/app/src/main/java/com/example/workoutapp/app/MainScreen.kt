@@ -89,7 +89,7 @@ fun MainScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.WORKOUT,
+            startDestination = Routes.LOGIN, // First page, client would see
             modifier = modifier.padding(innerPadding)
         ) {
             composable(Routes.LOGIN)     { LoginPage(Modifier,navController) }

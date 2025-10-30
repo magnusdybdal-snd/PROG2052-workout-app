@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -66,6 +67,7 @@ func HandleAuth(cfg *config.Config) http.HandlerFunc {
 			Token:  jwt,
 			UserId: userId,
 		}
+		log.Println("Hello: ", userId)
 		utils.Encode(w, http.StatusOK, result)
 	}
 }

@@ -14,6 +14,8 @@ class LoginViewModel @Inject constructor(
     fun loginWithGoogle(code: String, onResult: (String) -> Unit) {
         viewModelScope.launch {
             val response = googleUseCase.invoke(code)
+
+
             onResult(response.userId)
         }
     }
