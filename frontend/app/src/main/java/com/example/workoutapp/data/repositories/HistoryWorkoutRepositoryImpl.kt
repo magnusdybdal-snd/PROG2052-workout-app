@@ -231,7 +231,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
 
     override suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
         try {
-            api.deleteHistoryWorkout(historyWorkout)
+            api.deleteHistoryWorkout(historyWorkout.id)
             dao.deleteWorkoutById(historyWorkout.id)
             Log.d("HistoryRepo", "Deleted workout ${historyWorkout.id} locally and remotely")
         } catch (e: Exception) {
@@ -244,8 +244,74 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         val deletedHistoryWorkouts = dao.getDeletedAndSyncedHistoryWorkouts()
         deletedHistoryWorkouts.forEach { historyWorkoutEntity ->
             try {
-                api.deleteHistoryWorkout(historyWorkoutEntity
+                api.deleteHistoryWorkout(historyWorkoutEntity.id)
+                dao.deleteWorkoutById(historyWorkoutEntity.id)
+                Log.d("HistoryRepo", "Synced delete for historyWorkout ${historyWorkoutEntity.id}")
+            } catch (e: Exception) {
+                Log.w("HistoryRepo", "Failed to sync delete for ${historyWorkoutEntity.id}: ${e.message}")
             }
+        }
+    }
+
+    override suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout) {
+        // Store the room object to be edited
+        val existingHistoryWorkout = dao.getWorkoutHistoryWithExercises(historyWorkout.id)
+
+        // Check that the object was found in Room. If not return early
+        if (existingHistoryWorkout == null) {
+            Log.e("HistoryRepo", "HistoryWorkout not found in Room: ${historyWorkout.id}")
+            return
+        }
+
+        // Rebuild the new, updated historyWorkout
+        val historyWorkoutEntity = HistoryWorkoutEntity(
+            id = historyWorkout.id,
+            name = historyWorkout.name,
+            duration = historyWorkout.duration,
+            note = historyWorkout.note,
+            date = historyWorkout.date,
+            isSynced = false,
+            isDeleted = false
+        )
+
+        val exerciseEntities = historyWorkout.exercises.map { historyWorkoutExercise ->
+            WorkoutExerciseEntity(
+                id = UUID.randomUUID().toString(),
+                workoutId = historyWorkout.id,
+                exerciseId = historyWorkoutExercise.exerciseId,
+                name = historyWorkoutExercise.name
+            )
+        }
+
+        val setEntities = historyWorkout.exercises.flatMapIndexed { idx, historyWorkoutExercise ->
+            val parentExerciseId = exerciseEntities[idx].id
+            historyWorkoutExercise.sets.map { set ->
+                SetEntity(
+                    id = UUID.randomUUID().toString(),
+                    exerciseEntityId = parentExerciseId,
+                    rep = set.rep,
+                    kg = set.kg,
+                    typeSet = set.typeSet
+                )
+            }
+        }
+
+        // Update the Room entry with the new data
+        try {
+            dao.updateHistoryWorkoutExercises(historyWorkout.id, historyWorkoutEntity, exerciseEntities, setEntities)
+            Log.d("HistoryRepo", "Updated historyWorkout ${historyWorkout.id} in Room")
+        } catch (e: Exception) {
+            Log.e("HistoryRepo", "Failed to update historyWorkout ${historyWorkout.id} in Room: ${e.message}")
+            return
+        }
+
+        // Sync new data with API
+        try {
+            api.editHistoryWorkout(historyWorkout)
+            dao.markAsSynced(historyWorkout.id)
+            Log.d("HistoryRepo", "Synced historyWorkout ${historyWorkout.id} to API")
+        } catch (e: Exception) {
+            Log.w("HistoryRepo", "HistoryWorkout ${historyWorkout.id} could not sync to API, queued for sync: ${e.message}")
         }
     }
 }
