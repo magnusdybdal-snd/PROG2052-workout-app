@@ -56,7 +56,7 @@ fun HistoryDisplayBox(
                     text = "%02d:%02d:%02d".format(
                         it.duration.toHours(),
                         it.duration.toMinutes() % 60,
-                        it.duration.toSeconds() % 60
+                        it.duration.seconds % 60
                     ),
                     modifier = padding
                 )

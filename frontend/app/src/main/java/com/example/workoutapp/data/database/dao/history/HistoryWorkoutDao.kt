@@ -31,7 +31,7 @@ interface HistoryWorkoutDao {
     //  Basic operations
     //--------------------------
 
-    @Query("SELECT * FROM history_workouts ORDER BY date DESC")
+    @Query("SELECT * FROM history_workouts WHERE isDeleted = 0 ORDER BY date DESC")
     fun getAllHistoryWorkouts(): Flow<List<HistoryWorkoutEntity>>
 
     @Query("SELECT * FROM history_workouts WHERE isDeleted = 1 AND isSynced = 1")
@@ -43,7 +43,7 @@ interface HistoryWorkoutDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(workouts: List<HistoryWorkoutEntity>)
 
-    @Query("SELECT * FROM history_workouts WHERE isSynced = 0")
+    @Query("SELECT * FROM history_workouts WHERE isSynced = 0 AND isDeleted = 0")
     suspend fun getUnsyncedWorkouts(): List<HistoryWorkoutEntity>
 
     @Query("UPDATE history_workouts SET isSynced = 1 WHERE id = :id")
@@ -67,7 +67,7 @@ interface HistoryWorkoutDao {
     suspend fun deleteExercisesByWorkoutId(workoutId: String)
 
     // Get all workouts from ROOM once (not reactive)
-    @Query("SELECT * FROM history_workouts ORDER BY date DESC")
+    @Query("SELECT * FROM history_workouts WHERE isDeleted = 0 ORDER BY date DESC")
     suspend fun getAllHistoryWorkoutsSnapshot(): List<HistoryWorkoutEntity>
 
     @Transaction
@@ -88,7 +88,7 @@ interface HistoryWorkoutDao {
     //--------------------------
 
     @Transaction
-    @Query("SELECT * FROM history_workouts ORDER BY date DESC")
+    @Query("SELECT * FROM history_workouts WHERE isDeleted = 0 ORDER BY date DESC")
     fun getAllHistoryWorkoutsWithExercises(): Flow<List<HistoryWorkoutWithExercises>>
 
     @Transaction
