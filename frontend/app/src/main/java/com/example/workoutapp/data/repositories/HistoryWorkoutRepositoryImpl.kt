@@ -239,4 +239,13 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
             dao.deleteWorkoutById(historyWorkout.id)
         }
     }
+
+    override suspend fun syncDeleteTemplates() {
+        val deletedHistoryWorkouts = dao.getDeletedAndSyncedHistoryWorkouts()
+        deletedHistoryWorkouts.forEach { historyWorkoutEntity ->
+            try {
+                api.deleteHistoryWorkout(historyWorkoutEntity
+            }
+        }
+    }
 }

@@ -140,9 +140,8 @@ class ApiService @Inject constructor(
     }
 
 
-    suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
-        client.delete("$baseUrl/sessions/" + historyWorkout.id) {
-            contentType(ContentType.Application.Json)
+    suspend fun deleteHistoryWorkout(historyWorkoutId: String) {
+        client.delete("$baseUrl/sessions/$historyWorkoutId") {
         }
     }
 }
