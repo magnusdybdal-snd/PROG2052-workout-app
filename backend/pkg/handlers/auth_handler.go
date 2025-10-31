@@ -16,7 +16,7 @@ import (
 
 func genGoogleOauthConfig(clientId, ClientSecret string) *oauth2.Config {
 	return &oauth2.Config{
-		RedirectURL:  "com.example.workoutapp:/oauth2redirect",
+		RedirectURL:  "http://localhost",
 		ClientID:     clientId,
 		ClientSecret: ClientSecret,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
@@ -37,6 +37,7 @@ func HandleAuth(cfg *config.Config) http.HandlerFunc {
 			utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 			return
 		}
+		log.Println(payload)
 		googleOauthConfig := genGoogleOauthConfig(cfg.GOOGLE_CLIENT_ID, cfg.GOOGLE_CLIENT_SECRET)
 		token, err := googleOauthConfig.Exchange(ctx, payload.Code)
 		if err != nil {
@@ -59,6 +60,8 @@ func HandleAuth(cfg *config.Config) http.HandlerFunc {
 
 		userId := utils.EnsureInDB(googleId, email)
 		jwt, err := utils.CreateToken(userId, cfg.JWT_KEY)
+		log.Println(userId)
+		log.Println(jwt)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
@@ -67,6 +70,7 @@ func HandleAuth(cfg *config.Config) http.HandlerFunc {
 			Token:  jwt,
 			UserId: userId,
 		}
+		log.Printf("body: %v\n", result)
 		log.Println("Hello: ", userId)
 		utils.Encode(w, http.StatusOK, result)
 	}
