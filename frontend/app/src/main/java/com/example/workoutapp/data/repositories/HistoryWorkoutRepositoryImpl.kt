@@ -231,12 +231,17 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
 
     override suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
         try {
-            api.deleteHistoryWorkout(historyWorkout.id)
-            dao.deleteWorkoutById(historyWorkout.id)
-            Log.d("HistoryRepo", "Deleted workout ${historyWorkout.id} locally and remotely")
+            // Mark as deleted first ( soft delete )
+            dao.markAsDeleted(historyWorkout.id)
+            try {
+                api.deleteHistoryWorkout(historyWorkout.id)
+                dao.deleteWorkoutById(historyWorkout.id)
+                Log.d("HistoryRepo", "Deleted workout ${historyWorkout.id} locally and remotely")
+            } catch (e: Exception) {
+                Log.w("HistoryRepo", "Failed to delete ${historyWorkout.id} from API. Retry on next sync: ${e.message}")
+            }
         } catch (e: Exception) {
-            Log.w("HistoryRepo", "Failed to delete remote, removing locally anyway: ${e.message}")
-            dao.deleteWorkoutById(historyWorkout.id)
+            Log.w("HistoryRepo", "Failed to delete ${historyWorkout.id}: ${e.message}, marked for delete, will retry next sync")
         }
     }
 
