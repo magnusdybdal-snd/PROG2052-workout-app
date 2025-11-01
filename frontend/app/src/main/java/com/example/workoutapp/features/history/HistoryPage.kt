@@ -1,5 +1,6 @@
 package com.example.workoutapp.features.history
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,12 +29,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.workoutapp.R
+import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.ExerciseDetailPage
 import com.example.workoutapp.core.core_ui.composable.HistoryDisplayBox
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.modifiers.PageColumnModifier
 import com.example.workoutapp.core.core_ui.composable.PageHeading
+import com.example.workoutapp.domain.models.Exercise
 
 /**
  * Displays History page
@@ -50,6 +53,7 @@ fun HistoryPage(
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
     var showOverlay by remember { mutableStateOf(false) }
+
 
     // Checks if user navigates back to history and reloads the composable (refreshes histories)
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -102,14 +106,24 @@ fun HistoryPage(
                                 )
                         }
                         // Looping over each workout within the month
-                        workoutsInMonth.forEach {
-                            HistoryDisplayBox(it)
+                        workoutsInMonth.forEach { workout ->
+                            Box( // Wrap each session in a clickable box
+                                Modifier
+                                    .clickable {
+                                        val encoded = Uri.encode(workout.id) // id == sessionId string in DB/API
+                                        navController.navigate(Routes.historyDetailPage(encoded))
+                                    }
+                            ) {
+                                HistoryDisplayBox(it = workout)
+                            }
+                        }
                         }
                     }
                 }
+                }
             }
         }
-    }
-}
+
+
 
 

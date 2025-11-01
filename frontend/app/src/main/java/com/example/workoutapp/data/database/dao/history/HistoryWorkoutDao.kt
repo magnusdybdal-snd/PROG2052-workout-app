@@ -40,6 +40,9 @@ interface HistoryWorkoutDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(workouts: List<HistoryWorkoutEntity>)
 
+    @Query("SELECT * FROM history_workouts WHERE id = :id LIMIT 1")
+    fun observeById(id: String): Flow<HistoryWorkoutEntity?>
+
     @Query("SELECT * FROM history_workouts WHERE isSynced = 0")
     suspend fun getUnsyncedWorkouts(): List<HistoryWorkoutEntity>
 

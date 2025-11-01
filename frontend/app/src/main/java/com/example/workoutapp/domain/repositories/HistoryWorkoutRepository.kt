@@ -32,4 +32,11 @@ interface HistoryWorkoutRepository {
      * Posts a completed workout to the API and saves it locally.
      */
     suspend fun postHistoryWorkout(session: Session)
+
+    /**
+     * Gets a workout session by ID.
+     * Retrieves one specific workout session from the local database using its sessionId.
+     * Includes all nested exercises and sets. Returns null if the session doesn't exist.
+     */
+    suspend fun getHistoryWorkoutBySessionId(sessionId: String): HistoryWorkout?
 }

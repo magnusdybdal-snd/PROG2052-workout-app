@@ -227,4 +227,48 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
             Log.e("HistoryRepo", "Workout queued for sync: ${session.sessionId}, error: ${e.message}")
         }
     }
+
+/**
+ * Retrieves a single completed workout session (history workout) by its unique session ID.
+ *
+ * This method performs a lookup in the local Room database through the [HistoryWorkoutDao],
+ * returning a fully populated [HistoryWorkout] object containing all nested exercises and sets.
+ *
+ * The function is a suspend call and should be invoked from a coroutine or another suspend context.
+ */
+    override suspend fun getHistoryWorkoutBySessionId(sessionId: String): HistoryWorkout? {
+    Log.d("HistoryRepo", "Fetching workout details for sessionId=$sessionId")
+
+    val full = dao.getWorkoutHistoryWithExercises(sessionId)
+    if (full == null) {
+        Log.w("HistoryRepo", "No workout found in DB for sessionId=$sessionId")
+        return null
+    }
+
+    Log.d(
+        "HistoryRepo",
+        "Loaded workout '${full.workout.name}' with ${full.exercises.size} exercises"
+    )
+
+        return HistoryWorkout(
+            id = full.workout.id,
+            name = full.workout.name,
+            date = full.workout.date,
+            duration = full.workout.duration,
+            note = full.workout.note,
+            exercises = full.exercises.map { exerciseWithSets ->
+                WorkoutExercise(
+                    exerciseId = exerciseWithSets.exercise.exerciseId,
+                    name = exerciseWithSets.exercise.name,
+                    sets = exerciseWithSets.sets.map { setEntity ->
+                        Set(
+                            rep = setEntity.rep,
+                            kg = setEntity.kg,
+                            typeSet = setEntity.typeSet
+                        )
+                    }
+                )
+            }
+        )
+    }
 }
