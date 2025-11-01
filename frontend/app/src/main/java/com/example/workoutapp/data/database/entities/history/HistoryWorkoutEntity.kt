@@ -46,6 +46,9 @@ data class HistoryWorkoutEntity(
     /** Whether this workout is synced with the remote backend. */
     val isSynced: Boolean = false,
 
+    /** Wether this workout is marked for deletion */
+    val isDeleted: Boolean = false,
+
     /** Last modification timestamp (used to detect and resolve sync conflicts). */
     val lastModified: Long = System.currentTimeMillis()
 )

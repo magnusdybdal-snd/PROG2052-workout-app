@@ -48,7 +48,7 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
                 // On success update the state with data in exercises
                 getWorkoutTemplatesUseCase().collect { data ->
                     _uiState.value = ActiveWorkoutUiState(
-                        templates = data.sortedBy { it.createdAt },
+                        templates = data.sortedByDescending { it.createdAt },
                         isLoading = false
                     )
                 }
