@@ -22,12 +22,12 @@ fun ExerciseDetailTextField(
         Text(
             text = "$label: ",
             fontWeight = FontWeight.Bold,
-            color = cs.onTertiary
+            color = cs.onBackground
 
         )
         Text(
             text = values.joinToString(", "),
-            color = cs.onTertiary
+            color = cs.onBackground
         )
     }
     Spacer(Modifier.height(6.dp))
