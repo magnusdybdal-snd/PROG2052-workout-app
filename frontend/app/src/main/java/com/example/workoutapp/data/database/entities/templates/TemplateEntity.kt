@@ -33,6 +33,9 @@ data class TemplateEntity(
     /** Whether this workout is synced with the remote backend. */
     val isSynced: Boolean = false,
 
+    /** Mark the template for deletion. Used to make sure API and Room are synced, also when offline */
+    val isDeleted : Boolean = false,
+
     /** Created timestamp. */
     val createdAt: LocalDateTime
 )

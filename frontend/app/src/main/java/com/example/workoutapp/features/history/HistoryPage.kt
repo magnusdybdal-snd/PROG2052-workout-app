@@ -54,7 +54,6 @@ fun HistoryPage(
     val cs = MaterialTheme.colorScheme
     var showOverlay by remember { mutableStateOf(false) }
 
-
     // Checks if user navigates back to history and reloads the composable (refreshes histories)
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     LaunchedEffect(currentBackStackEntry) {
@@ -114,16 +113,16 @@ fun HistoryPage(
                                         navController.navigate(Routes.historyDetailPage(encoded))
                                     }
                             ) {
-                                HistoryDisplayBox(it = workout)
+                                HistoryDisplayBox(
+                                    it = workout,
+                                    viewModel)
                             }
-                        }
                         }
                     }
                 }
-                }
             }
         }
-
-
+    }
+}
 
 

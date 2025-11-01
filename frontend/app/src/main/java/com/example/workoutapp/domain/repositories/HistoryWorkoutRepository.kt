@@ -3,6 +3,7 @@ package com.example.workoutapp.domain.repositories
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.Session
+import com.example.workoutapp.domain.models.WorkoutTemplate
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -39,4 +40,8 @@ interface HistoryWorkoutRepository {
      * Includes all nested exercises and sets. Returns null if the session doesn't exist.
      */
     suspend fun getHistoryWorkoutBySessionId(sessionId: String): HistoryWorkout?
+    /**
+     * Deletes a workout to the API and removes it locally.
+     */
+    suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout)
 }

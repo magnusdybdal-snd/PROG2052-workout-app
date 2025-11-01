@@ -5,6 +5,7 @@ object Routes {
     const val WORKOUT = "workout"
     const val EXERCISES = "exercises"
     const val NEWTEMP = "newTemp"
+    const val EDITTEMP = "editTemp/{tempId}"
     const val WORKTEMP = "workTemp/{tempId}"
 
     // HistoryDetail

@@ -9,6 +9,7 @@
     <string name="add_exercise">Add exercise</string>
     <string name="add_workout">Add workout</string>
     <string name="add_template">Add template</string>
+    <string name="add_set">Add set</string>
 
     <string name="workouts">Workouts</string>
     <string name="history">History</string>
@@ -18,6 +19,7 @@
     <string name="cancel">Cancel</string>
     <string name="done_set">Done set</string>
     <string name="finish">Finish</string>
+    <string name="save_template">Save template</string>
     <string name="finish_workout">Finish workout</string>
     <string name="workout_notes">Workout notes</string>
 </resources>

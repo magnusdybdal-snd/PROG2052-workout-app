@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.domain.usecases.DeleteWorkoutTemplateUseCase
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +25,8 @@ data class WorkoutTemplatesUiState(
 
 @HiltViewModel
 class WorkoutTemplatesViewModel @Inject constructor(
-    private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase
+    private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase,
+    private val deleteWorkoutTemplatesUseCase: DeleteWorkoutTemplateUseCase,
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutTemplatesUiState())
@@ -46,7 +49,7 @@ class WorkoutTemplatesViewModel @Inject constructor(
 
                     _uiState.value = WorkoutTemplatesUiState(
                         isLoading = false,
-                        workoutTemplates = templates.sortedBy { it.createdAt },
+                        workoutTemplates = templates.sortedByDescending { it.createdAt },
                     )
                 }
                 .catch { e ->
@@ -66,6 +69,16 @@ class WorkoutTemplatesViewModel @Inject constructor(
                 getWorkoutTemplatesUseCase.syncNow()
             } catch (e: Exception) {
                 Log.e("TemplateViewModel", "Sync failed: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteTemplate(workoutTemplate: WorkoutTemplate) {
+        viewModelScope.launch {
+            try {
+                deleteWorkoutTemplatesUseCase(workoutTemplate)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message ?: "Failed to delete template") }
             }
         }
     }
