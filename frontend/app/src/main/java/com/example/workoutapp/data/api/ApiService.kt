@@ -140,9 +140,22 @@ class ApiService @Inject constructor(
     }
 
 
-    suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
-        client.delete("$baseUrl/sessions/" + historyWorkout.id) {
+    suspend fun deleteHistoryWorkout(historyWorkoutId: String) {
+        client.delete("$baseUrl/sessions/$historyWorkoutId") {
+        }
+    }
+
+    /**
+     * Updates an existing history workout on the backend.
+     *
+     * Syncs local changes to the historyWorkout (name, exercises, sets) with the backend.
+     *
+     * @param historyWorkout The historyWorkout with updated data
+     */
+    suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout) {
+        client.put("$baseUrl/templates/${historyWorkout.id}") {
             contentType(ContentType.Application.Json)
+            setBody(historyWorkout)
         }
     }
 }

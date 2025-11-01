@@ -44,4 +44,8 @@ interface HistoryWorkoutRepository {
      * Deletes a workout to the API and removes it locally.
      */
     suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout)
+
+    suspend fun syncDeleteTemplates()
+
+    suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout)
 }

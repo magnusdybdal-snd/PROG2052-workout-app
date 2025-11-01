@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.HistoryWorkout
-import com.example.workoutapp.domain.models.Session
-import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.usecases.DeleteHistoryWorkoutUseCase
 import com.example.workoutapp.domain.usecases.GetHistoryWorkoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -94,7 +92,7 @@ class HistoryViewModel @Inject constructor(
             try {
                 deleteHistoryWorkoutUseCase(historyWorkout)
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "Failed to delete template") }
+                _uiState.update { it.copy(error = e.message ?: "Failed to delete historyWorkout") }
             }
         }
     }
