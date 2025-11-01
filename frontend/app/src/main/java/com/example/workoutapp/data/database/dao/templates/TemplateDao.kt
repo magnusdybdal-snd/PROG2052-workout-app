@@ -1,6 +1,7 @@
 package com.example.workoutapp.data.database.dao.templates
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -12,9 +13,9 @@ import com.example.workoutapp.data.database.entities.templates.TemplateWithExerc
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Data Access Object (DAO) for managing [TemplateEntity] records in the local Rooom database.
+ * Data Access Object (DAO) for managing [TemplateEntity] records in the local Room database.
  *
- * This interface providees methods for:
+ * This interface provides methods for:
  * - Observing all stored templates as a [kotlinx.coroutines.flow.Flow] for reactive UI updates
  * - Inserting or replacing templates
  * - Retrieving templates that haven't been synced with the backend API
@@ -31,8 +32,13 @@ interface TemplateDao {
     //  Basic operations
     //--------------------------
 
-    @Query("SELECT * FROM templates ORDER BY createdAt DESC")
+    // Get all templates that are not marked for deletion
+    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
     fun getAllTemplates(): Flow<List<TemplateEntity>>
+
+    // Gets all templates that are synced to API and marked for delete.
+    @Query("SELECT * FROM templates WHERE isDeleted = 1 AND isSynced = 1")
+    suspend fun getDeletedAndSyncedTemplates(): List<TemplateEntity>
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insert(template: TemplateEntity)
@@ -40,26 +46,51 @@ interface TemplateDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(templates: List<TemplateEntity>)
 
-    @Query("SELECT * FROM templates WHERE isSynced = 0")
+    @Query("SELECT * FROM templates WHERE isSynced = 0 AND isDeleted = 0")
     suspend fun getUnsyncedTemplates(): List<TemplateEntity>
 
     @Query("UPDATE templates SET isSynced = 1 WHERE id = :id")
     suspend fun markAsSynced(id: String)
 
+    @Query("UPDATE templates SET isSynced = 0 WHERE id = :id")
+    suspend fun markAsUnsynced(id: String)
+
+    // Get all templates from Room once (not reactive)
+    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
+    suspend fun getAllTemplatesSnapshot(): List<TemplateEntity>
+
+    @Query("DELETE FROM templates WHERE id = :id")
+    suspend fun deleteById(id: String)
+
+    @Query("UPDATE templates SET isDeleted = 1 WHERE id = :id")
+    suspend fun markAsDeleted(id: String)
+
+    @Query("DELETE FROM template_exercise WHERE templateId = :templateId")
+    suspend fun deleteExercisesByTemplateId(templateId: String)
+
     @Transaction
     @Query("DELETE FROM templates")
     suspend fun clearAll()
 
-    // Get all templates from Room once (not reactive)
-    @Query("SELECT * FROM templates ORDER BY createdAt DESC")
-    suspend fun getAllTemplatesSnapshot(): List<TemplateEntity>
+    @Transaction
+    suspend fun updateTemplateExercises(
+        templateId: String,
+        template: TemplateEntity,
+        exercises: List<TemplateExerciseEntity>,
+        sets: List<TemplateSetEntity>
+    ) {
+        deleteExercisesByTemplateId(templateId)
+        insert(template)
+        insertExercises(exercises)
+        insertSets(sets)
+    }
 
     //--------------------------
     //  Nested relationships
     //--------------------------
 
     @Transaction
-    @Query("SELECT * FROM templates ORDER BY createdAt DESC")
+    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
     fun getAllTemplatesWithExercises(): Flow<List<TemplateWithExercises>>
 
     @Transaction

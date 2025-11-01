@@ -19,6 +19,6 @@ interface WorkoutTemplateRepository {
     suspend fun postWorkoutTemplate(newTemplate: NewTemplate)
     suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate)
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate)
-
+    suspend fun syncDeletedTemplates()
     fun observeTemplates(): Flow<List<WorkoutTemplate>>
 }

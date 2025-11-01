@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
@@ -46,6 +47,7 @@ import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifie
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
+import kotlinx.coroutines.launch
 
 /**viewmodel
  * Displays Workout page
@@ -55,7 +57,7 @@ fun EditTemplatePage(
     templateId: Int,
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ActWorkViewModel = hiltViewModel()
+    viewModel: EditTemplateViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
@@ -71,6 +73,10 @@ fun EditTemplatePage(
                 return
             }
 
+            // state variables for save feedback
+            var isSaving by remember { mutableStateOf(false) }
+            var showSaveSuccess by remember { mutableStateOf(false) }
+
             Column(
                 modifier = Modifier.verticalScroll(
                     state= rememberScrollState()
@@ -84,9 +90,19 @@ fun EditTemplatePage(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.padding(horizontal = 20.dp)
                 ) {
+                    if (showSaveSuccess) {
+                        Text(
+                            text = "Template saved successfully",
+                            color = cs.onBackground,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+
                     RoundedButton(
-                        buttonText = stringResource(R.string.save_template),
+                        buttonText = if (isSaving) "Saving..." else stringResource(R.string.save_template),
                         onClick = {
+                            isSaving = true
                             val editedWorkout = WorkoutTemplate(
                                 templateId = template.templateId,
                                 name = template.name,
@@ -94,7 +110,13 @@ fun EditTemplatePage(
                                 exercises = template.exercises
                             )
                             viewModel.editTemplate(editedWorkout)
-                            navController.popBackStack()
+                            showSaveSuccess = true
+                            isSaving = false
+
+                            viewModel.viewModelScope.launch {
+                                kotlinx.coroutines.delay(1500)
+                                navController.popBackStack()
+                            }
                         },
                     )
 

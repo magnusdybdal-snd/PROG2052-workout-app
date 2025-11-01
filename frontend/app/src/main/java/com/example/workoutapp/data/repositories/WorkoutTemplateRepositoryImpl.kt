@@ -61,6 +61,10 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
      * 2. Pull updated templates from the API and merge them locally
      */
     override suspend fun getWorkoutTemplates(): List<WorkoutTemplate> {
+
+        // Step 0 : sync deleted templates ( retry API deletion )
+        syncDeletedTemplates()
+
         // Step 1: Post unsynced templates to API
         val unsyncedTemplates = dao.getUnsyncedTemplates()
         unsyncedTemplates.forEach { local ->
@@ -97,7 +101,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
 
         // Step 2: Pull latest templates from backend
-        val remoteTemplate = try {
+        val remoteTemplates = try {
             api.getWorkoutTemplates().map { dto ->
                 val templateEntity = TemplateEntity(
                     id = dto.templateId,
@@ -137,15 +141,20 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
 
         // Step 3: Insert locally
-        if(remoteTemplate.isNotEmpty()) {
+        val locallyDeletedIds = dao.getDeletedAndSyncedTemplates().map { it.id }.toSet()
+        val templatesToInsert = remoteTemplates.filter { (template, _,_) ->
+            template.id !in locallyDeletedIds
+        }
+
+        if(templatesToInsert.isNotEmpty()) {
             try {
-                dao.insertFullTemplates(remoteTemplate)
+                dao.insertFullTemplates(templatesToInsert)
             } catch (e: Exception) {
                 Log.e("TemplateRepo", "Failed inserting templates: ${e.message}")
             }
         }
 
-        Log.d("TemplateRepo", "Fetched ${remoteTemplate.size} remote templates")
+        Log.d("TemplateRepo", "Fetched ${templatesToInsert.size} remote templates")
         Log.d("TemplateRepo", "Local DB now has ${dao.getAllTemplatesSnapshot().size} templates")
 
         // Step 4: Return local data from DB (local first)
@@ -202,20 +211,97 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             Log.w("TemplateRepo", "Template queued for sync: ${newTemplate.templateId}, error: ${e.message}")
         }
     }
+
     override suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
         try {
-            api.deleteWorkoutTemplate(workoutTemplate)
-            dao.markAsSynced(workoutTemplate.templateId)
+            // Mark as deleted locally first ( soft delete )
+            dao.markAsDeleted(workoutTemplate.templateId)
+            Log.d("TemplateRepo", "Marked template ${workoutTemplate.templateId} as deleted")
+
+            try {
+                // If API deletion is successful, also delete from ROOM
+                api.deleteWorkoutTemplate(workoutTemplate.templateId)
+                dao.deleteById(workoutTemplate.templateId)
+                Log.d("TemplateRepo", "template ${workoutTemplate.templateId} deleted from API and ROOM")
+            } catch (e: Exception) {
+                Log.w("TemplateRepo", "Failed to delete ${workoutTemplate.templateId} from API. Retry on next sync: ${e.message}")
+            }
         } catch (e: Exception) {
-            Log.w("TemplateRepo", "Template queued for sync: ${workoutTemplate.templateId}, error: ${e.message}")
+            Log.e("TemplateRepo", "Failed to delete template: ${workoutTemplate.templateId}: ${e.message}")
         }
     }
+
+    // Add sync method for deleted items
+    override suspend fun syncDeletedTemplates() {
+        val deletedTemplates = dao.getDeletedAndSyncedTemplates()
+        deletedTemplates.forEach { template ->
+            try {
+                api.deleteWorkoutTemplate(template.id)
+                dao.deleteById(template.id) // Actually delete after API confirms
+                Log.d("TemplateRepo", "Synced delete for template ${template.id}")
+            } catch (e: Exception) {
+                Log.w("TemplateRepo", "Failed to sync delete for ${template.id}: ${e.message}")
+            }
+        }
+    }
+
     override suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
+        // Store the room object to be edited
+        val existingTemplate = dao.getTemplateWithExercises(workoutTemplate.templateId)
+
+        // Check that template was found in Room, if not return early
+        if (existingTemplate == null) {
+            Log.e("TemplateRepo", "Template not found in Room: ${workoutTemplate.templateId}")
+            return
+        }
+
+        // Rebuild the new, updated template
+        val templateEntity = TemplateEntity(
+            id = workoutTemplate.templateId,
+            name = workoutTemplate.name,
+            isSynced = false,                // Set to false again, will reload to API
+            isDeleted = false,
+            createdAt = existingTemplate.template.createdAt
+        )
+
+        val exerciseEntities = workoutTemplate.exercises.map { templateExercise ->
+            TemplateExerciseEntity(
+                id = UUID.randomUUID().toString(),
+                templateId = workoutTemplate.templateId,
+                exerciseId = templateExercise.exerciseId,
+                name = templateExercise.name
+            )
+        }
+
+        val setEntities = workoutTemplate.exercises.flatMapIndexed { idx, templateExercise ->
+            val parentExerciseId = exerciseEntities[idx].id
+            templateExercise.sets.map { set ->
+                TemplateSetEntity(
+                    id = UUID.randomUUID().toString(),
+                    exerciseEntityId = parentExerciseId,
+                    rep = set.rep,
+                    kg = set.kg,
+                    typeSet = set.typeSet
+                )
+            }
+        }
+
+        // Update the Room entry with the new data
+        try {
+            dao.updateTemplateExercises(workoutTemplate.templateId, templateEntity, exerciseEntities, setEntities)
+            Log.d("TemplateRepo", "Updated template ${workoutTemplate.templateId} in Room")
+        } catch (e: Exception) {
+            Log.e("TemplateRepo", "Failed to update template ${workoutTemplate.templateId} in Room: ${e.message}")
+            return
+        }
+
+        // Sync new data with API
         try {
             api.editWorkoutTemplate(workoutTemplate)
             dao.markAsSynced(workoutTemplate.templateId)
+            Log.d("TemplateRepo", "Synced template ${workoutTemplate.templateId} to API")
         } catch (e: Exception) {
-            Log.w("TemplateRepo", "Template queued for sync: ${workoutTemplate.templateId}, error: ${e.message}")
+            Log.w("TemplateRepo", "Template ${workoutTemplate.templateId} Could not sync to API, queued for sync: ${e.message}")
         }
     }
 }
