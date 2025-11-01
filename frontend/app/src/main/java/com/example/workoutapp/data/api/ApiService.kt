@@ -3,6 +3,7 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.domain.models.AuthResponse
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.Session
@@ -31,6 +32,17 @@ class ApiService @Inject constructor(
     private val client: HttpClient,
     private val baseUrl: String
 ) {
+    /**
+     *  /POST
+     *  Request jwt token from the backend.
+     *  used for user authenticated data
+    * */
+    suspend fun loginWithGoogle(code: String): AuthResponse {
+        return client.post("$baseUrl/auth/google") {
+            contentType(ContentType.Application.Json)
+            setBody(mapOf("code" to code))
+        }.body()
+    }
 
     //===========================================
     // EXERCISE LIBRARY ENDPOINTS

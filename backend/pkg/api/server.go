@@ -18,11 +18,13 @@ import (
 )
 
 func newServer(
+	cfg *config.Config,
 	container *di.ServiceContainer,
 ) http.Handler {
 	mux := http.NewServeMux()
 	addRoutes(
 		mux, 
+		cfg,
 		container,
 	)
 
@@ -50,7 +52,7 @@ func Run(ctx context.Context, w io.Writer, args []string) error {
 	defer container.Logger.Sync()
 	
 	// Setting up routes and starting http server
-	srv := newServer(container) // injecting services
+	srv := newServer(cfg,container) // injecting services
 	httpServer := &http.Server{
 		Addr:    net.JoinHostPort(cfg.Host, cfg.Port),
 		Handler: srv,

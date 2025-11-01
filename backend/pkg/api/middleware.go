@@ -1,15 +1,21 @@
 package api
 
 import (
+	"context"
+	"fmt"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/api/config"
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/utils"
 	"go.uber.org/zap"
 )
 
 /*
-	Top level Middleware
-	used in all endpoints
+Top level Middleware
+used in all endpoints
 */
 func CorsMiddleware() func(h http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -35,20 +41,35 @@ func LoggingMiddleware(logger *zap.Logger) func(h http.Handler) http.Handler {
 			start := time.Now()
 
 			duration := time.Since(start)
-			next.ServeHTTP(w,r)
+			next.ServeHTTP(w, r)
 			logger.Info("HTTP Request",
 				zap.String("method", r.Method),
-				zap.String("url",r.URL.Path),
-				zap.Duration("duration",duration),
-				zap.String("remote_addr",r.RemoteAddr))
+				zap.String("url", r.URL.Path),
+				zap.Duration("duration", duration),
+				zap.String("remote_addr", r.RemoteAddr))
 		})
 	}
 }
 
 // Middleware to authenticate the user
-func AuthenticateUser(h http.HandlerFunc) http.Handler {
-	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request)  {
-		
-		h(w,r)
+func AuthenticateUser(cfg *config.Config, next http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			utils.HandleError(w, http.StatusUnauthorized, fmt.Errorf("missing token"), utils.ErrMsgUnauthorized)
+			return
+		}
+		tokenStr := authHeader[len("Bearer "):]
+		token, _ := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			return []byte(cfg.JWT_KEY), nil
+		})
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			userId := claims["userId"].(string)
+			ctx := context.WithValue(r.Context(), "userId", userId)
+			log.Println("successfully authenticated")
+			next(w, r.WithContext(ctx))
+		} else {
+			utils.HandleError(w, http.StatusUnauthorized, fmt.Errorf("invalid token"), utils.ErrMsgUnauthorized)
+		}
 	})
 }

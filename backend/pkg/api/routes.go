@@ -3,12 +3,14 @@ package api
 import (
 	"net/http"
 
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/api/config"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/di"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/handlers"
 )
 
 func addRoutes(
 	mux *http.ServeMux, 
+	cfg *config.Config,
 	container *di.ServiceContainer,
 ) {
 	// Home route
@@ -31,6 +33,11 @@ func addRoutes(
 	mux.Handle(TEMPLATES_ROUTE, handlers.HandleTemplate(container.TemplateService))
 	// GET /templates/{templateId}
 	mux.Handle(TEMPLATES_ID_ROUTE,handlers.HandleOneTemplate(container.TemplateService))
+
+	// POST /auth/google
+	mux.Handle(AUTH_ROUTE, handlers.HandleAuth(cfg))
+
+	mux.Handle(API_ROUTE + "/helloAuth", AuthenticateUser(cfg,handlers.HelloAuth()))
 
 	// Media
 	mux.Handle(MEDIA_ROUTE,http.StripPrefix(MEDIA_ROUTE, handlers.HandleMedia()))

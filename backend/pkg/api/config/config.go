@@ -8,17 +8,21 @@ import (
 )
 
 type Config struct {
-	Host string
-	Port string
-	UriDB string 
-	Mode string
+	Host                 string
+	Port                 string
+	UriDB                string
+	Mode                 string
+	JWT_KEY              string
+	GOOGLE_CLIENT_ID     string
+	GOOGLE_CLIENT_SECRET string
 }
 
 func LoadConfig() *Config {
-	err := godotenv.Load(); if err != nil {
+	err := godotenv.Load()
+	if err != nil {
 		log.Println("No .env file present")
 	}
-	
+
 	host := os.Getenv("HOST")
 	if host == "" {
 		host = "0.0.0.0"
@@ -28,7 +32,7 @@ func LoadConfig() *Config {
 	if port == "" {
 		port = "8080"
 	}
-	
+
 	UriDb := os.Getenv("MONGO_URI")
 	if port == "" {
 		log.Fatal("MONGO_URI is required but not set")
@@ -37,11 +41,28 @@ func LoadConfig() *Config {
 	if mode == "" {
 		mode = "PRODUCTION"
 	}
+	key := os.Getenv("JWT_KEY")
+	if key == "" {
+		log.Fatal("JWT_KEY not found")
+	}
+
+	clientId := os.Getenv("GOOGLE_CLIENT_ID")
+	if clientId == "" {
+		log.Fatal("No client id found")
+	}
+
+	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
+	if clientSecret == "" {
+		log.Fatal("no client secret found")
+	}
 
 	return &Config{
-		Host: host,
-		Port: port,
-		UriDB: UriDb,
-		Mode: mode,
+		Host:                 host,
+		Port:                 port,
+		UriDB:                UriDb,
+		Mode:                 mode,
+		JWT_KEY:              key,
+		GOOGLE_CLIENT_SECRET: clientSecret,
+		GOOGLE_CLIENT_ID:     clientId,
 	}
 }
