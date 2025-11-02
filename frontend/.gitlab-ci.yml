@@ -14,21 +14,21 @@ cache:
     - frontend/.gradle/caches/
     - frontend/.gradle/wrapper/
 
-build_android_debug:
+before_script:
+  - cd "$ANDROID_PROJECT_DIR"
+  - chmod +x gradlew
+
+build_android_debug: # Build
   stage: build
-  before_script:
-    - cd "$ANDROID_PROJECT_DIR"
-    - chmod +x gradlew
-    - ./gradlew --version
   script:
     - ./gradlew clean
     - ./gradlew assembleDebug --stacktrace --no-daemon -x test
-    # -x test excludes the test task
-    # --stacktrace gives good debug info 
-    # --no-daemon prevents background process from interveinging.
-  artifacts:
-    when: on_failure
-    paths:
-      - $ANDROID_PROJECT_DIR/app/build/outputs/**/*
+  only:
+    - merge_request
+
+test_android_unit: # Unit test
+  stage: test
+  script:
+    - ./gradlew testDebugUnitTest --stacktrace --no-daemon
   only:
     - merge_requests
