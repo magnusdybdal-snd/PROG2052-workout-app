@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.junit.ktx)
     val roomVersion = "2.8.2"
 
     implementation("androidx.room:room-runtime:$roomVersion")
