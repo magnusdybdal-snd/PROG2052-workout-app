@@ -1,6 +1,7 @@
 // MainScreen.kt
 package com.example.workoutapp.app
 
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -27,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
+import com.example.workoutapp.features.history_detail.HistoryDetailPage
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
 import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
@@ -117,6 +119,18 @@ fun MainScreen(
             ) { backStackEntry ->
                 val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
                 ActiveWorkoutPage(templateId.toInt(), Modifier, navController)
+            }
+
+            composable(
+                route = Routes.HISTORY_DETAIL,
+                arguments = listOf(navArgument("workoutId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val arg = backStackEntry.arguments?.getString("workoutId") ?: ""
+                val workoutId = Uri.decode(arg) // safe if you encoded
+                HistoryDetailPage(
+                    sessionId = workoutId,
+                    navController = navController
+                )
             }
         }
     }

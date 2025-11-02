@@ -8,4 +8,8 @@ object Routes {
     const val NEWTEMP = "newTemp"
     const val EDITTEMP = "editTemp/{tempId}"
     const val WORKTEMP = "workTemp/{tempId}"
+
+    // HistoryDetail
+    const val HISTORY_DETAIL = "historyDetail/{workoutId}"
+    fun historyDetailPage(workoutId: String) = "historyDetail/$workoutId"
 }

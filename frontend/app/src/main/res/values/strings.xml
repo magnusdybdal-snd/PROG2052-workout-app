@@ -5,6 +5,7 @@
     <string name="reps">REPS</string>
     <string name="sets">SETS</string>
     <string name="kg">KG</string>
+    <string name="volume">VOLUME</string>
 
     <string name="add_exercise">Add exercise</string>
     <string name="add_workout">Add workout</string>
