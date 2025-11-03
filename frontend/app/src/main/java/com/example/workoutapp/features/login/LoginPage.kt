@@ -34,7 +34,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_navigation.Routes
+import kotlinx.coroutines.delay
 
+
+const val welcomeDelay: Long = 2000
 @Composable
 fun LoginPage(
     modifier: Modifier = Modifier,
@@ -67,13 +70,6 @@ fun LoginPage(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-        }
-    }
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
-            navController.navigate(Routes.WORKOUT) {
-                popUpTo(Routes.LOGIN) { inclusive = true }
             }
         }
     }
@@ -121,11 +117,19 @@ fun LoginPage(
             }
 
             if (loginState is LoginState.Success) {
+                val name = (loginState as LoginState.Success).name
                 Text(
-                    text = "Welcome, ${(loginState as LoginState.Success).userId}",
+                    text = "Welcome, $name",
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp
                 )
+                // Side effect for delaying hello message
+                LaunchedEffect(loginState) {
+                    delay(welcomeDelay) // 2 seconds
+                    navController.navigate(Routes.WORKOUT) {
+                        popUpTo(0)
+                    }
+                }
             }
         }
     }

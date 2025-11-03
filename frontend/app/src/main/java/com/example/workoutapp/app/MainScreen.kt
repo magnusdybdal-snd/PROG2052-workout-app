@@ -14,6 +14,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -66,7 +67,6 @@ fun MainScreen(
         currentDestination.isOnRoute(item.route)}
 
     val token by preferences.token.collectAsState(initial = null)
-    val startDestination = if (isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
 
     Scaffold(
         bottomBar = {
@@ -99,9 +99,23 @@ fun MainScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = startDestination, // First page, client would see
+            startDestination = Routes.SPLASH, // First page, client would see
             modifier = modifier.padding(innerPadding)
         ) {
+            composable(Routes.SPLASH) {
+                LaunchedEffect(token) {
+                    if (token != null && !isTokenExpired(token)) {
+                        navController.navigate(Routes.WORKOUT) {
+                            popUpTo(Routes.LOGIN) { inclusive = true }
+                        }
+                    } else if (token == null || isTokenExpired(token)) {
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.WORKOUT) { inclusive=true }
+                        }
+                    }
+                }
+                Text("Loading...")
+            }
             composable(Routes.LOGIN)     { LoginPage(Modifier,navController) }
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }
@@ -135,6 +149,7 @@ fun MainScreen(
             }
         }
     }
+
 }
 
 private fun NavDestination?.isOnRoute(route: String): Boolean {

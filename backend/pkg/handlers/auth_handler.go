@@ -19,7 +19,7 @@ func genGoogleOauthConfig(clientId, ClientSecret string) *oauth2.Config {
 		RedirectURL:  "http://localhost",
 		ClientID:     clientId,
 		ClientSecret: ClientSecret,
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
+		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}
 }
@@ -54,12 +54,13 @@ func HandleAuth(cfg *config.Config) http.HandlerFunc {
 		var userInfo map[string]interface{}
 		json.NewDecoder(resp.Body).Decode(&userInfo)
 
-		email := userInfo["email"].(string)
+		name := userInfo["name"].(string)
 		googleId := userInfo["id"].(string)
+		log.Printf("name: %v\n", name)
 
-		userId := utils.EnsureInDB(googleId, email)
+		userId := utils.EnsureInDB(googleId, name)
+
 		jwt, err := utils.CreateToken(userId, cfg.JWT_KEY)
-		log.Println(userId)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
@@ -67,9 +68,9 @@ func HandleAuth(cfg *config.Config) http.HandlerFunc {
 		result := utils.AuthResponse{
 			Token:  jwt,
 			UserId: userId,
+			Name:   name,
 		}
-		log.Printf("body: %v\n", result)
-		log.Println("Hello: ", userId)
+
 		utils.Encode(w, http.StatusOK, result)
 	}
 }
