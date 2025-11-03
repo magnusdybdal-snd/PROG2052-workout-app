@@ -13,9 +13,12 @@ type TemplateRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *TemplateRepository) FindAll(ctx context.Context) ([]domain.Template, error) {
+func (r *TemplateRepository) FindAll(ctx context.Context, userId int) ([]domain.Template, error) {
 	var data []domain.Template
-	cursor, err := r.Coll.Find(ctx, bson.M{})
+
+	filter := bson.M{"userId": userId}
+
+	cursor, err := r.Coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +27,7 @@ func (r *TemplateRepository) FindAll(ctx context.Context) ([]domain.Template, er
 	}
 	defer cursor.Close(ctx)
 	if len(data) == 0 {
-		return nil, fmt.Errorf("no data found")
+		return nil, fmt.Errorf("no data found for user")
 	}
 
 	return data, nil
@@ -59,7 +62,7 @@ func (r *TemplateRepository) Update(ctx context.Context, id string, data interfa
 		return "", err
 	}
 	if result.MatchedCount == 0 {
-		return "", fmt.Errorf("no template found with this id: %s",id)
+		return "", fmt.Errorf("no template found with this id: %s", id)
 	}
 	return id, nil
 }

@@ -14,15 +14,15 @@ import (
 )
 
 type mockTemplateService struct {
-	GetAllFunc func(ctx context.Context, include bool) (interface{}, error)
+	GetAllFunc func(ctx context.Context, userId int, include bool) (interface{}, error)
 	GetOneFunc func(ctx context.Context, id string, include bool) (interface{}, error)
 	CreateFunc func(ctx context.Context, payload *domain.Template) (string, error)
 	UpdateFunc func(ctx context.Context, id string, payload interface{}) (string, error)
 	DeleteFunc func(ctx context.Context, id string) (string, error)
 }
 
-func (m *mockTemplateService) GetAll(ctx context.Context, include bool) (interface{}, error) {
-	return m.GetAllFunc(ctx, include)
+func (m *mockTemplateService) GetAll(ctx context.Context, userId int, include bool) (interface{}, error) {
+	return m.GetAllFunc(ctx, userId, include)
 }
 
 func (m *mockTemplateService) GetOne(ctx context.Context, id string, include bool) (interface{}, error) {
@@ -43,7 +43,7 @@ func (m *mockTemplateService) Delete(ctx context.Context, id string) (string, er
 
 func TestHandleTemplate_GetAll(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		GetAllFunc: func(ctx context.Context, include bool) (interface{}, error) {
+		GetAllFunc: func(ctx context.Context, userId int, include bool) (interface{}, error) {
 			return []domain.Template{
 				{TemplateId: "tmp_001", Name: "Upper Body"},
 				{TemplateId: "tmp_002", Name: "Lower Body"},
@@ -98,7 +98,6 @@ func TestHandleOneTemplate_GetOne(t *testing.T) {
 		t.Errorf("expected tmp_001, got %s", tpl.TemplateId)
 	}
 }
-
 
 func TestHandleTemplate_Post(t *testing.T) {
 	mockSvc := &mockTemplateService{
@@ -168,4 +167,3 @@ func TestHandleOneTemplate_Delete(t *testing.T) {
 		t.Errorf("expected tmp_001, got %s", result["id"])
 	}
 }
-

@@ -98,6 +98,8 @@ fun LoginPage(
 
             when (loginState) {
                 is LoginState.Loading -> CircularProgressIndicator()
+
+                is LoginState.Success -> {} // hides button
                 else -> Button(
                     onClick = { launcher.launch(googleSignInClient.signInIntent) },
                     modifier = Modifier.fillMaxWidth()

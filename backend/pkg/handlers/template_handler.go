@@ -26,11 +26,11 @@ func HandleTemplate(serv domain.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
-
+		userID := r.Context().Value("userId").(int)
 		switch r.Method {
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
-			data, err := serv.GetAll(ctx, include)
+			data, err := serv.GetAll(ctx, userID, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -103,7 +103,7 @@ func HandleOneTemplate(serv domain.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return
 			}
-			utils.Encode(w, http.StatusOK,map[string]string{
+			utils.Encode(w, http.StatusOK, map[string]string{
 				"id":      result,
 				"message": "successfuly patched document on id",
 			})

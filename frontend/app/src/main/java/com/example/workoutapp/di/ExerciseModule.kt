@@ -1,6 +1,7 @@
 package com.example.workoutapp.di
 
 import com.example.workoutapp.data.api.ApiService
+import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.data.repositories.ExercisesRepositoryImpl
 import com.example.workoutapp.domain.repositories.ExercisesRepository
 import com.example.workoutapp.domain.usecases.GetExercisesUseCase
@@ -23,8 +24,9 @@ object ExerciseModule {
     @Singleton  // Only one API service will be created over the app
     fun provideApiService(
         client: HttpClient,
-        baseUrl: String
-    ): ApiService = ApiService(client, baseUrl)
+        baseUrl: String,
+        preferences: UserPreferences
+    ): ApiService = ApiService(client, baseUrl,preferences)
 
     // Provides the repository implementation, but exposes it as the interface type.
     // This decouples the rest of the app from the concrete implementation.

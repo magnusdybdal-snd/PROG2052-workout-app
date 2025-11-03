@@ -8,21 +8,21 @@ import (
 
 type TemplateServiceImpl struct {
 	RepoTempl domain.TemplateRepository
-	RepoExer domain.ExerciseRepository
+	RepoExer  domain.ExerciseRepository
 }
 
 func NewTemplateService(
-	rTempl domain.TemplateRepository, 
+	rTempl domain.TemplateRepository,
 	rExer domain.ExerciseRepository,
 ) *TemplateServiceImpl {
 	return &TemplateServiceImpl{
 		RepoTempl: rTempl,
-		RepoExer: rExer,
+		RepoExer:  rExer,
 	}
 }
 
-func (s *TemplateServiceImpl) GetAll(ctx context.Context, include bool) (interface{}, error) {
-	templ, err := s.RepoTempl.FindAll(ctx)
+func (s *TemplateServiceImpl) GetAll(ctx context.Context, userId int, include bool) (interface{}, error) {
+	templ, err := s.RepoTempl.FindAll(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (s *TemplateServiceImpl) GetAll(ctx context.Context, include bool) (interfa
 			}
 			newTemplate.Exercises = append(newTemplate.Exercises, domain.ExpandedExerciseTemplate{
 				Exercise: ex,
-				Set: et.Sets,
+				Set:      et.Sets,
 			})
 		}
 
@@ -53,8 +53,8 @@ func (s *TemplateServiceImpl) GetAll(ctx context.Context, include bool) (interfa
 	return expandedTempl, nil
 }
 
-func (s *TemplateServiceImpl) GetOne(ctx context.Context,id string, include bool) (interface{}, error) {
-	templ,err := s.RepoTempl.FindOne(ctx,id)
+func (s *TemplateServiceImpl) GetOne(ctx context.Context, id string, include bool) (interface{}, error) {
+	templ, err := s.RepoTempl.FindOne(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -67,17 +67,17 @@ func (s *TemplateServiceImpl) GetOne(ctx context.Context,id string, include bool
 	expandedTempl.Name = templ.Name
 
 	for _, et := range templ.Exercises {
-		ex, err := s.RepoExer.FindOne(ctx,et.ExerciseId)
+		ex, err := s.RepoExer.FindOne(ctx, et.ExerciseId)
 		if err != nil {
 			return nil, err
 		}
 		expandedTempl.Exercises = append(expandedTempl.Exercises, domain.ExpandedExerciseTemplate{
 			Exercise: ex,
-			Set: et.Sets,
+			Set:      et.Sets,
 		})
 	}
 
-	return expandedTempl,nil
+	return expandedTempl, nil
 }
 
 func (s *TemplateServiceImpl) Create(ctx context.Context, payload *domain.Template) (string, error) {

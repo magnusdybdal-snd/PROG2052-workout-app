@@ -3,6 +3,7 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.domain.models.AuthResponse
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.NewTemplate
@@ -12,11 +13,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 /**
@@ -30,8 +33,12 @@ import javax.inject.Inject
  */
 class ApiService @Inject constructor(
     private val client: HttpClient,
-    private val baseUrl: String
+    private val baseUrl: String,
+    private val preferences: UserPreferences
 ) {
+    private suspend fun getAuthHeader(): String? {
+        return preferences.token.firstOrNull()
+    }
     /**
      *  /POST
      *  Request jwt token from the backend.
@@ -130,10 +137,16 @@ class ApiService @Inject constructor(
      * display progress, statistics, and past performance.
      *
      * @return List of history workout DTOs with nested exercise and set data
-     * TODO: Add user authentication to fetch only current user's history
      */
     suspend fun getHistoryWorkouts(): List<HistoryWorkoutDto> {
-        return client.get("$baseUrl/sessions?include=exercises").body()
+        val token = getAuthHeader()
+        return client.get("$baseUrl/sessions?include=exercises") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
+        }.body()
     }
 
     /**
