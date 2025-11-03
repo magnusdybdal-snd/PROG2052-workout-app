@@ -104,6 +104,9 @@ dependencies {
     // datastore preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
+    // jwt token decoding
+    implementation("com.auth0.android:jwtdecode:2.0.2")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

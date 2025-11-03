@@ -30,6 +30,7 @@ import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.history_detail.HistoryDetailPage
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
+import com.example.workoutapp.core.utils.isTokenExpired
 import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.edit_template.EditTemplatePage
@@ -65,7 +66,7 @@ fun MainScreen(
         currentDestination.isOnRoute(item.route)}
 
     val token by preferences.token.collectAsState(initial = null)
-    val startDestination = if (token != null) Routes.WORKOUT else Routes.LOGIN
+    val startDestination = if (isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
 
     Scaffold(
         bottomBar = {
