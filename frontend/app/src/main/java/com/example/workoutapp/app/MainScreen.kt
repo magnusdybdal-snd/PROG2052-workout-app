@@ -40,6 +40,7 @@ import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.login.LoginPage
 import com.example.workoutapp.features.new_template.NewTemplatePage
+import kotlinx.coroutines.flow.firstOrNull
 
 /**
  * Main screen
@@ -52,7 +53,16 @@ fun MainScreen(
     navController: NavHostController,
     preferences: UserPreferences = UserPreferences(LocalContext.current) // for checking if user logged in
 ) {
-
+    val token by preferences.token.collectAsState(initial = null)
+    val startDestination = if(isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
+    LaunchedEffect(token) {
+        if (token.isNullOrBlank() || isTokenExpired(token)) {
+            preferences.clearAuthData()
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive=true }
+            }
+        }
+    }
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
         NavItem("Workouts", Routes.WORKOUT, Icons.Default.PlayArrow),
@@ -65,8 +75,6 @@ fun MainScreen(
     // Show or hide the bottom-bar.
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
-
-    val token by preferences.token.collectAsState(initial = null)
 
     Scaffold(
         bottomBar = {
@@ -99,23 +107,9 @@ fun MainScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.SPLASH, // First page, client would see
+            startDestination = startDestination, // First page, client would see
             modifier = modifier.padding(innerPadding)
         ) {
-            composable(Routes.SPLASH) {
-                LaunchedEffect(token) {
-                    if (token != null && !isTokenExpired(token)) {
-                        navController.navigate(Routes.WORKOUT) {
-                            popUpTo(Routes.LOGIN) { inclusive = true }
-                        }
-                    } else if (token == null || isTokenExpired(token)) {
-                        navController.navigate(Routes.LOGIN) {
-                            popUpTo(Routes.WORKOUT) { inclusive=true }
-                        }
-                    }
-                }
-                Text("Loading...")
-            }
             composable(Routes.LOGIN)     { LoginPage(Modifier,navController) }
             composable(Routes.WORKOUT)   { HomePage(Modifier, navController) }
             composable(Routes.EXERCISES) { ExercisesPage(Modifier, navController) }

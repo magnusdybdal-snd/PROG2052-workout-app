@@ -13,7 +13,7 @@ type TemplateRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *TemplateRepository) FindAll(ctx context.Context, userId int) ([]domain.Template, error) {
+func (r *TemplateRepository) FindAll(ctx context.Context, userId string) ([]domain.Template, error) {
 	var data []domain.Template
 
 	filter := bson.M{"userId": userId}

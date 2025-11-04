@@ -81,7 +81,14 @@ class ApiService @Inject constructor(
      * TODO: Add user authentication to fetch only current user's templates
      */
     suspend fun getWorkoutTemplates(): List<WorkoutTemplateDto> {
-        return client.get("$baseUrl/templates?include=exercises").body()
+        val token = getAuthHeader()
+        return client.get("$baseUrl/templates?include=exercises") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
+        }.body()
     }
 
     /**

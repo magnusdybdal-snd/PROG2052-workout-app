@@ -13,7 +13,7 @@ type Template struct {
 }
 
 type TemplateRepository interface {
-	FindAll(ctx context.Context, userId int) ([]Template, error)
+	FindAll(ctx context.Context, userId string) ([]Template, error)
 	FindOne(ctx context.Context, id string) (Template, error)
 	Insert(ctx context.Context, data Template) (string, error)
 	Update(ctx context.Context, id string, data interface{}) (string, error)
@@ -21,7 +21,7 @@ type TemplateRepository interface {
 }
 
 type TemplateService interface {
-	GetAll(ctx context.Context, userId int, include bool) (interface{}, error)
+	GetAll(ctx context.Context, userId string, include bool) (interface{}, error)
 	GetOne(ctx context.Context, id string, include bool) (interface{}, error)
 	Create(ctx context.Context, payload *Template) (string, error)
 	Update(ctx context.Context, id string, payload interface{}) (string, error)

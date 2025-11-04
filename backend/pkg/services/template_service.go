@@ -21,7 +21,7 @@ func NewTemplateService(
 	}
 }
 
-func (s *TemplateServiceImpl) GetAll(ctx context.Context, userId int, include bool) (interface{}, error) {
+func (s *TemplateServiceImpl) GetAll(ctx context.Context, userId string, include bool) (interface{}, error) {
 	templ, err := s.RepoTempl.FindAll(ctx, userId)
 	if err != nil {
 		return nil, err

@@ -26,7 +26,12 @@ func HandleTemplate(serv domain.TemplateService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
-		userID := r.Context().Value("userId").(int)
+
+		userID := r.Context().Value("userId").(string)
+		if userID == "" {
+			utils.HandleError(w, http.StatusUnauthorized, fmt.Errorf("missing token"), utils.ErrMsgUnauthorized)
+			return
+		}
 		switch r.Method {
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
