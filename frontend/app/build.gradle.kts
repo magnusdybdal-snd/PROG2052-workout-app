@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.junit.ktx)
     val roomVersion = "2.8.2"
 
     implementation("androidx.room:room-runtime:$roomVersion")
@@ -111,6 +112,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Testing
+    testImplementation("io.mockk:mockk:1.13.8") //create fake versions of classes/interfaces for testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("junit:junit:4.13.2")
 }
 
 hilt {
