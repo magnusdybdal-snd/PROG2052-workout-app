@@ -55,6 +55,8 @@ fun MainScreen(
 ) {
     val token by preferences.token.collectAsState(initial = null)
     val startDestination = if(isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
+
+    // TODO: THIS IS TO BE SWITCHED WITH A PROPER SPLASH SCREEN
     LaunchedEffect(token) {
         if (token.isNullOrBlank() || isTokenExpired(token)) {
             preferences.clearAuthData()

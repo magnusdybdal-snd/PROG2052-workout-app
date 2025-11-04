@@ -25,14 +25,14 @@ func addRoutes(
 	mux.Handle(EXERCISES_ID_ROUTE, handlers.HandleOneExercise(container.ExerciseService))
 
 	// GET, POST /sessions
-	mux.Handle(SESSIONS_ROUTE, handlers.HandleSession(container.SessionService))
+	mux.Handle(SESSIONS_ROUTE, AuthenticateUser(cfg, handlers.HandleSession(container.SessionService)))
 	// DELETE /sessions
-	mux.Handle(SESSIONS_ID_ROUTE, handlers.HandleOneSession(container.SessionService))
+	mux.Handle(SESSIONS_ID_ROUTE, AuthenticateUser(cfg, handlers.HandleOneSession(container.SessionService)))
 
 	// GET, POST /templates
 	mux.Handle(TEMPLATES_ROUTE, AuthenticateUser(cfg, handlers.HandleTemplate(container.TemplateService)))
 	// GET /templates/{templateId}
-	mux.Handle(TEMPLATES_ID_ROUTE, handlers.HandleOneTemplate(container.TemplateService))
+	mux.Handle(TEMPLATES_ID_ROUTE, AuthenticateUser(cfg, handlers.HandleOneTemplate(container.TemplateService)))
 
 	// POST /auth/google
 	mux.Handle(AUTH_ROUTE, handlers.HandleAuth(cfg))
