@@ -11,8 +11,8 @@ type SessionServiceImpl struct {
 	RepoExer domain.ExerciseRepository
 }
 
-func (s *SessionServiceImpl) GetAll(ctx context.Context, include bool) (interface{}, error) {
-	sess, err := s.Repo.FindAll(ctx)
+func (s *SessionServiceImpl) GetAll(ctx context.Context, userId string,include bool) (interface{}, error) {
+	sess, err := s.Repo.FindAll(ctx,userId)
 	if err != nil {
 		return nil, err
 	}

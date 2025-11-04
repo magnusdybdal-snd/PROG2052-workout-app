@@ -13,9 +13,10 @@ type SessionRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *SessionRepository) FindAll(ctx context.Context) ([]domain.Session, error) {
+func (r *SessionRepository) FindAll(ctx context.Context, userId string) ([]domain.Session, error) {
 	var data []domain.Session
-	cursor, err := r.Coll.Find(ctx, bson.M{})
+	filter := bson.M{"userId": userId}
+	cursor, err := r.Coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
