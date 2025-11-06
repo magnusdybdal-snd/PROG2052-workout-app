@@ -14,8 +14,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination
@@ -65,7 +67,26 @@ fun MainScreen(
         currentDestination.isOnRoute(item.route)}
 
     val token by preferences.token.collectAsState(initial = null)
-    val startDestination = if (token != null) Routes.WORKOUT else Routes.LOGIN
+    val startDestination = remember {
+        if (token == null) Routes.LOGIN else Routes.WORKOUT
+    }
+
+    LaunchedEffect(token) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+        // User logged out, navigate to login page
+        if (token == null && currentRoute != Routes.LOGIN) {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive = true }
+            }
+        // User just logged in, navigate to home
+        } else if (token != null && currentRoute == Routes.LOGIN) {
+            navController.navigate(Routes.WORKOUT) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
+
 
     Scaffold(
         bottomBar = {
