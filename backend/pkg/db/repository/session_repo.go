@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/models"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -14,25 +15,33 @@ type SessionRepository struct {
 }
 
 func (r *SessionRepository) FindAll(ctx context.Context, userId string) ([]domain.Session, error) {
-	var data []domain.Session
+	var entity []models.SessionEntity
 	filter := bson.M{"userId": userId}
 	cursor, err := r.Coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	if err := cursor.All(ctx, &data); err != nil {
+	if err := cursor.All(ctx, &entity); err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	if len(data) == 0 {
+	entityLen := len(entity)
+
+	if entityLen == 0 {
 		return nil, fmt.Errorf("no data found")
 	}
+	response := make([]domain.Session,entityLen)
+	for i, v := range entity {
+		response[i] = toDomainSession(v)
+		
+	}
 
-	return data, nil
+	return response, nil
 }
 
-func (r *SessionRepository) Insert(ctx context.Context, data domain.Session) (string, error) {
-	result, err := r.Coll.InsertOne(ctx, data)
+func (r *SessionRepository) Insert(ctx context.Context, userId string,data domain.Session) (string, error) {
+	entity := toEntitySession(data, userId)
+	result, err := r.Coll.InsertOne(ctx, entity)
 	if err != nil {
 		return "", err
 	}
@@ -40,9 +49,10 @@ func (r *SessionRepository) Insert(ctx context.Context, data domain.Session) (st
 	return id, nil
 }
 
-func (r *SessionRepository) Update(ctx context.Context, id string, data interface{}) (string, error) {
-	filter := bson.M{"sessionId": id}
-	result, err := r.Coll.ReplaceOne(ctx,filter, data)
+func (r *SessionRepository) Update(ctx context.Context, id string, userId string,data domain.Session) (string, error) {
+	entity := toEntitySession(data, userId)
+	filter := bson.M{"sessionId": id, "userId": userId}
+	result, err := r.Coll.ReplaceOne(ctx,filter, entity)
 	if err != nil {
 		return "", err
 	}

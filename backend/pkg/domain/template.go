@@ -15,15 +15,15 @@ type TemplateRepository interface {
 	FindAll(ctx context.Context, userId string) ([]Template, error)
 	FindOne(ctx context.Context, id string, userId string) (Template, error)
 	Insert(ctx context.Context, userId string, data Template) (string, error)
-	Update(ctx context.Context, id string, userId string, data interface{}) (string, error)
+	Update(ctx context.Context, id string, userId string, data Template) (string, error)
 	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 type TemplateService interface {
-	GetAll(ctx context.Context, userId string, include bool) (interface{}, error)
-	GetOne(ctx context.Context, id string, userId string, include bool) (interface{}, error)
+	GetAll(ctx context.Context, userId string, include bool) (Template, error)
+	GetOne(ctx context.Context, id string, userId string, include bool) (Template, error)
 	Create(ctx context.Context, userId string, payload *Template) (string, error)
-	Update(ctx context.Context, id string, userId string, payload interface{}) (string, error)
+	Update(ctx context.Context, id string, userId string, payload Template) (string, error)
 	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 

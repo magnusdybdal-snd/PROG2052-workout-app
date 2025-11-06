@@ -8,7 +8,6 @@ import (
 
 type Session struct {
 	SessionId string               `json:"sessionId"`
-	UserId    string               `json:"userId"`
 	Name      string               `json:"name"` // get this from template
 	Exercises []ExerciseIdTemplate `json:"exercises"`
 	Duration  string               `json:"duration"`
@@ -19,9 +18,9 @@ type Session struct {
 // Repository implementation
 type SessionRepository interface {
 	FindAll(ctx context.Context, userId string) ([]Session, error)
-	Insert(ctx context.Context, data Session) (string, error)
-	Update(ctx context.Context, id string, data interface{}) (string, error)
-	Delete(ctx context.Context, id string) (string, error)
+	Insert(ctx context.Context, userId string,data Session) (string, error)
+	Update(ctx context.Context, id string, userId string,data Session) (string, error)
+	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 // Service implementation

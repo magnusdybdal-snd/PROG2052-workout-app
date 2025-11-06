@@ -33,7 +33,7 @@ func (r *TemplateRepository) FindAll(ctx context.Context, userId string) ([]doma
 	}
 
 	// convert to domain
-	response := make([]domain.Template,entityLen)
+	response := make([]domain.Template, entityLen)
 	for i, v := range entity {
 		response[i] = toDomainTemplate(v) // converts entity to domain model
 	}
@@ -41,9 +41,9 @@ func (r *TemplateRepository) FindAll(ctx context.Context, userId string) ([]doma
 	return response, nil
 }
 
-func (r *TemplateRepository) FindOne(ctx context.Context, id string) (domain.Template, error) {
-	var entity models.TemplateEntity 
-	filter := bson.M{"templateId": id}
+func (r *TemplateRepository) FindOne(ctx context.Context, id string, userId string) (domain.Template, error) {
+	var entity models.TemplateEntity
+	filter := bson.M{"templateId": id, "userId": userId}
 
 	err := r.Coll.FindOne(ctx, filter).Decode(&entity)
 	if err != nil {
@@ -65,9 +65,10 @@ func (r *TemplateRepository) Insert(ctx context.Context, userId string, data dom
 	return id, nil
 }
 
-func (r *TemplateRepository) Update(ctx context.Context, id string, data interface{}) (string, error) {
-	filter := bson.M{"templateId": id}
-	result, err := r.Coll.ReplaceOne(ctx, filter, data)
+func (r *TemplateRepository) Update(ctx context.Context, id string, userId string, data domain.Template) (string, error) {
+	entity := toEntityTemplate(data, userId)
+	filter := bson.M{"templateId": id, "userId": userId}
+	result, err := r.Coll.ReplaceOne(ctx, filter, entity)
 	if err != nil {
 		return "", err
 	}
@@ -77,8 +78,8 @@ func (r *TemplateRepository) Update(ctx context.Context, id string, data interfa
 	return id, nil
 }
 
-func (r *TemplateRepository) Delete(ctx context.Context, id string) (string, error) {
-	filter := bson.M{"templateId": id}
+func (r *TemplateRepository) Delete(ctx context.Context, id string, userId string) (string, error) {
+	filter := bson.M{"templateId": id, "userId":userId}
 	result, err := r.Coll.DeleteOne(ctx, filter)
 	if err != nil {
 		return "", err
