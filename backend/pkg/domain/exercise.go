@@ -3,14 +3,14 @@ package domain
 import "context"
 
 type Exercises struct {
-	Id               string   `bson:"exerciseId" json:"exerciseId"`
-	Name             string   `bson:"name" json:"name"`
-	TargetMuscles    []string `bson:"targetMuscles" json:"targetMuscles"`
-	BodyParts        []string `bson:"bodyParts" json:"bodyParts"`
-	Equipments       []string `bson:"equipments" json:"equipments"`
-	SecondaryMuscles []string `bson:"secondaryMuscles" json:"secondaryMuscles"`
-	GifUrl           string   `bson:"gifUrl" json:"gifUrl"`
-	Instructions     []string `bson:"instructions" json:"instructions"`
+	Id               string   `json:"exerciseId"`
+	Name             string   `json:"name"`
+	TargetMuscles    []string `json:"targetMuscles"`
+	BodyParts        []string `json:"bodyParts"`
+	Equipments       []string `json:"equipments"`
+	SecondaryMuscles []string `json:"secondaryMuscles"`
+	GifUrl           string   `json:"gifUrl"`
+	Instructions     []string `json:"instructions"`
 }
 
 // Domain interface for db repository
@@ -19,14 +19,13 @@ type ExerciseRepository interface {
 	FindOne(ctx context.Context, id string) (Exercises, error)
 }
 
-
-// Domain interface for service implementation 
+// Domain interface for service implementation
 type ExerciseService interface {
 	GetAll(ctx context.Context, limit int) ([]Exercises, error)
-	GetOne(ctx context.Context, id string) (Exercises,error)
+	GetOne(ctx context.Context, id string) (Exercises, error)
 }
 
-type TypeSet int
+type TypeSet int32
 
 const (
 	Drop TypeSet = iota
@@ -35,21 +34,20 @@ const (
 )
 
 type Set struct {
-	Rep  int32   `bson:"rep" json:"rep"`
-	Kg   int32   `bson:"kg" json:"kg"`
-	Type TypeSet `bson:"typeSet" json:"typeSet"`
+	Rep  int32   `json:"rep"`
+	Kg   float64 `json:"kg"`
+	Type TypeSet `json:"typeSet"`
 }
-
 
 // Exercises with id and name
 type ExerciseIdTemplate struct {
-	ExerciseId string `bson:"exerciseId" json:"exerciseId"` 
-	Name string `bson:"name" json:"name"`
-	Sets       []Set  `bson:"sets" json:"sets"`
+	ExerciseId string `json:"exerciseId"`
+	Name       string `json:"name"`
+	Sets       []Set  `json:"sets"`
 }
 
 // Exercise with everything
 type ExpandedExerciseTemplate struct {
-	Exercise Exercises `bson:"exercise" json:"exercise"`
-	Set      []Set     `bson:"sets" json:"sets"`
+	Exercise Exercises `json:"exercise"`
+	Set      []Set     `json:"sets"`
 }

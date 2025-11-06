@@ -100,9 +100,15 @@ class ApiService @Inject constructor(
      * @param newTemplate The template to create (includes exercises and sets)
      */
     suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
+        val token = getAuthHeader()
         client.post("$baseUrl/templates") {
             contentType(ContentType.Application.Json)
             setBody(newTemplate)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
@@ -114,9 +120,15 @@ class ApiService @Inject constructor(
      * @param workoutTemplate The template with updated data
      */
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
+        val token = getAuthHeader()
         client.put("$baseUrl/templates/${workoutTemplate.templateId}") {
             contentType(ContentType.Application.Json)
             setBody(workoutTemplate)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
@@ -130,7 +142,14 @@ class ApiService @Inject constructor(
      * @param templateId UUID of the template to delete
      */
     suspend fun deleteWorkoutTemplate(templateId: String) {
-        client.delete("$baseUrl/templates/$templateId")
+        val token = getAuthHeader()
+        client.delete("$baseUrl/templates/$templateId") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
+        }
     }
 
     //===========================================
@@ -165,15 +184,27 @@ class ApiService @Inject constructor(
      * @param session The completed workout session with all performance data
      */
     suspend fun postHistoryWorkout(session: Session) {
+        val token = getAuthHeader()
         client.post("$baseUrl/sessions") {
             contentType(ContentType.Application.Json)
             setBody(session)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
 
     suspend fun deleteHistoryWorkout(historyWorkoutId: String) {
+        val token = getAuthHeader()
         client.delete("$baseUrl/sessions/$historyWorkoutId") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
@@ -185,9 +216,15 @@ class ApiService @Inject constructor(
      * @param historyWorkout The historyWorkout with updated data
      */
     suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout) {
+        val token = getAuthHeader()
         client.put("$baseUrl/templates/${historyWorkout.id}") {
             contentType(ContentType.Application.Json)
             setBody(historyWorkout)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 }

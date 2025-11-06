@@ -15,30 +15,30 @@ import (
 
 type mockTemplateService struct {
 	GetAllFunc func(ctx context.Context, userId string, include bool) (interface{}, error)
-	GetOneFunc func(ctx context.Context, id string, include bool) (interface{}, error)
-	CreateFunc func(ctx context.Context, payload *domain.Template) (string, error)
-	UpdateFunc func(ctx context.Context, id string, payload interface{}) (string, error)
-	DeleteFunc func(ctx context.Context, id string) (string, error)
+	GetOneFunc func(ctx context.Context, userId string,id string, include bool) (interface{}, error)
+	CreateFunc func(ctx context.Context, userId string, payload *domain.Template) (string, error)
+	UpdateFunc func(ctx context.Context, userId string,id string, payload interface{}) (string, error)
+	DeleteFunc func(ctx context.Context, userId string, id string) (string, error)
 }
 
 func (m *mockTemplateService) GetAll(ctx context.Context, userId string, include bool) (interface{}, error) {
 	return m.GetAllFunc(ctx, userId, include)
 }
 
-func (m *mockTemplateService) GetOne(ctx context.Context, id string, include bool) (interface{}, error) {
-	return m.GetOneFunc(ctx, id, include)
+func (m *mockTemplateService) GetOne(ctx context.Context, id string, userId string,include bool) (interface{}, error) {
+	return m.GetOneFunc(ctx, id, userId,include)
 }
 
-func (m *mockTemplateService) Create(ctx context.Context, payload *domain.Template) (string, error) {
-	return m.CreateFunc(ctx, payload)
+func (m *mockTemplateService) Create(ctx context.Context, userId string, payload *domain.Template) (string, error) {
+	return m.CreateFunc(ctx, userId,payload)
 }
 
-func (m *mockTemplateService) Update(ctx context.Context, id string, payload interface{}) (string, error) {
-	return m.UpdateFunc(ctx, id, payload)
+func (m *mockTemplateService) Update(ctx context.Context, id string, userId string,payload interface{}) (string, error) {
+	return m.UpdateFunc(ctx, id, userId,payload)
 }
 
-func (m *mockTemplateService) Delete(ctx context.Context, id string) (string, error) {
-	return m.DeleteFunc(ctx, id)
+func (m *mockTemplateService) Delete(ctx context.Context, id string, userId string) (string, error) {
+	return m.DeleteFunc(ctx, id, userId)
 }
 
 func TestHandleTemplate_GetAll(t *testing.T) {
@@ -73,7 +73,7 @@ func TestHandleTemplate_GetAll(t *testing.T) {
 
 func TestHandleOneTemplate_GetOne(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		GetOneFunc: func(ctx context.Context, id string, include bool) (interface{}, error) {
+		GetOneFunc: func(ctx context.Context, id string, userId string,include bool) (interface{}, error) {
 			return domain.Template{TemplateId: id, Name: "Upper Body"}, nil
 		},
 	}
@@ -101,7 +101,7 @@ func TestHandleOneTemplate_GetOne(t *testing.T) {
 
 func TestHandleTemplate_Post(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		CreateFunc: func(ctx context.Context, payload *domain.Template) (string, error) {
+		CreateFunc: func(ctx context.Context, userId string,payload *domain.Template) (string, error) {
 			if payload.Name == "" {
 				return "", errors.New("missing name")
 			}
@@ -139,7 +139,7 @@ func TestHandleTemplate_Post(t *testing.T) {
 
 func TestHandleOneTemplate_Delete(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		DeleteFunc: func(ctx context.Context, id string) (string, error) {
+		DeleteFunc: func(ctx context.Context, userId string,id string) (string, error) {
 			if id == "missing" {
 				return "", errors.New("not found")
 			}

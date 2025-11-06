@@ -53,8 +53,8 @@ func (s *TemplateServiceImpl) GetAll(ctx context.Context, userId string, include
 	return expandedTempl, nil
 }
 
-func (s *TemplateServiceImpl) GetOne(ctx context.Context, id string, include bool) (interface{}, error) {
-	templ, err := s.RepoTempl.FindOne(ctx, id)
+func (s *TemplateServiceImpl) GetOne(ctx context.Context, id string, userId string,include bool) (interface{}, error) {
+	templ, err := s.RepoTempl.FindOne(ctx, id, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -80,24 +80,24 @@ func (s *TemplateServiceImpl) GetOne(ctx context.Context, id string, include boo
 	return expandedTempl, nil
 }
 
-func (s *TemplateServiceImpl) Create(ctx context.Context, payload *domain.Template) (string, error) {
-	result, err := s.RepoTempl.Insert(ctx, *payload)
+func (s *TemplateServiceImpl) Create(ctx context.Context, userId string,payload *domain.Template) (string, error) {
+	result, err := s.RepoTempl.Insert(ctx, userId,*payload)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func (s *TemplateServiceImpl) Update(ctx context.Context, id string, payload interface{}) (string, error) {
-	result, err := s.RepoTempl.Update(ctx, id, payload)
+func (s *TemplateServiceImpl) Update(ctx context.Context, userId string,id string, payload interface{}) (string, error) {
+	result, err := s.RepoTempl.Update(ctx, id, userId,payload)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func (s *TemplateServiceImpl) Delete(ctx context.Context, id string) (string, error) {
-	result, err := s.RepoTempl.Delete(ctx, id)
+func (s *TemplateServiceImpl) Delete(ctx context.Context, id string, userId string) (string, error) {
+	result, err := s.RepoTempl.Delete(ctx, id,userId)
 	if err != nil {
 		return "", err
 	}
