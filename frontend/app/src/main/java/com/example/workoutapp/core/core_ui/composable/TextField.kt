@@ -1,10 +1,12 @@
 package com.example.workoutapp.core.core_ui.composable
 
 import android.R
+import android.R.attr.singleLine
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -16,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.workoutapp.core.core_ui.theme.AppTextField
@@ -42,23 +45,29 @@ fun WorkoutTextField(
             var text by remember(set) {
                 mutableStateOf(
                     when (type.lowercase()) {
-                        "kg" -> set.kg.toString()
+                        "kg"   -> set.kg.toString()
                         "reps" -> set.rep.toString()
-                        else -> "0"
+                        else   -> "0"
                     }
                 )
             }
 
             TextField(
                 value = text,
-                onValueChange = {
-                    text = it
-                    val value = it.toIntOrNull() ?: 0
-                    when (type.lowercase()) {
-                        "kg" -> set.kg = value
-                        "reps" -> set.rep = value
+                onValueChange = { newValue: String ->
+                    val filtered = newValue.filter { it.isDigit() || it == '.' }
+
+                    if (filtered.isValidDecimal(maxDecimals = 2)) {
+                        text = filtered
+                        when (type.lowercase()) {
+                            "kg" -> set.kg = filtered.toDoubleOrNull() ?: 0.0
+                            "reps" -> set.rep = filtered.toIntOrNull() ?: 0
+                        }
                     }
                 },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal
+                ),
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 colors = AppTextField.fieldColors(),
@@ -84,31 +93,41 @@ fun WorkoutTextField(
 ){
     Text(label, fontSize = 10.sp)
     exSet.sets.forEach { set ->
-        var text by remember {
-            mutableStateOf(
-                when (type.lowercase()) {
-                    "kg" -> set.kg.toString()
-                    "reps" -> set.rep.toString()
-                    else -> "0"
-                }
+        key(set) {
+            var text by remember(set) {
+                mutableStateOf(
+                    when (type.lowercase()) {
+                        "kg"   -> set.kg.toString()
+                        "reps" -> set.rep.toString()
+                        else   -> "0"
+                    }
+                )
+            }
+
+            TextField(
+                value = text,
+                onValueChange = { newValue: String ->
+                    val filtered = newValue.filter { it.isDigit() || it == '.' }
+
+                    if (filtered.isValidDecimal(maxDecimals = 2)) {
+                        text = filtered
+                        when (type.lowercase()) {
+                            "kg" -> set.kg = filtered.toDoubleOrNull() ?: 0.0
+                            "reps" -> set.rep = filtered.toIntOrNull() ?: 0
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal
+                ),
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = AppTextField.fieldColors(),
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(50.dp)
             )
         }
-        TextField(
-            value = text,
-            onValueChange = {
-                text = it
-                val value = it.toIntOrNull() ?: 0
-                when (type.lowercase()) {
-                    "kg" -> set.kg = value
-                    "reps" -> set.rep = value
-                }
-            },
-            shape = RoundedCornerShape(size = 12.dp),
-            colors = AppTextField.fieldColors(),
-            modifier = Modifier
-                .width(100.dp)
-                .height(50.dp)
-        )
     }
 }
 
@@ -163,4 +182,22 @@ fun TimerTextField(
         colors = fieldColors(),
         modifier = Modifier.padding(vertical = 10.dp)
     )
+}
+
+/**
+ * Validate that string is a valid decimal
+ * @param maxDecimals Maximum decimal precision allowed
+ */
+private fun String.isValidDecimal(maxDecimals: Int = 2): Boolean{
+    if (isEmpty()) return true
+    if (count {it == '.'} > 1) return false
+
+    val parts = split(".")
+    return if (parts.size == 2) {
+        parts[0].all {it.isDigit()} &&
+        parts[1].all {it.isDigit()} &&
+        parts[2].length <= maxDecimals
+    } else{
+        all {it.isDigit() || it == '.'}
+    }
 }

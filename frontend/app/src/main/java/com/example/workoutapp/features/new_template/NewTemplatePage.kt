@@ -211,7 +211,7 @@ fun NewTemplatePage(
                                                 sets = mutableStateListOf(
                                                     Set (
                                                         rep = 0,
-                                                        kg = 0,
+                                                        kg = 0.0,
                                                         typeSet = 0,
                                                     )
                                                 )
@@ -339,7 +339,7 @@ fun NewTemplatePage(
                                     exSet.sets.add(
                                         Set(
                                             rep = 0,
-                                            kg = 0,
+                                            kg = 0.0,
                                             typeSet = 0,
                                         )
                                     )

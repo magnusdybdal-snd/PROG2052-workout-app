@@ -280,8 +280,7 @@ fun ActiveWorkoutPage(
                                         for (i in 1..y) {
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier
-                                                    .height(50.dp)
+                                                modifier = Modifier.height(50.dp)
                                             ) {
                                                 Text(
                                                     "$i",

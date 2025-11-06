@@ -177,7 +177,7 @@ fun EditTemplatePage(
                                                 sets = mutableStateListOf(
                                                     Set(
                                                         rep = 0,
-                                                        kg = 0,
+                                                        kg = 0.0,
                                                         typeSet = 0,
                                                     )
                                                 )
@@ -307,7 +307,7 @@ fun EditTemplatePage(
                                     template.exercises[exerciseIndex].sets.add(
                                         Set(
                                             rep = 0,
-                                            kg = 0,
+                                            kg = 0.0,
                                             typeSet = 0,
                                         )
                                     )
