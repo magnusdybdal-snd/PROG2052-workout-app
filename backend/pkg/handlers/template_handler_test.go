@@ -14,8 +14,8 @@ import (
 )
 
 type mockTemplateService struct {
-	GetAllFunc func(ctx context.Context, userId string, include bool) (interface{}, error)
-	GetOneFunc func(ctx context.Context, id string, userId string, include bool) (interface{}, error)
+	GetAllFunc func(ctx context.Context, userId string, include bool) ([]domain.Template, error)
+	GetOneFunc func(ctx context.Context, id string, userId string, include bool) (domain.Template, error)
 	CreateFunc func(ctx context.Context, userId string, payload *domain.Template) (string, error)
 	UpdateFunc func(ctx context.Context, id string, userId string, payload domain.Template) (string, error)
 	DeleteFunc func(ctx context.Context, id string, userId string) (string, error)
@@ -43,7 +43,7 @@ func (m *mockTemplateService) Delete(ctx context.Context, id string, userId stri
 
 func TestHandleTemplate_GetAll(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		GetAllFunc: func(ctx context.Context, userId string, include bool) (interface{}, error) {
+		GetAllFunc: func(ctx context.Context, userId string, include bool) ([]domain.Template, error) {
 			return []domain.Template{
 				{TemplateId: "tmp_001", Name: "Upper Body"},
 				{TemplateId: "tmp_002", Name: "Lower Body"},
@@ -52,6 +52,8 @@ func TestHandleTemplate_GetAll(t *testing.T) {
 	}
 	
 	req := httptest.NewRequest(http.MethodGet, "/template", nil)
+	ctx := context.WithValue(req.Context(), "userId", "test_user") // handling authentication
+	req = req.WithContext(ctx)
 	w := httptest.NewRecorder()
 
 	handler := handlers.HandleTemplate(mockSvc)
@@ -73,12 +75,14 @@ func TestHandleTemplate_GetAll(t *testing.T) {
 
 func TestHandleOneTemplate_GetOne(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		GetOneFunc: func(ctx context.Context, id string, userId string, include bool) (interface{}, error) {
+		GetOneFunc: func(ctx context.Context, id string, userId string, include bool) (domain.Template, error) {
 			return domain.Template{TemplateId: id, Name: "Upper Body"}, nil
 		},
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/template/tmp_001", nil)
+	ctx := context.WithValue(req.Context(), "userId", "test_user") // handling authentication
+	req = req.WithContext(ctx)
 	req.SetPathValue("templateId", "tmp_001")
 	w := httptest.NewRecorder()
 
@@ -118,6 +122,8 @@ func TestHandleTemplate_Post(t *testing.T) {
 	body, _ := json.Marshal(template)
 
 	req := httptest.NewRequest(http.MethodPost, "/template", bytes.NewReader(body))
+	ctx := context.WithValue(req.Context(), "userId", "test_user") // handling authentication
+	req = req.WithContext(ctx)
 	w := httptest.NewRecorder()
 
 	handler := handlers.HandleTemplate(mockSvc)
@@ -139,7 +145,7 @@ func TestHandleTemplate_Post(t *testing.T) {
 
 func TestHandleOneTemplate_Delete(t *testing.T) {
 	mockSvc := &mockTemplateService{
-		DeleteFunc: func(ctx context.Context, userId string, id string) (string, error) {
+		DeleteFunc: func(ctx context.Context, id string, userId string) (string, error) {
 			if id == "missing" {
 				return "", errors.New("not found")
 			}
@@ -148,6 +154,8 @@ func TestHandleOneTemplate_Delete(t *testing.T) {
 	}
 
 	req := httptest.NewRequest(http.MethodDelete, "/template/tmp_001", nil)
+	ctx := context.WithValue(req.Context(), "userId", "test_user") // handling authentication
+	req = req.WithContext(ctx)
 	req.SetPathValue("templateId", "tmp_001")
 	w := httptest.NewRecorder()
 
