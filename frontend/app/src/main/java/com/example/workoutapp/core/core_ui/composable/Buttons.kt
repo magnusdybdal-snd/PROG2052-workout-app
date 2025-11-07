@@ -126,3 +126,26 @@ fun RoundedButton(
         )
     }
 }
+
+@Composable
+fun StandardButtonCustomRoute(
+    buttonText: String,
+    onClick: () -> Unit,
+    navController: NavController,
+    cs: ColorScheme = MaterialTheme.colorScheme,
+    fillMaxWidth: Boolean = false
+) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = cs.tertiary
+        ),
+        modifier = if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier.wrapContentWidth()
+    ) {
+        Text(
+            buttonText,
+            color = cs.onTertiary
+        )
+    }
+}

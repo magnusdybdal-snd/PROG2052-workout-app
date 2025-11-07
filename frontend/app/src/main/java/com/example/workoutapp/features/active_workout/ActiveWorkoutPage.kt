@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,15 +49,7 @@ import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifie
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
 import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
-import com.example.workoutapp.domain.models.Session
-import com.example.workoutapp.domain.models.SessionExercise
-import com.example.workoutapp.domain.models.Set
 import kotlinx.coroutines.delay
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 /**viewmodel
@@ -73,42 +64,60 @@ fun ActiveWorkoutPage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+    val activeSession by viewModel.activeSession.collectAsState()
 
+    // If no active session, navigate back
+    if (activeSession == null) {
+        LaunchedEffect(Unit) {
+            navController.popBackStack()
+        }
+        return
+    }
+
+    val session = activeSession!!
 
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
 
-            val template = state.templates[templateId]
-            val completedSets = remember {
-                mutableStateOf(
-                    template.exercises.mapIndexed { _, exSet ->
-                        MutableList(exSet.sets.size) { false }
-                    }
-                )
-            }
-
-            var time by remember { mutableIntStateOf(3) }
-            var ticks by remember { mutableIntStateOf(time * 60) }
-            var isTimerRunning by remember { mutableStateOf(false) }
-            var restartKey by remember { mutableIntStateOf(0) }
-
-
-            LaunchedEffect(isTimerRunning, time, restartKey) {
-                if (isTimerRunning) {
-                    ticks = time * 60 // reset countdown
-                    while (ticks > 0) {
-                        delay(1.seconds)
-                        ticks--
-                    }
-                    isTimerRunning = false
+            // Timer countdown effect
+            LaunchedEffect(session.isTimerRunning, session.timerSecondsRemaining) {
+                if (session.isTimerRunning && session.timerSecondsRemaining > 0) {
+                    delay(1.seconds)
+                    viewModel.tickTimer()
                 }
             }
 
+//            val template = state.templates[templateId]
+//            val completedSets = remember {
+//                mutableStateOf(
+//                    template.exercises.mapIndexed { _, exSet ->
+//                        MutableList(exSet.sets.size) { false }
+//                    }
+//                )
+//            }
+//
+//            var time by remember { mutableIntStateOf(3) }
+//            var ticks by remember { mutableIntStateOf(time * 60) }
+//            var isTimerRunning by remember { mutableStateOf(false) }
+//            var restartKey by remember { mutableIntStateOf(0) }
+//
+//
+//            LaunchedEffect(isTimerRunning, time, restartKey) {
+//                if (isTimerRunning) {
+//                    ticks = time * 60 // reset countdown
+//                    while (ticks > 0) {
+//                        delay(1.seconds)
+//                        ticks--
+//                    }
+//                    isTimerRunning = false
+//                }
+//            }
+
             Scaffold (
                 bottomBar = {
-                    if (isTimerRunning) { // check if condition is true (show/hide bottombar)
+                    if (session.isTimerRunning) { // check if condition is true (show/hide bottombar)
                         NavigationBar{
                             Box(
                                 modifier = Modifier
@@ -116,8 +125,10 @@ fun ActiveWorkoutPage(
                                     .background(color = cs.background),
                                 contentAlignment = Alignment.Center
                             ) {
+                                val minutes = session.timerSecondsRemaining / 60
+                                val seconds = session.timerSecondsRemaining % 60
                                 Text(
-                                    text = "${ticks / 60}:${ticks % 60}",
+                                    text = String.format("%d:%02d", minutes, seconds),
                                     fontSize = 70.sp,
                                     textAlign = TextAlign.Center,
                                     color = cs.onBackground
@@ -146,8 +157,9 @@ fun ActiveWorkoutPage(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
+
                             var showDialog by remember { mutableStateOf(false) }
-                            var notes by remember { mutableStateOf("") }
+                            var notes by remember { mutableStateOf(session.notes) }
 
                             RoundedButton(
                                 buttonText = stringResource(R.string.finish),
@@ -165,7 +177,10 @@ fun ActiveWorkoutPage(
                                         OutlinedTextField(
                                             colors = outlinedFieldColors(),
                                             value = notes,
-                                            onValueChange = { notes = it },
+                                            onValueChange = {
+                                                notes = it
+                                                viewModel.updateNotes(it)
+                                            },
                                             label = { Text(text = stringResource(R.string.workout_notes)) },
 
                                             )
@@ -173,39 +188,7 @@ fun ActiveWorkoutPage(
                                     confirmButton = {
                                         TextButton(
                                             onClick = {
-                                                val finishedWorkout = Session(
-                                                    sessionId = UUID.randomUUID().toString(),
-                                                    name = template.name,
-                                                    exercises = template.exercises.mapIndexedNotNull { exerciseIndex, exSet ->
-                                                        val completedSetsForExercise =
-                                                            exSet.sets.filterIndexed { setIndex, _ ->
-                                                                completedSets.value[exerciseIndex][setIndex]
-                                                            }
-
-                                                        if (completedSetsForExercise.isNotEmpty()) {
-                                                            SessionExercise(
-                                                                exerciseId = exSet.exerciseId,
-                                                                name = exSet.name,
-                                                                sets = completedSetsForExercise.map { set ->
-                                                                    Set(
-                                                                        rep = set.rep,
-                                                                        kg = set.kg,
-                                                                        typeSet = set.typeSet
-                                                                    )
-                                                                }
-                                                            )
-                                                        } else {
-                                                            null
-                                                        }
-                                                    },
-                                                    duration = java.time.Duration.ofHours(1)
-                                                        .plusMinutes(15)
-                                                        .plusSeconds(45), // TODO THIS IS MOCK DATA
-                                                    date = LocalDate.now(),
-                                                    note = notes
-                                                )
-
-                                                viewModel.postWorkout(finishedWorkout)
+                                                viewModel.completeWorkout()
                                                 showDialog = false
                                                 navController.popBackStack()
                                             },
@@ -226,7 +209,7 @@ fun ActiveWorkoutPage(
                             }
                         }
                         Text(
-                            state.templates[templateId].name,
+                            session.template.name,
                             fontSize = 30.sp,
                             modifier = Modifier.padding(vertical = 10.dp)
                         )
@@ -235,8 +218,8 @@ fun ActiveWorkoutPage(
                             modifier = Modifier.width(120.dp)
                         ) {
                             TimerTextField(
-                                time = time,
-                                onTimeChange = { time = it }
+                                time = session.timerMinutes,
+                                onTimeChange = { viewModel.updateTimerMinutes(it) }
                             )
                         }
 
@@ -245,7 +228,7 @@ fun ActiveWorkoutPage(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                         ) {
-                            state.templates[templateId].exercises.forEachIndexed { exerciseIndex, exSet ->
+                            session.modifiedExercises.exercises.forEachIndexed { exerciseIndex, exSet ->
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically,
@@ -327,17 +310,17 @@ fun ActiveWorkoutPage(
                                         exSet.sets.forEachIndexed { setIndex, _ ->
                                             Checkbox(
                                                 colors = AppCheckBox.checkBoxColor(),
-                                                checked = completedSets.value[exerciseIndex][setIndex],
+                                                checked = session.completedSets.getOrNull(exerciseIndex)
+                                                    ?.getOrNull(setIndex) ?: false,
                                                 onCheckedChange = { isChecked ->
-                                                    completedSets.value = completedSets.value.toMutableList().apply {
-                                                        this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
-                                                            this[setIndex] = isChecked
-                                                        }
-                                                    }
+                                                    viewModel.updateCompletedSets(
+                                                        exerciseIndex,
+                                                        setIndex,
+                                                        isChecked
+                                                    )
 
-                                                    if (isChecked) {
-                                                        isTimerRunning = true
-                                                        restartKey++
+                                                    if(isChecked) {
+                                                        viewModel.startTimer()
                                                     }
                                                 }
                                             )
@@ -351,10 +334,4 @@ fun ActiveWorkoutPage(
             }
         }
     }
-}
-
-fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now(ZoneId.systemDefault()) // current time
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
-    return currentTime.format(formatter)
 }

@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -91,7 +92,7 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
     fun completeWorkout() {
         val session = activeWorkoutManager.activeSession.value ?: return
 
-        val duration = Duration.between(session.startTime, LocalTime.now())
+        val duration = Duration.between(session.startTime, LocalDateTime.now())
 
         val finishedWorkout = Session(
             sessionId = UUID.randomUUID().toString(),
@@ -137,7 +138,7 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
     fun cancelWorkout() {
         activeWorkoutManager.cancelWorkout()
     }
-    
+
     fun getCurrentTimeString(): String {
         val currentTime = LocalTime.now() // current time
         val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
