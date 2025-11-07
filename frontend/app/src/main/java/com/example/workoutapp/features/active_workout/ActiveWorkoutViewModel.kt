@@ -2,18 +2,13 @@ package com.example.workoutapp.features.active_workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
-import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -25,7 +20,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.reflect.typeOf
 
 // UI state holder: represents what's shown on the "Active workout" screen.
 data class ActiveWorkoutUiState(
@@ -49,60 +43,6 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
     // This immutable instance is for the UI, read only
     val uiState: StateFlow<ActiveWorkoutUiState> = _uiState
 
-    private var timerJob: Job? = null // Track timer coroutine
-
-    init {
-        observeTimerState()
-    }
-
-    private fun observeTimerState() {
-        viewModelScope.launch {
-            activeSession.collect { session ->
-                android.util.Log.d("TimerDebug", "Session changed: isRunning=${session?.isTimerRunning}, seconds=${session?.timerSecondsRemaining}")
-                if (session?.isTimerRunning == true) {
-                    android.util.Log.d("TimerDebug", "Starting timer countdown")
-                    startTimerCountdown()
-                } else {
-                    android.util.Log.d("TimerDebug", "Stopping timer countdown")
-                    stopTimerCountdown()
-                }
-            }
-        }
-    }
-
-    private fun startTimerCountdown() {
-        android.util.Log.d("TimerDebug", "startTimerCountdown called, existing job: ${timerJob != null}")
-        timerJob?.cancel()
-
-        timerJob = viewModelScope.launch {
-            android.util.Log.d("TimerDebug", "Timer coroutine started")
-
-            while (true) {
-                val session = activeSession.value
-                if (session == null || !session.isTimerRunning || session.timerSecondsRemaining <= 0) {
-                    android.util.Log.d("TimerDebug", "Timer stopping: session=$session, isRunning=${session?.isTimerRunning}, seconds=${session?.timerSecondsRemaining}")
-
-                    if (session?.timerSecondsRemaining == 0) {
-                        activeWorkoutManager.updateSession {
-                            it.copy(isTimerRunning = false)
-                        }
-                    }
-                    break
-                }
-                delay(1000)
-                android.util.Log.d("TimerDebug", "Tick: ${session.timerSecondsRemaining}")
-
-                tickTimer()
-            }
-            android.util.Log.d("TimerDebug", "Timer coroutine finished")
-        }
-    }
-
-    private fun stopTimerCountdown() {
-        timerJob?.cancel()
-        timerJob = null
-    }
-
     fun updateCompletedSets(exerciseIndex: Int, setindex: Int, isCompleted: Boolean) {
         activeWorkoutManager.updateSession { session ->
             val updatedSets = session.completedSets.toMutableList().apply {
@@ -124,16 +64,6 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
                 isTimerRunning = true,
                 timerSecondsRemaining = it.timerMinutes * 60
             )
-        }
-    }
-
-    fun tickTimer() {
-        activeWorkoutManager.updateSession { session ->
-            if (session.timerSecondsRemaining > 0) {
-                session.copy(timerSecondsRemaining = session.timerSecondsRemaining - 1)
-            } else {
-                session.copy(isTimerRunning = false)
-            }
         }
     }
 
@@ -183,17 +113,20 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
             _uiState.update { it.copy(isLoading = true) }
             try {
                 postHistoryWorkoutUseCase(finishedWorkout)
-                stopTimerCountdown()
                 activeWorkoutManager.completeWorkout()
                 _uiState.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message ?: "Failed to save workout") }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Failed to save workout"
+                    )
+                }
             }
         }
     }
 
     fun cancelWorkout() {
-        stopTimerCountdown()
         activeWorkoutManager.cancelWorkout()
     }
 
@@ -203,9 +136,4 @@ class ActWorkViewModel @Inject constructor(  // @Inject = Hilt can construct thi
         return currentTime.format(formatter)
     }
 
-    // Clean up when viewmodel is destroyed
-    override fun onCleared() {
-        super.onCleared()
-        stopTimerCountdown()
-    }
 }

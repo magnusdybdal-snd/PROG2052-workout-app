@@ -49,15 +49,12 @@ import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifie
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
 import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
 
 /**viewmodel
  * Displays Workout page
  */
 @Composable
 fun ActiveWorkoutPage(
-    templateId: Int,
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: ActWorkViewModel = hiltViewModel()
