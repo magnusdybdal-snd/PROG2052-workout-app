@@ -18,17 +18,17 @@ type Session struct {
 // Repository implementation
 type SessionRepository interface {
 	FindAll(ctx context.Context, userId string) ([]Session, error)
-	Insert(ctx context.Context, userId string,data Session) (string, error)
-	Update(ctx context.Context, id string, userId string,data Session) (string, error)
+	Insert(ctx context.Context, userId string, data Session) (string, error)
+	Update(ctx context.Context, id string, userId string, data Session) (string, error)
 	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 // Service implementation
 type SessionService interface {
 	GetAll(ctx context.Context, userId string, include bool) (interface{}, error)
-	Create(ctx context.Context, payload *Session) (string, error)
-	Update(ctx context.Context, id string, payload interface{}) (string, error)
-	Delete(ctx context.Context, id string) (string, error)
+	Create(ctx context.Context, userId string, payload *Session) (string, error)
+	Update(ctx context.Context, id string, userId string, payload Session) (string, error)
+	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 func (s *Session) Valid(ctx context.Context) map[string]string {

@@ -30,41 +30,40 @@ func (r *SessionRepository) FindAll(ctx context.Context, userId string) ([]domai
 	if entityLen == 0 {
 		return nil, fmt.Errorf("no data found")
 	}
-	response := make([]domain.Session,entityLen)
+	response := make([]domain.Session, entityLen)
 	for i, v := range entity {
 		response[i] = toDomainSession(v)
-		
 	}
 
 	return response, nil
 }
 
-func (r *SessionRepository) Insert(ctx context.Context, userId string,data domain.Session) (string, error) {
+func (r *SessionRepository) Insert(ctx context.Context, userId string, data domain.Session) (string, error) {
 	entity := toEntitySession(data, userId)
 	result, err := r.Coll.InsertOne(ctx, entity)
 	if err != nil {
 		return "", err
 	}
-	id := fmt.Sprintf("%s",result.InsertedID)
+	id := fmt.Sprintf("%s", result.InsertedID)
 	return id, nil
 }
 
-func (r *SessionRepository) Update(ctx context.Context, id string, userId string,data domain.Session) (string, error) {
+func (r *SessionRepository) Update(ctx context.Context, id string, userId string, data domain.Session) (string, error) {
 	entity := toEntitySession(data, userId)
 	filter := bson.M{"sessionId": id, "userId": userId}
-	result, err := r.Coll.ReplaceOne(ctx,filter, entity)
+	result, err := r.Coll.ReplaceOne(ctx, filter, entity)
 	if err != nil {
 		return "", err
 	}
 	if result.MatchedCount == 0 {
-		return "", fmt.Errorf("no session found with this id: %s",id)
+		return "", fmt.Errorf("no session found with this id: %s", id)
 	}
 	return id, nil
 }
 
-func (r *SessionRepository) Delete(ctx context.Context, id string) (string, error) {
-	filter := bson.M{"sessionId": id}
-	result, err := r.Coll.DeleteOne(ctx,filter)
+func (r *SessionRepository) Delete(ctx context.Context, id string, userId string) (string, error) {
+	filter := bson.M{"sessionId": id, "userId":userId}
+	result, err := r.Coll.DeleteOne(ctx, filter)
 	if err != nil {
 		return "", err
 	}

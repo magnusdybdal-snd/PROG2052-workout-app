@@ -109,7 +109,7 @@ func HandleOneTemplate(serv domain.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			result, err := serv.Update(ctx, id, userID,payload)
+			result, err := serv.Update(ctx, id, userID,*payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return

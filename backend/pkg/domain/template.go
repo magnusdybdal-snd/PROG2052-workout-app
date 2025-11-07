@@ -20,8 +20,8 @@ type TemplateRepository interface {
 }
 
 type TemplateService interface {
-	GetAll(ctx context.Context, userId string, include bool) (Template, error)
-	GetOne(ctx context.Context, id string, userId string, include bool) (Template, error)
+	GetAll(ctx context.Context, userId string, include bool) (interface{}, error)
+	GetOne(ctx context.Context, id string, userId string, include bool) (interface{}, error)
 	Create(ctx context.Context, userId string, payload *Template) (string, error)
 	Update(ctx context.Context, id string, userId string, payload Template) (string, error)
 	Delete(ctx context.Context, id string, userId string) (string, error)

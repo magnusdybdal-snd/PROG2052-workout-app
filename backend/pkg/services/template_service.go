@@ -88,7 +88,7 @@ func (s *TemplateServiceImpl) Create(ctx context.Context, userId string,payload 
 	return result, nil
 }
 
-func (s *TemplateServiceImpl) Update(ctx context.Context, userId string,id string, payload interface{}) (string, error) {
+func (s *TemplateServiceImpl) Update(ctx context.Context, userId string,id string, payload domain.Template) (string, error) {
 	result, err := s.RepoTempl.Update(ctx, id, userId,payload)
 	if err != nil {
 		return "", err
