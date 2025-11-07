@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
@@ -63,7 +64,7 @@ fun TemplateDisplayContent (
                     if (!viewModel.activeWorkoutManager.hasActiveWorkout()) {
                         viewModel.activeWorkoutManager.startWorkout(template)
                     }
-                    navController.navigate("worktemp/$index")
+                    navController.navigate(Routes.WORKTEMP)
                 },
                 navController = navController,
             )

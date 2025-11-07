@@ -134,12 +134,11 @@ fun MainScreen(
                 val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
                 EditTemplatePage(templateId.toInt(), Modifier, navController)
             }
-            composable(
-                route = Routes.WORKTEMP,
-                arguments = listOf(navArgument("tempId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
-                ActiveWorkoutPage(templateId.toInt(), Modifier, navController)
+            composable(Routes.WORKTEMP) {
+                ActiveWorkoutPage(
+                    modifier = Modifier,
+                    navController = navController
+                )
             }
 
             composable(
