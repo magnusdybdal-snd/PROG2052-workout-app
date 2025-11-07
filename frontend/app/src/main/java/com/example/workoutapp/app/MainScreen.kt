@@ -2,11 +2,14 @@
 package com.example.workoutapp.app
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -18,8 +21,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -33,6 +40,7 @@ import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.history_detail.HistoryDetailPage
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
 import com.example.workoutapp.data.database.UserPreferences
+import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.edit_template.EditTemplatePage
 import com.example.workoutapp.features.exercises.ExercisesPage
@@ -50,7 +58,8 @@ import com.example.workoutapp.features.new_template.NewTemplatePage
 fun MainScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    preferences: UserPreferences = UserPreferences(LocalContext.current) // for checking if user logged in
+    preferences: UserPreferences = UserPreferences(LocalContext.current), // for checking if user logged in
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
 
     val navItemList = listOf(
@@ -70,6 +79,11 @@ fun MainScreen(
     val startDestination = remember {
         if (token == null) Routes.LOGIN else Routes.WORKOUT
     }
+
+    // Check if there is an active workout going on
+    val activeSession by mainViewModel.activeWorkoutManager.activeSession.collectAsState()
+    val hasActiveWorkout = activeSession != null
+    val isOnWorkoutPage = currentDestination?.route == Routes.WORKTEMP
 
     LaunchedEffect(token) {
         val currentRoute = navController.currentBackStackEntry?.destination?.route
@@ -112,6 +126,43 @@ fun MainScreen(
                             label = { Text(item.label) },
                             colors = AppNavBar.itemColors()
                         )
+                    }
+                }
+            }
+        },
+
+        floatingActionButton = {
+            val cs = MaterialTheme.colorScheme
+            // Show floating action button if not on workout page and has an active workout
+            if (hasActiveWorkout && !isOnWorkoutPage) {
+                val timerText = activeSession?.let { session ->
+                    if (session.isTimerRunning) {
+                        val minutes = session.timerSecondsRemaining / 60
+                        val seconds = session.timerSecondsRemaining % 60
+                        String.format("%d:%02d", minutes, seconds)
+                    } else {
+                        "Resume Workout"
+                    }
+                } ?: "Resume Workout"
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Routes.WORKTEMP) {
+                            launchSingleTop = true
+                        }
+                    },
+                    containerColor = cs.primary,
+                    contentColor = cs.onPrimary
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Resume Workout"
+                        )
+                        Text(timerText, fontSize = 12.sp)
                     }
                 }
             }
