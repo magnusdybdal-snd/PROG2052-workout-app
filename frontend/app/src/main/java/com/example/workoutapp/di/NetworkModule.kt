@@ -35,6 +35,6 @@ object KtorClient{
     @Singleton
     // Instead of hardcoding the URL everywhere, we provide it once.
     // If you later change servers, only this provider changes.
-    fun provideBaseUrl():String = "http://${server}/api/v1"
+    fun provideBaseUrl():String = "http://${emulatorHost}/api/v1"
 
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/models"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -13,38 +14,50 @@ type TemplateRepository struct {
 	Coll *mongo.Collection
 }
 
-func (r *TemplateRepository) FindAll(ctx context.Context) ([]domain.Template, error) {
-	var data []domain.Template
-	cursor, err := r.Coll.Find(ctx, bson.M{})
+func (r *TemplateRepository) FindAll(ctx context.Context, userId string) ([]domain.Template, error) {
+	var entity []models.TemplateEntity
+
+	filter := bson.M{"userId": userId}
+
+	cursor, err := r.Coll.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	if err := cursor.All(ctx, &data); err != nil {
+	if err := cursor.All(ctx, &entity); err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	if len(data) == 0 {
-		return nil, fmt.Errorf("no data found")
+	entityLen := len(entity)
+	if entityLen == 0 {
+		return nil, fmt.Errorf("no data found for user")
 	}
 
-	return data, nil
+	// convert to domain
+	response := make([]domain.Template, entityLen)
+	for i, v := range entity {
+		response[i] = toDomainTemplate(v) // converts entity to domain model
+	}
+
+	return response, nil
 }
 
-func (r *TemplateRepository) FindOne(ctx context.Context, id string) (domain.Template, error) {
-	var data domain.Template
-	filter := bson.M{"templateId": id}
+func (r *TemplateRepository) FindOne(ctx context.Context, id string, userId string) (domain.Template, error) {
+	var entity models.TemplateEntity
+	filter := bson.M{"templateId": id, "userId": userId}
 
-	err := r.Coll.FindOne(ctx, filter).Decode(&data)
+	err := r.Coll.FindOne(ctx, filter).Decode(&entity)
 	if err != nil {
 		var empty domain.Template
 		return empty, err
 	}
+	response := toDomainTemplate(entity)
 
-	return data, nil
+	return response, nil
 }
 
-func (r *TemplateRepository) Insert(ctx context.Context, data domain.Template) (string, error) {
-	result, err := r.Coll.InsertOne(ctx, data)
+func (r *TemplateRepository) Insert(ctx context.Context, userId string, data domain.Template) (string, error) {
+	entity := toEntityTemplate(data, userId)
+	result, err := r.Coll.InsertOne(ctx, entity)
 	if err != nil {
 		return "", err
 	}
@@ -52,20 +65,21 @@ func (r *TemplateRepository) Insert(ctx context.Context, data domain.Template) (
 	return id, nil
 }
 
-func (r *TemplateRepository) Update(ctx context.Context, id string, data interface{}) (string, error) {
-	filter := bson.M{"templateId": id}
-	result, err := r.Coll.ReplaceOne(ctx, filter, data)
+func (r *TemplateRepository) Update(ctx context.Context, id string, userId string, data domain.Template) (string, error) {
+	entity := toEntityTemplate(data, userId)
+	filter := bson.M{"templateId": id, "userId": userId}
+	result, err := r.Coll.ReplaceOne(ctx, filter, entity)
 	if err != nil {
 		return "", err
 	}
 	if result.MatchedCount == 0 {
-		return "", fmt.Errorf("no template found with this id: %s",id)
+		return "", fmt.Errorf("no template found with this id: %s", id)
 	}
 	return id, nil
 }
 
-func (r *TemplateRepository) Delete(ctx context.Context, id string) (string, error) {
-	filter := bson.M{"templateId": id}
+func (r *TemplateRepository) Delete(ctx context.Context, id string, userId string) (string, error) {
+	filter := bson.M{"templateId": id, "userId":userId}
 	result, err := r.Coll.DeleteOne(ctx, filter)
 	if err != nil {
 		return "", err

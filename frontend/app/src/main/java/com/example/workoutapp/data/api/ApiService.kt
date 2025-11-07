@@ -3,6 +3,7 @@ package com.example.workoutapp.data.api
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
+import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.domain.models.AuthResponse
 import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.domain.models.NewTemplate
@@ -12,11 +13,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 /**
@@ -30,8 +33,12 @@ import javax.inject.Inject
  */
 class ApiService @Inject constructor(
     private val client: HttpClient,
-    private val baseUrl: String
+    private val baseUrl: String,
+    private val preferences: UserPreferences
 ) {
+    private suspend fun getAuthHeader(): String? {
+        return preferences.token.firstOrNull()
+    }
     /**
      *  /POST
      *  Request jwt token from the backend.
@@ -74,7 +81,14 @@ class ApiService @Inject constructor(
      * TODO: Add user authentication to fetch only current user's templates
      */
     suspend fun getWorkoutTemplates(): List<WorkoutTemplateDto> {
-        return client.get("$baseUrl/templates?include=exercises").body()
+        val token = getAuthHeader()
+        return client.get("$baseUrl/templates?include=exercises") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
+        }.body()
     }
 
     /**
@@ -86,9 +100,15 @@ class ApiService @Inject constructor(
      * @param newTemplate The template to create (includes exercises and sets)
      */
     suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
+        val token = getAuthHeader()
         client.post("$baseUrl/templates") {
             contentType(ContentType.Application.Json)
             setBody(newTemplate)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
@@ -100,9 +120,15 @@ class ApiService @Inject constructor(
      * @param workoutTemplate The template with updated data
      */
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
+        val token = getAuthHeader()
         client.put("$baseUrl/templates/${workoutTemplate.templateId}") {
             contentType(ContentType.Application.Json)
             setBody(workoutTemplate)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
@@ -116,7 +142,14 @@ class ApiService @Inject constructor(
      * @param templateId UUID of the template to delete
      */
     suspend fun deleteWorkoutTemplate(templateId: String) {
-        client.delete("$baseUrl/templates/$templateId")
+        val token = getAuthHeader()
+        client.delete("$baseUrl/templates/$templateId") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
+        }
     }
 
     //===========================================
@@ -130,10 +163,16 @@ class ApiService @Inject constructor(
      * display progress, statistics, and past performance.
      *
      * @return List of history workout DTOs with nested exercise and set data
-     * TODO: Add user authentication to fetch only current user's history
      */
     suspend fun getHistoryWorkouts(): List<HistoryWorkoutDto> {
-        return client.get("$baseUrl/sessions?include=exercises").body()
+        val token = getAuthHeader()
+        return client.get("$baseUrl/sessions?include=exercises") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
+        }.body()
     }
 
     /**
@@ -145,15 +184,27 @@ class ApiService @Inject constructor(
      * @param session The completed workout session with all performance data
      */
     suspend fun postHistoryWorkout(session: Session) {
+        val token = getAuthHeader()
         client.post("$baseUrl/sessions") {
             contentType(ContentType.Application.Json)
             setBody(session)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
 
     suspend fun deleteHistoryWorkout(historyWorkoutId: String) {
+        val token = getAuthHeader()
         client.delete("$baseUrl/sessions/$historyWorkoutId") {
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 
@@ -165,9 +216,15 @@ class ApiService @Inject constructor(
      * @param historyWorkout The historyWorkout with updated data
      */
     suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout) {
+        val token = getAuthHeader()
         client.put("$baseUrl/templates/${historyWorkout.id}") {
             contentType(ContentType.Application.Json)
             setBody(historyWorkout)
+            token?.let {
+                headers {
+                    append("Authorization", "Bearer $it")
+                }
+            }
         }
     }
 }

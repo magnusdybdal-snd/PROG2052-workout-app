@@ -7,33 +7,33 @@ import (
 )
 
 type Session struct {
-	SessionId string               `bson:"sessionId" json:"sessionId"`
-	Name      string               `bson:"name" json:"name"` // get this from template
-	Exercises []ExerciseIdTemplate `bson:"exercises" json:"exercises"`
-	Duration  string               `bson:"duration" json:"duration"`
-	Date      string               `bson:"date" json:"date"`
-	Note      string               `bson:"note" json:"note"`
+	SessionId string               `json:"sessionId"`
+	Name      string               `json:"name"` // get this from template
+	Exercises []ExerciseIdTemplate `json:"exercises"`
+	Duration  string               `json:"duration"`
+	Date      string               `json:"date"`
+	Note      string               `json:"note"`
 }
 
 // Repository implementation
 type SessionRepository interface {
-	FindAll(ctx context.Context) ([]Session, error)
-	Insert(ctx context.Context, data Session) (string, error)
-	Update(ctx context.Context, id string, data interface{}) (string, error)
-	Delete(ctx context.Context, id string) (string, error)
+	FindAll(ctx context.Context, userId string) ([]Session, error)
+	Insert(ctx context.Context, userId string, data Session) (string, error)
+	Update(ctx context.Context, id string, userId string, data Session) (string, error)
+	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 // Service implementation
 type SessionService interface {
-	GetAll(ctx context.Context, include bool) (interface{}, error)
-	Create(ctx context.Context, payload *Session) (string, error)
-	Update(ctx context.Context, id string, payload interface{}) (string, error)
-	Delete(ctx context.Context, id string) (string, error)
+	GetAll(ctx context.Context, userId string, include bool) (interface{}, error)
+	Create(ctx context.Context, userId string, payload *Session) (string, error)
+	Update(ctx context.Context, id string, userId string, payload Session) (string, error)
+	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 func (s *Session) Valid(ctx context.Context) map[string]string {
 	problems := map[string]string{}
-	
+
 	if s.SessionId == "" {
 		problems["sessionId"] = "sessionId is required"
 	}
@@ -52,7 +52,7 @@ func (s *Session) Valid(ctx context.Context) map[string]string {
 	if s.Duration == "" {
 		problems["duration"] = "duration is required"
 	} else {
-		_, err := time.Parse("15:04:05",s.Duration)
+		_, err := time.Parse("15:04:05", s.Duration)
 		if err != nil {
 			problems["duration"] = "duration must be in format hh:mm:ss"
 		}
@@ -61,7 +61,7 @@ func (s *Session) Valid(ctx context.Context) map[string]string {
 	if s.Date == "" {
 		problems["date"] = "date is required"
 	} else {
-		_, err := time.Parse("2006-01-02",s.Date)
+		_, err := time.Parse("2006-01-02", s.Date)
 		if err != nil {
 			problems["date"] = "date must be in format yyyy-mm-dd"
 		}
@@ -71,10 +71,10 @@ func (s *Session) Valid(ctx context.Context) map[string]string {
 }
 
 type ExpandedSession struct {
-	SessionId string                     `bson:"sessionId" json:"sessionId"`
-	Name      string                     `bson:"name" json:"name"` // get this from template
-	Exercises []ExpandedExerciseTemplate `bson:"exercises" json:"exercises"`
-	Duration  string                     `bson:"duration" json:"duration"`
-	Date      string                     `bson:"date" json:"date"`
-	Note      string                     `bson:"note" json:"note"`
+	SessionId string                     `json:"sessionId"`
+	Name      string                     `json:"name"` // get this from template
+	Exercises []ExpandedExerciseTemplate `json:"exercises"`
+	Duration  string                     `json:"duration"`
+	Date      string                     `json:"date"`
+	Note      string                     `json:"note"`
 }

@@ -32,6 +32,7 @@ import com.example.workoutapp.core.core_navigation.NavItem
 import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.history_detail.HistoryDetailPage
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
+import com.example.workoutapp.core.utils.isTokenExpired
 import com.example.workoutapp.data.database.UserPreferences
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.edit_template.EditTemplatePage
@@ -40,6 +41,7 @@ import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.login.LoginPage
 import com.example.workoutapp.features.new_template.NewTemplatePage
+import kotlinx.coroutines.flow.firstOrNull
 
 /**
  * Main screen
@@ -52,7 +54,18 @@ fun MainScreen(
     navController: NavHostController,
     preferences: UserPreferences = UserPreferences(LocalContext.current) // for checking if user logged in
 ) {
+    val token by preferences.token.collectAsState(initial = null)
+    val startDestination = if(isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
 
+    // TODO: THIS IS TO BE SWITCHED WITH A PROPER SPLASH SCREEN
+    LaunchedEffect(token) {
+        if (token.isNullOrBlank() || isTokenExpired(token)) {
+            preferences.clearAuthData()
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive=true }
+            }
+        }
+    }
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
         NavItem("Workouts", Routes.WORKOUT, Icons.Default.PlayArrow),
@@ -65,28 +78,6 @@ fun MainScreen(
     // Show or hide the bottom-bar.
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
-
-    val token by preferences.token.collectAsState(initial = null)
-    val startDestination = remember {
-        if (token == null) Routes.LOGIN else Routes.WORKOUT
-    }
-
-    LaunchedEffect(token) {
-        val currentRoute = navController.currentBackStackEntry?.destination?.route
-
-        // User logged out, navigate to login page
-        if (token == null && currentRoute != Routes.LOGIN) {
-            navController.navigate(Routes.LOGIN) {
-                popUpTo(0) { inclusive = true }
-            }
-        // User just logged in, navigate to home
-        } else if (token != null && currentRoute == Routes.LOGIN) {
-            navController.navigate(Routes.WORKOUT) {
-                popUpTo(Routes.LOGIN) { inclusive = true }
-            }
-        }
-    }
-
 
     Scaffold(
         bottomBar = {
@@ -155,6 +146,7 @@ fun MainScreen(
             }
         }
     }
+
 }
 
 private fun NavDestination?.isOnRoute(route: String): Boolean {

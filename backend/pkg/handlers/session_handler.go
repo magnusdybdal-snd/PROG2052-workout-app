@@ -20,11 +20,13 @@ func HandleSession(serv domain.SessionService) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
+		userID := r.Context().Value("userId").(string)
+
 		switch r.Method {
 		// GET /sessions
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
-			data, err := serv.GetAll(ctx, include)
+			data, err := serv.GetAll(ctx, userID, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -34,22 +36,22 @@ func HandleSession(serv domain.SessionService) http.HandlerFunc {
 		// POST /sessions
 		case http.MethodPost:
 			/*
-			payload, problems, err := utils.DecodeValid[*domain.Session](r)
-			if err != nil {
-				if problems != nil {
-					utils.Encode(w, http.StatusBadRequest, problems)
+				payload, problems, err := utils.DecodeValid[*domain.Session](r)
+				if err != nil {
+					if problems != nil {
+						utils.Encode(w, http.StatusBadRequest, problems)
+						return
+					}
+					utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 					return
 				}
-				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
-				return
-			}
 			*/
 			payload, err := utils.Decode[domain.Session](r)
 			if err != nil {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.Create(ctx, &payload)
+			id, err := serv.Create(ctx, userID, &payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -74,6 +76,7 @@ DELETE /sessions/{sessionId}
 */
 func HandleOneSession(serv domain.SessionService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		userID := r.Context().Value("userId").(string)
 		id := r.PathValue("sessionId")
 		if id == "" {
 			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
@@ -84,7 +87,7 @@ func HandleOneSession(serv domain.SessionService) http.HandlerFunc {
 
 		switch r.Method {
 		case http.MethodDelete:
-			result, err := serv.Delete(ctx, id)
+			result, err := serv.Delete(ctx, id,userID)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return
@@ -103,7 +106,7 @@ func HandleOneSession(serv domain.SessionService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			result, err := serv.Update(ctx, id, payload)
+			result, err := serv.Update(ctx, id, userID,*payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return
