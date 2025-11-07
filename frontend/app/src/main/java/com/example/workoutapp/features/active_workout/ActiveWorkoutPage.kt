@@ -81,40 +81,6 @@ fun ActiveWorkoutPage(
         state.error != null -> ErrorStateView(state.error)
         else -> {
 
-            // Timer countdown effect
-            LaunchedEffect(session.isTimerRunning, session.timerSecondsRemaining) {
-                if (session.isTimerRunning && session.timerSecondsRemaining > 0) {
-                    delay(1.seconds)
-                    viewModel.tickTimer()
-                }
-            }
-
-//            val template = state.templates[templateId]
-//            val completedSets = remember {
-//                mutableStateOf(
-//                    template.exercises.mapIndexed { _, exSet ->
-//                        MutableList(exSet.sets.size) { false }
-//                    }
-//                )
-//            }
-//
-//            var time by remember { mutableIntStateOf(3) }
-//            var ticks by remember { mutableIntStateOf(time * 60) }
-//            var isTimerRunning by remember { mutableStateOf(false) }
-//            var restartKey by remember { mutableIntStateOf(0) }
-//
-//
-//            LaunchedEffect(isTimerRunning, time, restartKey) {
-//                if (isTimerRunning) {
-//                    ticks = time * 60 // reset countdown
-//                    while (ticks > 0) {
-//                        delay(1.seconds)
-//                        ticks--
-//                    }
-//                    isTimerRunning = false
-//                }
-//            }
-
             Scaffold (
                 bottomBar = {
                     if (session.isTimerRunning) { // check if condition is true (show/hide bottombar)
