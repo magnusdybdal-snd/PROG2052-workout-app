@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,6 +43,7 @@ import com.example.workoutapp.core.core_ui.composable.ErrorStateView
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
+import com.example.workoutapp.core.core_ui.composable.TimerTextField
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
@@ -87,25 +89,26 @@ fun ActiveWorkoutPage(
                 )
             }
 
-            var isAnyChecked by remember { mutableStateOf(false) }
-            var ticks by remember { mutableIntStateOf(60 * 3) }
+            var time by remember { mutableIntStateOf(3) }
+            var ticks by remember { mutableIntStateOf(time * 60) }
+            var isTimerRunning by remember { mutableStateOf(false) }
+            var restartKey by remember { mutableIntStateOf(0) }
 
-            LaunchedEffect(Unit) {
-                while (true) {
-                    delay(1.seconds)
-                    if (isAnyChecked) {
+
+            LaunchedEffect(isTimerRunning, time, restartKey) {
+                if (isTimerRunning) {
+                    ticks = time * 60 // reset countdown
+                    while (ticks > 0) {
+                        delay(1.seconds)
                         ticks--
-                        if (ticks == 0) {
-                            isAnyChecked = false
-                            ticks = 60 * 3
-                        }
                     }
+                    isTimerRunning = false
                 }
             }
 
             Scaffold (
                 bottomBar = {
-                    if (isAnyChecked) { // check if condition is true (show/hide bottombar)
+                    if (isTimerRunning) { // check if condition is true (show/hide bottombar)
                         NavigationBar{
                             Box(
                                 modifier = Modifier
@@ -165,63 +168,77 @@ fun ActiveWorkoutPage(
                                             onValueChange = { notes = it },
                                             label = { Text(text = stringResource(R.string.workout_notes)) },
 
-                                        )
+                                            )
                                     },
                                     confirmButton = {
-                                        TextButton(onClick = {
-                                            val finishedWorkout = Session(
-                                                sessionId = UUID.randomUUID().toString(),
-                                                name = template.name,
-                                                exercises = template.exercises.mapIndexedNotNull { exerciseIndex, exSet ->
-                                                    val completedSetsForExercise =
-                                                        exSet.sets.filterIndexed { setIndex, _ ->
-                                                            completedSets.value[exerciseIndex][setIndex]
-                                                        }
-
-                                                    if (completedSetsForExercise.isNotEmpty()) {
-                                                        SessionExercise(
-                                                            exerciseId = exSet.exerciseId,
-                                                            name = exSet.name,
-                                                            sets = completedSetsForExercise.map { set ->
-                                                                Set(
-                                                                    rep = set.rep,
-                                                                    kg = set.kg,
-                                                                    typeSet = set.typeSet
-                                                                )
+                                        TextButton(
+                                            onClick = {
+                                                val finishedWorkout = Session(
+                                                    sessionId = UUID.randomUUID().toString(),
+                                                    name = template.name,
+                                                    exercises = template.exercises.mapIndexedNotNull { exerciseIndex, exSet ->
+                                                        val completedSetsForExercise =
+                                                            exSet.sets.filterIndexed { setIndex, _ ->
+                                                                completedSets.value[exerciseIndex][setIndex]
                                                             }
-                                                        )
-                                                    } else {
-                                                        null
-                                                    }
-                                                },
-                                                duration = java.time.Duration.ofHours(1).plusMinutes(15).plusSeconds(45), // TODO THIS IS MOCK DATA
-                                                date = LocalDate.now(),
-                                                note = notes
-                                            )
 
-                                            viewModel.postWorkout(finishedWorkout)
-                                            showDialog = false
-                                            navController.popBackStack()
-                                        },
-                                            colors = textButtonColor()) {
+                                                        if (completedSetsForExercise.isNotEmpty()) {
+                                                            SessionExercise(
+                                                                exerciseId = exSet.exerciseId,
+                                                                name = exSet.name,
+                                                                sets = completedSetsForExercise.map { set ->
+                                                                    Set(
+                                                                        rep = set.rep,
+                                                                        kg = set.kg,
+                                                                        typeSet = set.typeSet
+                                                                    )
+                                                                }
+                                                            )
+                                                        } else {
+                                                            null
+                                                        }
+                                                    },
+                                                    duration = java.time.Duration.ofHours(1)
+                                                        .plusMinutes(15)
+                                                        .plusSeconds(45), // TODO THIS IS MOCK DATA
+                                                    date = LocalDate.now(),
+                                                    note = notes
+                                                )
+
+                                                viewModel.postWorkout(finishedWorkout)
+                                                showDialog = false
+                                                navController.popBackStack()
+                                            },
+                                            colors = textButtonColor()
+                                        ) {
                                             Text(text = stringResource(R.string.finish_workout))
                                         }
                                     },
                                     dismissButton = {
-                                        TextButton(onClick = { showDialog = false },
-                                            colors = textButtonColor()) {
+                                        TextButton(
+                                            onClick = { showDialog = false },
+                                            colors = textButtonColor()
+                                        ) {
                                             Text(text = stringResource(R.string.cancel))
                                         }
                                     }
                                 )
                             }
-
                         }
                         Text(
                             state.templates[templateId].name,
                             fontSize = 30.sp,
                             modifier = Modifier.padding(vertical = 10.dp)
                         )
+
+                        Box(
+                            modifier = Modifier.width(120.dp)
+                        ) {
+                            TimerTextField(
+                                time = time,
+                                onTimeChange = { time = it }
+                            )
+                        }
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -312,11 +329,15 @@ fun ActiveWorkoutPage(
                                                 colors = AppCheckBox.checkBoxColor(),
                                                 checked = completedSets.value[exerciseIndex][setIndex],
                                                 onCheckedChange = { isChecked ->
-                                                    isAnyChecked = isAnyChecked || isChecked
                                                     completedSets.value = completedSets.value.toMutableList().apply {
                                                         this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
                                                             this[setIndex] = isChecked
                                                         }
+                                                    }
+
+                                                    if (isChecked) {
+                                                        isTimerRunning = true
+                                                        restartKey++
                                                     }
                                                 }
                                             )
