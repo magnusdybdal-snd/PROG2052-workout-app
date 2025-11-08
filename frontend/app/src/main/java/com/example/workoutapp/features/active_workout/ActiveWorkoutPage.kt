@@ -1,5 +1,6 @@
 package com.example.workoutapp.features.active_workout
 
+import android.util.Log.i
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -277,18 +278,16 @@ fun ActiveWorkoutPage(
                                             fontSize = 10.sp,
                                             modifier = Modifier
                                         )
-                                        for (i in 1..y) {
+                                        exSet.sets.forEachIndexed { setIndex, set ->
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically,
                                                 modifier = Modifier.height(50.dp)
                                             ) {
                                                 Text(
-                                                    "$i",
+                                                    "${setIndex + 1}",
                                                     fontSize = 15.sp
                                                 )
                                             }
-                                        }
-                                    }
                                     Column(
                                         verticalArrangement = Arrangement.SpaceBetween,
                                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -297,7 +296,8 @@ fun ActiveWorkoutPage(
                                         WorkoutTextField(
                                             label = stringResource(R.string.kg),
                                             exSet = exSet,
-                                            type = "kg"
+                                            type = "kg",
+                                            set = set
                                         )
                                     }
                                     Column(
@@ -308,7 +308,8 @@ fun ActiveWorkoutPage(
                                         WorkoutTextField(
                                             label = stringResource(R.string.reps),
                                             exSet = exSet,
-                                            type = "reps"
+                                            type = "reps",
+                                            set = set
                                         )
                                     }
                                     Column(
@@ -340,6 +341,8 @@ fun ActiveWorkoutPage(
                                                     }
                                                 }
                                             )
+                                        }
+                                    }
                                         }
                                     }
                                 }

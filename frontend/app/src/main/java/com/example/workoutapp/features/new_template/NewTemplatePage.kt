@@ -1,5 +1,6 @@
 package com.example.workoutapp.features.new_template
 
+import android.util.Log.i
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -96,12 +97,13 @@ fun NewTemplatePage(
 
                         RoundedButton(
                             buttonText = stringResource(R.string.add_template),
-                            onClick = {showDialog = true},
+                            onClick = { showDialog = true },
                         )
 
                         if (showDialog &&
                             name != "" &&
-                            exercises.isNotEmpty()) {
+                            exercises.isNotEmpty()
+                        ) {
                             AlertDialog(
                                 containerColor = cs.tertiary,
                                 textContentColor = cs.onTertiary,
@@ -114,20 +116,21 @@ fun NewTemplatePage(
                                     )
                                 },
                                 confirmButton = {
-                                    TextButton(onClick = {
-                                        val newTemplate = NewTemplate(
-                                            templateId = UUID.randomUUID().toString(),
-                                            name = name,
-                                            exercises = exercises
-                                        )
-                                        viewModel.postWorkout(newTemplate)
-                                        showDialog = false
-                                        navController.popBackStack()
+                                    TextButton(
+                                        onClick = {
+                                            val newTemplate = NewTemplate(
+                                                templateId = UUID.randomUUID().toString(),
+                                                name = name,
+                                                exercises = exercises
+                                            )
+                                            viewModel.postWorkout(newTemplate)
+                                            showDialog = false
+                                            navController.popBackStack()
                                         },
                                         colors = textButtonColor()
                                     ) {
                                         Text(
-                                            text =stringResource(R.string.add_template),
+                                            text = stringResource(R.string.add_template),
                                         )
                                     }
                                 },
@@ -151,7 +154,8 @@ fun NewTemplatePage(
                         label = {
                             Text(
                                 text = stringResource(R.string.set_template_name),
-                                color = cs.onSecondaryContainer)
+                                color = cs.onSecondaryContainer
+                            )
                         },
                         shape = RoundedCornerShape(12.dp),
                         colors = fieldColors(),
@@ -180,10 +184,12 @@ fun NewTemplatePage(
                             TextField(
                                 value = searchString,
                                 onValueChange = { searchString = it },
-                                placeholder = { Text(
-                                    text = "Search exercise",
-                                    color = cs.onBackground
-                                ) },
+                                placeholder = {
+                                    Text(
+                                        text = "Search exercise",
+                                        color = cs.onBackground
+                                    )
+                                },
                                 singleLine = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -209,7 +215,7 @@ fun NewTemplatePage(
                                                 exerciseId = exercise.exerciseId,
                                                 name = exercise.name,
                                                 sets = mutableStateListOf(
-                                                    Set (
+                                                    Set(
                                                         rep = 0,
                                                         kg = 0.0,
                                                         typeSet = 0,
@@ -251,7 +257,7 @@ fun NewTemplatePage(
                                     exerciseNames[index],
                                     fontSize = 15.sp
                                 )
-                                IconButton (
+                                IconButton(
                                     onClick = {
                                         exercises.removeAt(index)
                                     }
@@ -281,74 +287,79 @@ fun NewTemplatePage(
                                         fontSize = 10.sp,
                                         modifier = Modifier
                                     )
-                                    for (i in 1..y) {
+                                    // Loop through all the Exercise sets
+                                    exSet.sets.forEachIndexed { setIndex, set ->
                                         Text(
-                                            text = "$i\n",
+                                            text = "${setIndex + 1}",
                                             fontSize = 15.sp,
                                         )
-                                    }
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
-                                ) {
-                                    WorkoutTextField(
-                                        label = stringResource(R.string.kg),
-                                        exSet = exSet,
-                                        type = "kg"
-                                    )
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = TextFieldModifier(height = h.dp * y)
-                                ) {
-                                    WorkoutTextField(
-                                        label = stringResource(R.string.reps),
-                                        exSet = exSet,
-                                        type = "reps"
-                                    )
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
-                                ) {
-                                    Text("", fontSize = 10.sp)
-                                    exSet.sets.forEachIndexed {index, set ->
-                                        IconButton (
-                                            onClick = {
-                                                exSet.sets.removeAt(index)
-                                            }
+
+
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = Modifier
+                                                .height(h.dp * y)
+                                                .fillMaxHeight()
                                         ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = "Remove set"
+                                            WorkoutTextField(
+                                                label = stringResource(R.string.kg),
+                                                exSet = exSet,
+                                                type = "kg",
+                                                set = set
                                             )
                                         }
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = TextFieldModifier(height = h.dp * y)
+                                        ) {
+                                            WorkoutTextField(
+                                                label = stringResource(R.string.reps),
+                                                exSet = exSet,
+                                                type = "reps",
+                                                set = set
+                                            )
+                                        }
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = Modifier
+                                                .height(h.dp * y)
+                                                .fillMaxHeight()
+                                        ) {
+                                            Text("", fontSize = 10.sp)
+                                            exSet.sets.forEachIndexed { index, set ->
+                                                IconButton(
+                                                    onClick = {
+                                                        exSet.sets.removeAt(index)
+                                                    }
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Close,
+                                                        contentDescription = "Remove set"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            exSet.sets.add(
+                                                Set(
+                                                    rep = 0,
+                                                    kg = 0.0,
+                                                    typeSet = 0,
+                                                )
+                                            )
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = stringResource(R.string.add_set)
+                                        )
                                     }
                                 }
-                            }
-                            IconButton (
-                                onClick = {
-                                    exSet.sets.add(
-                                        Set(
-                                            rep = 0,
-                                            kg = 0.0,
-                                            typeSet = 0,
-                                        )
-                                    )
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.add_set)
-                                )
                             }
                         }
                     }
