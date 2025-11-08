@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExerciseWorkoutHeaderRow
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
@@ -260,34 +261,7 @@ fun ActiveWorkoutPage(
                                 }
 
                                 // Header Row
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.sets),
-                                        fontSize = 10.sp,
-                                        modifier = Modifier.width(50.dp)
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.kg),
-                                        fontSize = 10.sp,
-                                        modifier = Modifier.width(100.dp)
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.reps),
-                                        fontSize = 10.sp,
-                                        modifier = Modifier.width(100.dp)
-                                    )
-                                    Icon(
-                                        Icons.Default.Check,
-                                        contentDescription = stringResource(R.string.done_set),
-                                        tint = cs.onBackground,
-                                        modifier = Modifier.width(50.dp)
-                                    )
-                                }
+                                ExerciseWorkoutHeaderRow()
 
                                 // Loop through each set
                                 exSet.sets.forEachIndexed { setIndex, set ->
