@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.OutlinedTextField
@@ -339,6 +341,31 @@ fun ActiveWorkoutPage(
                                             modifier = Modifier.width(50.dp)
                                         )
                                     }
+
+                                }
+                                // Add set button (OUTSIDE the set loop, INSIDE the exercise loop)
+                                IconButton(
+                                    onClick = {
+                                        // Update completedSets to include the new set
+                                        completedSets.value = completedSets.value.toMutableList().apply {
+                                            this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
+                                                add(false) // Add tracking for the new set
+                                            }
+                                        }
+                                        // Add the actual set
+                                        exSet.sets.add(
+                                            Set(
+                                                rep = 0,
+                                                kg = 0.0,
+                                                typeSet = 0,
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = stringResource(R.string.add_set)
+                                    )
                                 }
                             }
                         }
