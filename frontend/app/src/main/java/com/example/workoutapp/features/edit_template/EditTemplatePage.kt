@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +62,7 @@ fun EditTemplatePage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+    val focusManager = LocalFocusManager.current
 
     when {
         state.isLoading -> LoadingStateView()
@@ -100,6 +102,7 @@ fun EditTemplatePage(
                     RoundedButton(
                         buttonText = if (isSaving) "Saving..." else stringResource(R.string.save_template),
                         onClick = {
+                            focusManager.clearFocus() // Clear focus
                             isSaving = true
                             val editedWorkout = WorkoutTemplate(
                                 templateId = template.templateId,
