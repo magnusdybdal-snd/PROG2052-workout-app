@@ -62,8 +62,8 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
-/**viewmodel
- * Displays Workout page
+/**
+ * Displays Active Workout page
  */
 @Composable
 fun ActiveWorkoutPage(
@@ -75,12 +75,10 @@ fun ActiveWorkoutPage(
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
 
-
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-
             val template = state.templates[templateId]
             val completedSets = remember {
                 mutableStateOf(
@@ -95,7 +93,6 @@ fun ActiveWorkoutPage(
             var isTimerRunning by remember { mutableStateOf(false) }
             var restartKey by remember { mutableIntStateOf(0) }
 
-
             LaunchedEffect(isTimerRunning, time, restartKey) {
                 if (isTimerRunning) {
                     ticks = time * 60 // reset countdown
@@ -107,10 +104,10 @@ fun ActiveWorkoutPage(
                 }
             }
 
-            Scaffold (
+            Scaffold(
                 bottomBar = {
-                    if (isTimerRunning) { // check if condition is true (show/hide bottombar)
-                        NavigationBar{
+                    if (isTimerRunning) {
+                        NavigationBar {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -118,7 +115,7 @@ fun ActiveWorkoutPage(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "${ticks / 60}:${ticks % 60}",
+                                    text = "${ticks / 60}:${String.format("%02d", ticks % 60)}",
                                     fontSize = 70.sp,
                                     textAlign = TextAlign.Center,
                                     color = cs.onBackground
@@ -130,13 +127,13 @@ fun ActiveWorkoutPage(
             ) { innerPadding ->
                 Column(
                     modifier = Modifier.verticalScroll(
-                        state= rememberScrollState()
+                        state = rememberScrollState()
                     ),
                 ) {
-                   RoundBackButton(
-                       navController = navController,
-                       modifier = Modifier.padding(innerPadding)
-                   )
+                    RoundBackButton(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPadding)
+                    )
                     Column(
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier.padding(horizontal = 20.dp)
@@ -168,8 +165,7 @@ fun ActiveWorkoutPage(
                                             value = notes,
                                             onValueChange = { notes = it },
                                             label = { Text(text = stringResource(R.string.workout_notes)) },
-
-                                            )
+                                        )
                                     },
                                     confirmButton = {
                                         TextButton(
@@ -226,6 +222,7 @@ fun ActiveWorkoutPage(
                                 )
                             }
                         }
+
                         Text(
                             state.templates[templateId].name,
                             fontSize = 30.sp,
@@ -243,107 +240,104 @@ fun ActiveWorkoutPage(
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier
-                                .padding(top = 10.dp),
+                            modifier = Modifier.padding(top = 10.dp),
                         ) {
                             state.templates[templateId].exercises.forEachIndexed { exerciseIndex, exSet ->
+                                // Exercise name
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
+                                        .fillMaxWidth()
                                         .padding(horizontal = 8.dp)
-
                                 ) {
                                     Text(
                                         exSet.name,
                                         fontSize = 15.sp
                                     )
                                 }
+
+                                // Header Row
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 8.dp)
-
                                 ) {
-                                    val y = exSet.sets.size //icon
-                                    val h = 75
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
+                                    Text(
+                                        text = stringResource(R.string.sets),
+                                        fontSize = 10.sp,
+                                        modifier = Modifier.width(50.dp)
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.kg),
+                                        fontSize = 10.sp,
+                                        modifier = Modifier.width(100.dp)
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.reps),
+                                        fontSize = 10.sp,
+                                        modifier = Modifier.width(100.dp)
+                                    )
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = stringResource(R.string.done_set),
+                                        tint = cs.onBackground,
+                                        modifier = Modifier.width(50.dp)
+                                    )
+                                }
+
+                                // Loop through each set
+                                exSet.sets.forEachIndexed { setIndex, set ->
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+                                            .height(75.dp)
                                     ) {
+                                        // Set Number
                                         Text(
-                                            text = stringResource(R.string.sets),
-                                            fontSize = 10.sp,
-                                            modifier = Modifier
+                                            "${setIndex + 1}",
+                                            fontSize = 15.sp,
+                                            modifier = Modifier.width(50.dp)
                                         )
-                                        exSet.sets.forEachIndexed { setIndex, set ->
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier.height(50.dp)
-                                            ) {
-                                                Text(
-                                                    "${setIndex + 1}",
-                                                    fontSize = 15.sp
-                                                )
-                                            }
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
-                                    ) {
+
+                                        // KG TextField
                                         WorkoutTextField(
                                             label = stringResource(R.string.kg),
                                             exSet = exSet,
                                             type = "kg",
                                             set = set
                                         )
-                                    }
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
-                                    ) {
+
+                                        // Reps TextField
                                         WorkoutTextField(
                                             label = stringResource(R.string.reps),
                                             exSet = exSet,
                                             type = "reps",
                                             set = set
                                         )
-                                    }
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
 
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Check,
-                                            contentDescription = stringResource(R.string.done_set),
-                                            tint = cs.onBackground
-                                        )
-
-                                        exSet.sets.forEachIndexed { setIndex, _ ->
-                                            Checkbox(
-                                                colors = AppCheckBox.checkBoxColor(),
-                                                checked = completedSets.value[exerciseIndex][setIndex],
-                                                onCheckedChange = { isChecked ->
-                                                    completedSets.value = completedSets.value.toMutableList().apply {
-                                                        this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
-                                                            this[setIndex] = isChecked
-                                                        }
-                                                    }
-
-                                                    if (isChecked) {
-                                                        isTimerRunning = true
-                                                        restartKey++
+                                        // Checkbox
+                                        Checkbox(
+                                            colors = AppCheckBox.checkBoxColor(),
+                                            checked = completedSets.value[exerciseIndex][setIndex],
+                                            onCheckedChange = { isChecked ->
+                                                completedSets.value = completedSets.value.toMutableList().apply {
+                                                    this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
+                                                        this[setIndex] = isChecked
                                                     }
                                                 }
-                                            )
-                                        }
-                                    }
-                                        }
+
+                                                if (isChecked) {
+                                                    isTimerRunning = true
+                                                    restartKey++
+                                                }
+                                            },
+                                            modifier = Modifier.width(50.dp)
+                                        )
                                     }
                                 }
                             }
@@ -353,10 +347,4 @@ fun ActiveWorkoutPage(
             }
         }
     }
-}
-
-fun getCurrentTimeString(): String {
-    val currentTime = LocalTime.now(ZoneId.systemDefault()) // current time
-    val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format
-    return currentTime.format(formatter)
 }
