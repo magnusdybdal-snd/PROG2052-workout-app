@@ -99,8 +99,8 @@ private fun SetRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text("$setNumber", color = cs.onBackground)
-        Text("${set.rep}", color = cs.onBackground)
         Text("${set.kg}", color = cs.onBackground)
+        Text("${set.rep}", color = cs.onBackground)
         Text("${set.volume}", color = cs.onBackground)
     }
 }
