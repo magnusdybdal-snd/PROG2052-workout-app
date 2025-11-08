@@ -38,8 +38,8 @@ class DeleteHistoryWorkoutUseCaseTest{
                     exerciseId = "ex1",
                     name = "Bench Press",
                     sets = listOf(
-                        WorkoutSet(rep = 10, kg = 80, typeSet = 0),
-                        WorkoutSet(rep = 8, kg = 85, typeSet = 0)
+                        WorkoutSet(rep = 10, kg = 80.0, typeSet = 0),
+                        WorkoutSet(rep = 8, kg = 85.0, typeSet = 0)
                     )
                 )
             ),
