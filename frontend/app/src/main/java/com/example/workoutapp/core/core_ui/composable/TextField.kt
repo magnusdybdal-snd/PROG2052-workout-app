@@ -97,7 +97,7 @@ fun WorkoutTextField(
     TextField(
         value = text,
         onValueChange = { newValue: String ->
-            val text = newValue.filter { it.isDigit() || it == '.' }
+            text = newValue.filter { it.isDigit() || it == '.' }
         },
         isError = !isValid,
         keyboardOptions = KeyboardOptions(
