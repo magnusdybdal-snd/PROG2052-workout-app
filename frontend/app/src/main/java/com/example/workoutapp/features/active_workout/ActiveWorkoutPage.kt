@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,6 +79,7 @@ fun ActiveWorkoutPage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+    val focusManager = LocalFocusManager.current
 
     when {
         state.isLoading -> LoadingStateView()
@@ -153,7 +155,10 @@ fun ActiveWorkoutPage(
 
                             RoundedButton(
                                 buttonText = stringResource(R.string.finish),
-                                onClick = { showDialog = true },
+                                onClick = {
+                                    focusManager.clearFocus() // clear focus to ensure that active textfield is stored.
+                                    showDialog = true
+                                },
                             )
 
                             if (showDialog) {
@@ -174,6 +179,7 @@ fun ActiveWorkoutPage(
                                     confirmButton = {
                                         TextButton(
                                             onClick = {
+                                                focusManager.clearFocus() // Clears on more time to be safe.
                                                 val finishedWorkout = Session(
                                                     sessionId = UUID.randomUUID().toString(),
                                                     name = template.name,
