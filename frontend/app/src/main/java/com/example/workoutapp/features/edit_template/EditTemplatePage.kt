@@ -1,14 +1,14 @@
 package com.example.workoutapp.features.edit_template
 
-import android.util.Log.i
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -44,14 +44,13 @@ import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
 import com.example.workoutapp.core.core_ui.composable.WorkoutNameTextField
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
-import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import kotlinx.coroutines.launch
 
-/**viewmodel
- * Displays Workout page
+/**
+ * Displays Edit Template page
  */
 @Composable
 fun EditTemplatePage(
@@ -67,7 +66,6 @@ fun EditTemplatePage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-
             val template = state.templates.getOrNull(templateId)
             if (template == null) {
                 LoadingStateView()
@@ -79,13 +77,12 @@ fun EditTemplatePage(
             var showSaveSuccess by remember { mutableStateOf(false) }
 
             Column(
-                modifier = Modifier.verticalScroll(
-                    state = rememberScrollState()
-                ),
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .imePadding()
             ) {
                 RoundBackButton(
                     navController = navController,
-                    //modifier = Modifier.padding(innerPadding)
                 )
                 Column(
                     horizontalAlignment = Alignment.Start,
@@ -123,13 +120,11 @@ fun EditTemplatePage(
 
                     WorkoutNameTextField(temp = template)
 
-
                     var expanded by remember { mutableStateOf(false) }
                     var searchString by remember { mutableStateOf("") }
 
                     Box(
-                        modifier = Modifier
-                            .padding(16.dp)
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Button(onClick = { expanded = !expanded }) {
                             Text(text = stringResource(R.string.add_exercise))
@@ -138,7 +133,7 @@ fun EditTemplatePage(
                             expanded = expanded,
                             onDismissRequest = {
                                 expanded = false
-                                searchString = "" // Reset search when closing
+                                searchString = ""
                             },
                             containerColor = cs.tertiary
                         ) {
@@ -204,16 +199,16 @@ fun EditTemplatePage(
 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier
-                            .padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 10.dp),
                     ) {
                         template.exercises.forEachIndexed { exerciseIndex, exSet ->
+                            // Exercise name with remove button
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(horizontal = 8.dp)
-
                             ) {
                                 Text(
                                     exSet.name,
@@ -230,98 +225,100 @@ fun EditTemplatePage(
                                     )
                                 }
                             }
+
+                            // Header Row
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp)
                             ) {
-                                val y = exSet.sets.size //icon
-                                val h = 75
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = TextFieldModifier(height = h.dp * y)
+                                Text(
+                                    text = stringResource(R.string.sets),
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.width(50.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.kg),
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.width(100.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.reps),
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.width(100.dp)
+                                )
+                                Text(
+                                    text = "",
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.width(50.dp)
+                                )
+                            }
+
+                            // Loop through each set
+                            exSet.sets.forEachIndexed { setIndex, set ->
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                        .height(75.dp)
                                 ) {
+                                    // Set Number
                                     Text(
-                                        text = stringResource(R.string.sets),
-                                        fontSize = 10.sp,
-                                        modifier = Modifier
+                                        "${setIndex + 1}",
+                                        fontSize = 15.sp,
+                                        modifier = Modifier.width(50.dp)
                                     )
-                                    exSet.sets.forEachIndexed { setIndex, set ->
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier
-                                                .height(50.dp)
-                                        ) {
-                                            Text(
-                                                "${setIndex + 1}",
-                                                fontSize = 15.sp
-                                            )
-                                        }
-                                        Column(
-                                            verticalArrangement = Arrangement.SpaceBetween,
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = TextFieldModifier(height = h.dp * y)
-                                        ) {
-                                            WorkoutTextField(
-                                                label = stringResource(R.string.kg),
-                                                exSet = exSet,
-                                                type = "kg",
-                                                set = set
-                                            )
-                                        }
-                                        Column(
-                                            verticalArrangement = Arrangement.SpaceBetween,
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = TextFieldModifier(height = h.dp * y)
-                                        ) {
-                                            WorkoutTextField(
-                                                label = stringResource(R.string.reps),
-                                                exSet = exSet,
-                                                type = "reps",
-                                                set = set
-                                            )
-                                        }
-                                        Column(
-                                            verticalArrangement = Arrangement.SpaceBetween,
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = Modifier
-                                                .height(h.dp * y)
-                                                .fillMaxHeight()
-                                        ) {
-                                            Text("", fontSize = 10.sp)
-                                            exSet.sets.forEachIndexed { index, set ->
-                                                IconButton(
-                                                    onClick = {
-                                                        exSet.sets.removeAt(index)
-                                                    }
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Close,
-                                                        contentDescription = "Remove set"
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
+
+                                    // KG TextField
+                                    WorkoutTextField(
+                                        label = stringResource(R.string.kg),
+                                        exSet = exSet,
+                                        type = "kg",
+                                        set = set
+                                    )
+
+                                    // Reps TextField
+                                    WorkoutTextField(
+                                        label = stringResource(R.string.reps),
+                                        exSet = exSet,
+                                        type = "reps",
+                                        set = set
+                                    )
+
+                                    // Remove set button
                                     IconButton(
                                         onClick = {
-                                            template.exercises[exerciseIndex].sets.add(
-                                                Set(
-                                                    rep = 0,
-                                                    kg = 0.0,
-                                                    typeSet = 0,
-                                                )
-                                            )
-                                        }
+                                            exSet.sets.removeAt(setIndex)
+                                        },
+                                        modifier = Modifier.width(50.dp)
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(R.string.add_set)
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Remove set"
                                         )
                                     }
                                 }
+                            }
+
+                            // Add set button
+                            IconButton(
+                                onClick = {
+                                    template.exercises[exerciseIndex].sets.add(
+                                        Set(
+                                            rep = 0,
+                                            kg = 0.0,
+                                            typeSet = 0,
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = stringResource(R.string.add_set)
+                                )
                             }
                         }
                     }
