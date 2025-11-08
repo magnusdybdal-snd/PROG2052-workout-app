@@ -40,7 +40,6 @@ import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.features.history_detail.HistoryDetailPage
 import com.example.workoutapp.core.core_ui.theme.AppNavBar
 import com.example.workoutapp.data.database.UserPreferences
-import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
 import com.example.workoutapp.features.active_workout.ActiveWorkoutPage
 import com.example.workoutapp.features.edit_template.EditTemplatePage
 import com.example.workoutapp.features.exercises.ExercisesPage
@@ -48,6 +47,8 @@ import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.login.LoginPage
 import com.example.workoutapp.features.new_template.NewTemplatePage
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.text.font.FontWeight
 
 /**
  * Main screen
@@ -135,15 +136,6 @@ fun MainScreen(
             val cs = MaterialTheme.colorScheme
             // Show floating action button if not on workout page and has an active workout
             if (hasActiveWorkout && !isOnWorkoutPage) {
-                val timerText = activeSession?.let { session ->
-                    if (session.isTimerRunning) {
-                        val minutes = session.timerSecondsRemaining / 60
-                        val seconds = session.timerSecondsRemaining % 60
-                        String.format("%d:%02d", minutes, seconds)
-                    } else {
-                        "Resume Workout"
-                    }
-                } ?: "Resume Workout"
                 FloatingActionButton(
                     onClick = {
                         navController.navigate(Routes.WORKTEMP) {
@@ -154,19 +146,48 @@ fun MainScreen(
                     contentColor = cs.onPrimary
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = "Resume Workout"
                         )
-                        Text(timerText, fontSize = 12.sp)
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            // Workout name (header)
+                            Text(
+                                text = activeSession?.template?.name ?: "Workout",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            // Timer or "Resume Workout" (subtitle)
+                            val subtitleText = activeSession?.let { session ->
+                                if (session.isTimerRunning) {
+                                    val minutes = session.timerSecondsRemaining / 60
+                                    val seconds = session.timerSecondsRemaining % 60
+                                    "Rest timer: ${String.format("%d:%02d", minutes, seconds)}"
+                                } else {
+                                    "Resume Workout"
+                                }
+                            } ?: "Resume Workout"
+
+                            Text(
+                                text = subtitleText,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
                     }
                 }
             }
         }
+
     ) { innerPadding ->
         NavHost(
             navController = navController,
