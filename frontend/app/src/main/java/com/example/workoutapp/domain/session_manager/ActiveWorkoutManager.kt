@@ -31,7 +31,11 @@ class ActiveWorkoutManager @Inject constructor() {
     private val _activeSession = MutableStateFlow<ActiveWorkoutSession?>(null)
     val activeSession: StateFlow<ActiveWorkoutSession?> = _activeSession.asStateFlow()
 
+    // Create a coroutine that survives as long as the scope (workoutmanager) exists
+    // Make it a supervisor job, so that if one coroutine crashed the manager survives
+    // All coroutines run on the main thread, wo they can safely update UI (flow) state
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    // Job is a handle to run coroutines. has methods like .isActive, .cancel(), .join()
     private var timerJob: Job? = null
 
     /*
@@ -65,27 +69,36 @@ class ActiveWorkoutManager @Inject constructor() {
     }
 
     private fun observeTimer() {
-        scope.launch {
-            activeSession.collect { session ->
+        scope.launch {  // Start a coroutine in our scope
+            // Collect recieves each emission from a stateFlow
+            activeSession.collect { session ->  // Subscribe to active session changes
+                // This code runs every time active session changes
                 if (session?.isTimerRunning == true && timerJob?.isActive != true) {
+                    // Timer should be running, but is not -> Start it
                     startTimer()
                 } else if (session?.isTimerRunning == false) {
+                    // Timer should be stopped -> stop it
                     stopTimer()
                 }
             }
         }
     }
 
+    /**
+     *
+     */
     private fun startTimer() {
-        timerJob?.cancel()
-        timerJob = scope.launch {
-            while (activeSession.value?.isTimerRunning == true) {
-                val session = activeSession.value ?: break
+        timerJob?.cancel()  // Stop any sxisting timer
+        timerJob = scope.launch {   // Start a new countdown coroutine and save it as a job so we can reference it later
+            while (activeSession.value?.isTimerRunning == true) {   // Keep observing as long as the timer is running
+                val session = activeSession.value ?: break  // Get current session, if null -> break
                 if (session.timerSecondsRemaining <= 0) {
+                    // If timer reaches 0, stop the timer and exit
                     updateSession { it.copy(isTimerRunning = false) }
                     break
                 }
-                delay(1000)
+                delay(1000) // Wait one second NB: dont use Thread.sleep() - will freeze UI
+                // Decrease timer by one second
                 updateSession { it.copy(timerSecondsRemaining = it.timerSecondsRemaining - 1) }
             }
         }
@@ -96,6 +109,8 @@ class ActiveWorkoutManager @Inject constructor() {
         timerJob = null
     }
 
+    // updater is a function that takes a session and returns a modified session
+    // Has to be called with a lambda like: activeWorkoutManager.updateSession( { it.copy(notes = "my notes" } )
     fun updateSession(updater: (ActiveWorkoutSession) -> ActiveWorkoutSession) {
         _activeSession.value?.let { current ->
             _activeSession.value = updater(current)
