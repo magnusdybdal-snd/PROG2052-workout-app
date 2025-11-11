@@ -1,13 +1,15 @@
 package com.example.workoutapp.features.new_template
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,6 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,14 +44,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExerciseWorkoutHeaderRow
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
 import com.example.workoutapp.core.core_ui.composable.WorkoutTextField
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
-import com.example.workoutapp.core.core_ui.composable.modifiers.TextFieldModifier
 import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
-import com.example.workoutapp.core.core_ui.theme.AppTextField
 import com.example.workoutapp.core.core_ui.theme.AppTextField.fieldColors
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.NewTemplateExercise
@@ -55,7 +58,7 @@ import com.example.workoutapp.domain.models.Set
 import java.util.UUID
 
 /**
- * Displays Workout page
+ * Displays New Template page
  */
 @Composable
 fun NewTemplatePage(
@@ -65,6 +68,7 @@ fun NewTemplatePage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+    val focusManager = LocalFocusManager.current
 
     when {
         state.isLoading -> LoadingStateView()
@@ -75,9 +79,16 @@ fun NewTemplatePage(
             val exerciseNames = remember { mutableStateListOf<String>() }
 
             Column(
-                modifier = modifier.verticalScroll(
-                    state = rememberScrollState()
-                ),
+                modifier = modifier
+                    .verticalScroll(state = rememberScrollState())
+                    .imePadding()
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = {
+                                focusManager.clearFocus()
+                            }
+                        )
+                    }
             ) {
                 RoundBackButton(
                     navController = navController,
@@ -96,12 +107,13 @@ fun NewTemplatePage(
 
                         RoundedButton(
                             buttonText = stringResource(R.string.add_template),
-                            onClick = {showDialog = true},
+                            onClick = { showDialog = true },
                         )
 
                         if (showDialog &&
                             name != "" &&
-                            exercises.isNotEmpty()) {
+                            exercises.isNotEmpty()
+                        ) {
                             AlertDialog(
                                 containerColor = cs.tertiary,
                                 textContentColor = cs.onTertiary,
@@ -114,20 +126,22 @@ fun NewTemplatePage(
                                     )
                                 },
                                 confirmButton = {
-                                    TextButton(onClick = {
-                                        val newTemplate = NewTemplate(
-                                            templateId = UUID.randomUUID().toString(),
-                                            name = name,
-                                            exercises = exercises
-                                        )
-                                        viewModel.postWorkout(newTemplate)
-                                        showDialog = false
-                                        navController.popBackStack()
+                                    TextButton(
+                                        onClick = {
+                                            focusManager.clearFocus() // clear focus to save texfield state
+                                            val newTemplate = NewTemplate(
+                                                templateId = UUID.randomUUID().toString(),
+                                                name = name,
+                                                exercises = exercises
+                                            )
+                                            viewModel.postWorkout(newTemplate)
+                                            showDialog = false
+                                            navController.popBackStack()
                                         },
                                         colors = textButtonColor()
                                     ) {
                                         Text(
-                                            text =stringResource(R.string.add_template),
+                                            text = stringResource(R.string.add_template),
                                         )
                                     }
                                 },
@@ -151,7 +165,8 @@ fun NewTemplatePage(
                         label = {
                             Text(
                                 text = stringResource(R.string.set_template_name),
-                                color = cs.onSecondaryContainer)
+                                color = cs.onSecondaryContainer
+                            )
                         },
                         shape = RoundedCornerShape(12.dp),
                         colors = fieldColors(),
@@ -180,10 +195,12 @@ fun NewTemplatePage(
                             TextField(
                                 value = searchString,
                                 onValueChange = { searchString = it },
-                                placeholder = { Text(
-                                    text = "Search exercise",
-                                    color = cs.onBackground
-                                ) },
+                                placeholder = {
+                                    Text(
+                                        text = "Search exercise",
+                                        color = cs.onBackground
+                                    )
+                                },
                                 singleLine = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -209,9 +226,9 @@ fun NewTemplatePage(
                                                 exerciseId = exercise.exerciseId,
                                                 name = exercise.name,
                                                 sets = mutableStateListOf(
-                                                    Set (
+                                                    Set(
                                                         rep = 0,
-                                                        kg = 0,
+                                                        kg = 0.0,
                                                         typeSet = 0,
                                                     )
                                                 )
@@ -239,21 +256,23 @@ fun NewTemplatePage(
                         modifier = Modifier
                             .padding(top = 10.dp),
                     ) {
-                        exercises.forEachIndexed { index, exSet ->
+                        exercises.forEachIndexed { exerciseIndex, exSet ->
+                            // Exercise name with remove button
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(horizontal = 8.dp)
-
                             ) {
                                 Text(
-                                    exerciseNames[index],
+                                    exerciseNames[exerciseIndex],
                                     fontSize = 15.sp
                                 )
-                                IconButton (
+                                IconButton(
                                     onClick = {
-                                        exercises.removeAt(index)
+                                        exercises.removeAt(exerciseIndex)
+                                        exerciseNames.removeAt(exerciseIndex)
                                     }
                                 ) {
                                     Icon(
@@ -262,84 +281,65 @@ fun NewTemplatePage(
                                     )
                                 }
                             }
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
 
-                            ) {
-                                val y = exSet.sets.size
-                                val h = 75
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = TextFieldModifier(height = h.dp * y)
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.sets),
-                                        fontSize = 10.sp,
-                                        modifier = Modifier
-                                    )
-                                    for (i in 1..y) {
-                                        Text(
-                                            text = "$i\n",
-                                            fontSize = 15.sp,
-                                        )
-                                    }
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
+                            // Header Row
+                            ExerciseWorkoutHeaderRow()
+
+                            // Loop through each set
+                            exSet.sets.forEachIndexed { setIndex, set ->
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                        .height(75.dp)
                                 ) {
+                                    // Set Number
+                                    Text(
+                                        "${setIndex + 1}",
+                                        fontSize = 15.sp,
+                                        modifier = Modifier.width(50.dp)
+                                    )
+
+                                    // KG TextField
                                     WorkoutTextField(
                                         label = stringResource(R.string.kg),
                                         exSet = exSet,
-                                        type = "kg"
+                                        type = "kg",
+                                        set = set
                                     )
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = TextFieldModifier(height = h.dp * y)
-                                ) {
+
+                                    // Reps TextField
                                     WorkoutTextField(
                                         label = stringResource(R.string.reps),
                                         exSet = exSet,
-                                        type = "reps"
+                                        type = "reps",
+                                        set = set
                                     )
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .height(h.dp * y)
-                                        .fillMaxHeight()
-                                ) {
-                                    Text("", fontSize = 10.sp)
-                                    exSet.sets.forEachIndexed {index, set ->
-                                        IconButton (
-                                            onClick = {
-                                                exSet.sets.removeAt(index)
-                                            }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Close,
-                                                contentDescription = "Remove set"
-                                            )
-                                        }
+
+                                    // Remove set button
+                                    IconButton(
+                                        onClick = {
+                                            exSet.sets.removeAt(setIndex)
+                                        },
+                                        modifier = Modifier.width(50.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = "Remove set"
+                                        )
                                     }
                                 }
                             }
-                            IconButton (
+
+                            // Add set button
+                            IconButton(
                                 onClick = {
                                     exSet.sets.add(
                                         Set(
                                             rep = 0,
-                                            kg = 0,
+                                            kg = 0.0,
                                             typeSet = 0,
                                         )
                                     )
@@ -357,5 +357,3 @@ fun NewTemplatePage(
         }
     }
 }
-
-

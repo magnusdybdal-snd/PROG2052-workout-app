@@ -27,10 +27,15 @@ func HandleTemplate(serv domain.TemplateService) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
+		userID := r.Context().Value("userId").(string)
+		if userID == "" {
+			utils.HandleError(w, http.StatusUnauthorized, fmt.Errorf("missing token"), utils.ErrMsgUnauthorized)
+			return
+		}
 		switch r.Method {
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
-			data, err := serv.GetAll(ctx, include)
+			data, err := serv.GetAll(ctx, userID, include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -47,7 +52,7 @@ func HandleTemplate(serv domain.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			id, err := serv.Create(ctx, payload)
+			id, err := serv.Create(ctx, userID,payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -73,6 +78,12 @@ func HandleOneTemplate(serv domain.TemplateService) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
+		userID := r.Context().Value("userId").(string)
+		if userID == "" {
+			utils.HandleError(w, http.StatusUnauthorized, fmt.Errorf("missing token"), utils.ErrMsgUnauthorized)
+			return
+		}
+
 		id := r.PathValue("templateId")
 		if id == "" {
 			utils.HandleError(w, http.StatusBadRequest, fmt.Errorf("bad id"), utils.ErrMsgBadRequest)
@@ -82,7 +93,7 @@ func HandleOneTemplate(serv domain.TemplateService) http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			include := utils.ParseInclude(r, "exercises")
-			data, err := serv.GetOne(ctx, id, include)
+			data, err := serv.GetOne(ctx, id, userID,include)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 				return
@@ -98,17 +109,17 @@ func HandleOneTemplate(serv domain.TemplateService) http.HandlerFunc {
 				utils.HandleError(w, http.StatusBadRequest, err, utils.ErrMsgBadRequest)
 				return
 			}
-			result, err := serv.Update(ctx, id, payload)
+			result, err := serv.Update(ctx, id, userID,*payload)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return
 			}
-			utils.Encode(w, http.StatusOK,map[string]string{
+			utils.Encode(w, http.StatusOK, map[string]string{
 				"id":      result,
 				"message": "successfuly patched document on id",
 			})
 		case http.MethodDelete:
-			result, err := serv.Delete(ctx, id)
+			result, err := serv.Delete(ctx, id, userID)
 			if err != nil {
 				utils.HandleError(w, http.StatusInternalServerError, err, err.Error())
 				return

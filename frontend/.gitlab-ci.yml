@@ -20,6 +20,8 @@ before_script:
 
 build_android_debug: # Build
   stage: build
+  tags:
+    - dind # docker-in-docker runner
   script:
     - ./gradlew clean
     - ./gradlew assembleDebug --stacktrace --no-daemon -x test
@@ -28,6 +30,8 @@ build_android_debug: # Build
 
 test_android_unit: # Unit test
   stage: test
+  tags:
+    - dind # docker-in-docker runner
   script:
     - ./gradlew testDebugUnitTest --stacktrace --no-daemon
   only:

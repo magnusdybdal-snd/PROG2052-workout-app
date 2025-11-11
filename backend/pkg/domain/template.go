@@ -5,27 +5,26 @@ import (
 	"fmt"
 )
 
-
 type Template struct {
-	TemplateId string               `bson:"templateId" json:"templateId"`
-	Name       string               `bson:"name" json:"name"`
-	Exercises  []ExerciseIdTemplate `bson:"exercises" json:"exercises"`
+	TemplateId string               `json:"templateId"`
+	Name       string               `json:"name"`
+	Exercises  []ExerciseIdTemplate `json:"exercises"`
 }
 
 type TemplateRepository interface {
-	FindAll(ctx context.Context) ([]Template, error)
-	FindOne(ctx context.Context, id string) (Template, error)
-	Insert(ctx context.Context, data Template) (string, error)
-	Update(ctx context.Context, id string, data interface{}) (string, error)
-	Delete(ctx context.Context, id string) (string, error)
+	FindAll(ctx context.Context, userId string) ([]Template, error)
+	FindOne(ctx context.Context, id string, userId string) (Template, error)
+	Insert(ctx context.Context, userId string, data Template) (string, error)
+	Update(ctx context.Context, id string, userId string, data Template) (string, error)
+	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 type TemplateService interface {
-	GetAll(ctx context.Context, include bool) (interface{}, error)
-	GetOne(ctx context.Context,id string, include bool) (interface{}, error)
-	Create(ctx context.Context, payload *Template) (string, error)
-	Update(ctx context.Context, id string, payload interface{}) (string, error)
-	Delete(ctx context.Context, id string) (string, error)
+	GetAll(ctx context.Context, userId string, include bool) (interface{}, error)
+	GetOne(ctx context.Context, id string, userId string, include bool) (interface{}, error)
+	Create(ctx context.Context, userId string, payload *Template) (string, error)
+	Update(ctx context.Context, id string, userId string, payload Template) (string, error)
+	Delete(ctx context.Context, id string, userId string) (string, error)
 }
 
 func (t *Template) Valid(ctx context.Context) map[string]string {

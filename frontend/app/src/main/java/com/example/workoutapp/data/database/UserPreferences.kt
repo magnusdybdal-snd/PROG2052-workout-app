@@ -18,17 +18,21 @@ class UserPreferences(private val context: Context) {
     companion object {
         private val USER_ID = stringPreferencesKey("userId")
         private val TOKEN = stringPreferencesKey("token")
+        private  val NAME = stringPreferencesKey("name")
     }
 
-    suspend fun saveAuthData(userId: String, token: String) {
+    suspend fun saveAuthData(userId: String, token: String, name: String) {
         context.dataStore.edit { prefs ->
             prefs[USER_ID] = userId
             prefs[TOKEN] = token
+            prefs[NAME] = name
         }
     }
 
     val userId: Flow<String?> = context.dataStore.data.map { it[USER_ID] }
     val token: Flow<String?> = context.dataStore.data.map { it[TOKEN] }
+    val name: Flow<String?> = context.dataStore.data.map { it[NAME] }
+
 
     suspend fun clearAuthData() {
         context.dataStore.edit { it.clear() }

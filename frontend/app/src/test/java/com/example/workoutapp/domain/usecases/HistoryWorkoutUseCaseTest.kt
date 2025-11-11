@@ -42,8 +42,8 @@ class GetHistoryWorkoutUseCaseTest {
                         exerciseId = "ex1",
                         name = "Bench Press",
                         sets = listOf(
-                            WorkoutSet(rep = 10, kg = 80, typeSet = 0),
-                            WorkoutSet(rep = 8, kg = 85, typeSet = 0)
+                            WorkoutSet(rep = 10, kg = 80.0, typeSet = 0),
+                            WorkoutSet(rep = 8, kg = 85.0, typeSet = 0)
                         )
                     )
                 ),
@@ -59,9 +59,9 @@ class GetHistoryWorkoutUseCaseTest {
                         exerciseId = "ex2",
                         name = "Squats",
                         sets = listOf(
-                            WorkoutSet(rep = 12, kg = 100, typeSet = 0),
-                            WorkoutSet(rep = 10, kg = 110, typeSet = 0),
-                            WorkoutSet(rep = 8, kg = 120, typeSet = 0)
+                            WorkoutSet(rep = 12, kg = 100.0, typeSet = 0),
+                            WorkoutSet(rep = 10, kg = 110.0, typeSet = 0),
+                            WorkoutSet(rep = 8, kg = 120.0, typeSet = 0)
                         )
                     )
                 ),
@@ -104,8 +104,8 @@ class GetHistoryWorkoutUseCaseTest {
                         exerciseId = "ex1",
                         name = "Bench Press",
                         sets = listOf(
-                            WorkoutSet(rep = 10, kg = 80, typeSet = 0),
-                            WorkoutSet(rep = 8, kg = 85, typeSet = 0)
+                            WorkoutSet(rep = 10, kg = 80.0, typeSet = 0),
+                            WorkoutSet(rep = 8, kg = 85.0, typeSet = 0)
                         )
                     )
                 ),

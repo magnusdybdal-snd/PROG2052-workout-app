@@ -87,7 +87,7 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                             sets = exerciseWithSets.sets.map { setEntity ->
                                 Set(
                                     rep = setEntity.rep,
-                                    kg = setEntity.kg,
+                                    kg = (setEntity.kg),
                                     typeSet = setEntity.typeSet
                                 )
                             }

@@ -1,6 +1,7 @@
 package com.example.workoutapp.core.core_navigation
 
 object Routes {
+    const val SPLASH = "splash" // Loading state page
     const val HISTORY = "history"
     const val LOGIN = "login"
     const val WORKOUT = "workout"

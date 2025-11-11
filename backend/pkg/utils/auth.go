@@ -13,12 +13,13 @@ type AuthRequest struct {
 type AuthResponse struct {
 	Token  string `json:"token"`
 	UserId string `json:"userId"`
+	Name   string `json:"name"`
 }
 
-func CreateToken(userId,secret string) (string, error) {
+func CreateToken(userId, secret string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userId,
-		"exp":     time.Now().Add(1 * time.Minute).Unix(),
+		"exp":     time.Now().Add(1000000 * time.Hour).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenStr, err := token.SignedString([]byte(secret))
@@ -28,7 +29,7 @@ func CreateToken(userId,secret string) (string, error) {
 	return tokenStr, nil
 }
 
-func EnsureInDB(googleId, email string) string {
+func EnsureInDB(googleId, name string) string {
 	// quary the database, and return user id
 
 	return googleId

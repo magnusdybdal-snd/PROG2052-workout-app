@@ -88,6 +88,48 @@ class ActWorkViewModel @Inject constructor(
     }
 
     /**
+     * Adds a new set to the specified exercise in the active workout.
+     *
+     * Creates a new set with default values (0 reps, 0 kg) and adds tracking
+     * for the new set in completedSets.
+     *
+     * @param exerciseIndex The index of the exercise to add a set to
+     */
+    fun addSetToExercise(exerciseIndex: Int) {
+        activeWorkoutManager.updateSession { session ->
+            // Create new set with default values
+            val newSet = Set(
+                rep = 0,
+                kg = 0.0,
+                typeSet = 0
+            )
+
+            // Update the modified exercises with the new set
+            val updatedExercises = session.modifiedExercises.copy(
+                exercises = session.modifiedExercises.exercises.toMutableList().apply {
+                    this[exerciseIndex] = this[exerciseIndex].copy(
+                        sets = this[exerciseIndex].sets.toMutableList().apply {
+                            add(newSet)
+                        }
+                    )
+                }
+            )
+
+            // Update completedSets to include tracking for the new set
+            val updatedCompletedSets = session.completedSets.toMutableList().apply {
+                this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
+                    add(false)  // New set starts as not completed
+                }
+            }
+
+            session.copy(
+                modifiedExercises = updatedExercises,
+                completedSets = updatedCompletedSets
+            )
+        }
+    }
+
+    /**
      * Updates how many minutes the rest timer should last
      *
      * @param minutes The duration in minutes for the rest timer

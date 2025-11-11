@@ -23,6 +23,6 @@ data class TemplateSetEntity(
 
     val exerciseEntityId: String,
     val rep: Int,
-    val kg: Int,
+    val kg: Double,
     val typeSet: Int
 )

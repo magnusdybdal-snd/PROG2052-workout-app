@@ -9,6 +9,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SetDto(
     val rep: Int,
-    val kg: Int,
+    val kg: Double,
     val typeSet: Int
 )
