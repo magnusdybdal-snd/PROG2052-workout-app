@@ -27,6 +27,8 @@ build_go:
 # ---------- TEST STAGE ----------
 unit-test:
   stage: test
+  tags:
+    - dind  # Use the Docker-in-Docker runner
   image: golang:${GO_VERSION}
   before_script:
     - cd backend
