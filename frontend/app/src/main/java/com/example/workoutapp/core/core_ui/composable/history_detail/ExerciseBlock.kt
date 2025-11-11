@@ -49,8 +49,8 @@ fun ExerciseBlock(index: Int, exercise: WorkoutExercise, cs: ColorScheme) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(stringResource(R.string.sets),   color = cs.onBackground.copy(alpha = 0.8f))
-        Text(stringResource(R.string.reps),   color = cs.onBackground.copy(alpha = 0.8f))
         Text(stringResource(R.string.kg),     color = cs.onBackground.copy(alpha = 0.8f))
+        Text(stringResource(R.string.reps),   color = cs.onBackground.copy(alpha = 0.8f))
         Text(stringResource(R.string.volume), color = cs.onBackground.copy(alpha = 0.8f))
     }
 
@@ -99,8 +99,8 @@ private fun SetRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text("$setNumber", color = cs.onBackground)
-        Text("${set.rep}", color = cs.onBackground)
         Text("${set.kg}", color = cs.onBackground)
+        Text("${set.rep}", color = cs.onBackground)
         Text("${set.volume}", color = cs.onBackground)
     }
 }

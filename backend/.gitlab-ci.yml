@@ -8,6 +8,8 @@ variables:
 # ---------- BUILD STAGE ----------
 build_go:
   stage: build
+  tags:
+    - dind  # Use the Docker-in-Docker runner
   image: golang:${GO_VERSION}
   before_script:
     - cd backend
@@ -25,6 +27,8 @@ build_go:
 # ---------- TEST STAGE ----------
 unit-test:
   stage: test
+  tags:
+    - dind  # Use the Docker-in-Docker runner
   image: golang:${GO_VERSION}
   before_script:
     - cd backend
@@ -37,6 +41,8 @@ unit-test:
 # ---------- DEPLOY STAGE (DEV) ----------
 deploy_backend:
   stage: deploy
+  tags:
+    - dind  # Use the Docker-in-Docker runner
   image: debian:stable-slim
   before_script:
     - apt update && apt install -y openssh-client git
