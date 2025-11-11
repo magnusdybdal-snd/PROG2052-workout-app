@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -74,6 +76,12 @@ fun EditTemplatePage(
             if (template == null) {
                 LoadingStateView()
                 return
+            }
+
+            val exercises = remember { mutableStateListOf<TemplateExercise>() }
+            LaunchedEffect(template) {
+                exercises.clear()
+                exercises.addAll(template.exercises)
             }
 
             // state variables for save feedback
@@ -145,7 +153,7 @@ fun EditTemplatePage(
                             expanded = expanded,
                             onDismissRequest = {
                                 expanded = false
-                                searchString = ""
+                                searchString = "" // Reset search when closing
                             },
                             containerColor = cs.tertiary
                         ) {

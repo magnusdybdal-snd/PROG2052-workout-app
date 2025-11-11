@@ -64,7 +64,8 @@ func AuthenticateUser(cfg *config.Config, next http.HandlerFunc) http.Handler {
 			return []byte(cfg.JWT_KEY), nil
 		})
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			userId := claims["userId"].(string)
+			log.Println(claims)
+			userId := claims["user_id"].(string)
 			ctx := context.WithValue(r.Context(), "userId", userId)
 			log.Println("successfully authenticated")
 			next(w, r.WithContext(ctx))

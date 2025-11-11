@@ -13,7 +13,7 @@ import javax.inject.Inject
 sealed class LoginState {
     object Idle : LoginState()
     object Loading : LoginState()
-    data class Success(val userId: String) : LoginState()
+    data class Success(val name: String) : LoginState()
     data class Error(val message: String) : LoginState()
 }
 
@@ -25,15 +25,14 @@ class LoginViewModel @Inject constructor(
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState = _loginState.asStateFlow()
-
     fun loginWithGoogle(code: String, onResult: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = googleUseCase.invoke(code)
 
-                preferences.saveAuthData(response.userId, response.token)
-                _loginState.value = LoginState.Success(response.userId)
-                onResult(response.userId)
+                preferences.saveAuthData(response.userId, response.token, response.name)
+                _loginState.value = LoginState.Success(response.name)
+                onResult(response.name)
             } catch (e: Exception) {
                 e.printStackTrace()
                 _loginState.value = LoginState.Error(e.message ?: "Login failed")
