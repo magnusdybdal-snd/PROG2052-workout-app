@@ -88,7 +88,7 @@ class ActiveWorkoutManager @Inject constructor() {
      *
      */
     private fun startTimer() {
-        timerJob?.cancel()  // Stop any sxisting timer
+        timerJob?.cancel()  // Stop any existing timer
         timerJob = scope.launch {   // Start a new countdown coroutine and save it as a job so we can reference it later
             while (activeSession.value?.isTimerRunning == true) {   // Keep observing as long as the timer is running
                 val session = activeSession.value ?: break  // Get current session, if null -> break
@@ -97,7 +97,7 @@ class ActiveWorkoutManager @Inject constructor() {
                     updateSession { it.copy(isTimerRunning = false) }
                     break
                 }
-                delay(1000) // Wait one second NB: dont use Thread.sleep() - will freeze UI
+                delay(1000) // Wait one second NB: don't use Thread.sleep() - will freeze UI
                 // Decrease timer by one second
                 updateSession { it.copy(timerSecondsRemaining = it.timerSecondsRemaining - 1) }
             }
