@@ -88,11 +88,6 @@ fun MainScreen(
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
 
-    val token by preferences.token.collectAsState(initial = null)
-    val startDestination = remember {
-        if (token == null) Routes.LOGIN else Routes.WORKOUT
-    }
-
     // Check if there is an active workout going on
     val activeSession by mainViewModel.activeWorkoutManager.activeSession.collectAsState()
     val hasActiveWorkout = activeSession != null
