@@ -31,7 +31,7 @@ class ActiveWorkoutManager @Inject constructor() {
     private val _activeSession = MutableStateFlow<ActiveWorkoutSession?>(null)
     val activeSession: StateFlow<ActiveWorkoutSession?> = _activeSession.asStateFlow()
 
-    // Create a coroutine that survives as long as the scope (workoutmanager) exists
+    // Create a coroutine that survives as long as the scope (workout-manager) exists
     // Make it a supervisor job, so that if one coroutine crashed the manager survives
     // All coroutines run on the main thread, wo they can safely update UI (flow) state
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -70,7 +70,7 @@ class ActiveWorkoutManager @Inject constructor() {
 
     private fun observeTimer() {
         scope.launch {  // Start a coroutine in our scope
-            // Collect recieves each emission from a stateFlow
+            // Collect receives each emission from a stateFlow
             activeSession.collect { session ->  // Subscribe to active session changes
                 // This code runs every time active session changes
                 if (session?.isTimerRunning == true && timerJob?.isActive != true) {
