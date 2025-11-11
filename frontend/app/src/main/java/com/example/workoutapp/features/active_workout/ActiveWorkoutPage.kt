@@ -50,8 +50,19 @@ import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
 import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
 
-/**viewmodel
- * Displays Workout page
+/**
+ * Displays the active workout screen where users can track their sets in real-time.
+ *
+ * Features:
+ * - Real-time timer countdown for rest periods
+ * - Checkbox tracking for completed sets
+ * - Editable weight and reps for each set
+ * - Workout notes dialog on completion
+ * - Auto-navigation back if no active session exists
+ *
+ * @param modifier Modifier to be applied to the root composable
+ * @param navController Navigation controller for screen transitions
+ * @param viewModel ViewModel managing workout state and operations
  */
 @Composable
 fun ActiveWorkoutPage(
@@ -63,7 +74,7 @@ fun ActiveWorkoutPage(
     val cs = MaterialTheme.colorScheme
     val activeSession by viewModel.activeSession.collectAsState()
 
-    // If no active session, navigate back
+    // Guard: Navigate back if no active workout session exists
     if (activeSession == null) {
         LaunchedEffect(Unit) {
             navController.popBackStack()
@@ -71,222 +82,233 @@ fun ActiveWorkoutPage(
         return
     }
 
-    val session = activeSession!!
-
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-
-            Scaffold (
-                bottomBar = {
-                    if (session.isTimerRunning) { // check if condition is true (show/hide bottombar)
-                        NavigationBar{
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(color = cs.background),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                val minutes = session.timerSecondsRemaining / 60
-                                val seconds = session.timerSecondsRemaining % 60
-                                Text(
-                                    text = String.format("%d:%02d", minutes, seconds),
-                                    fontSize = 70.sp,
-                                    textAlign = TextAlign.Center,
-                                    color = cs.onBackground
-                                )
+            // Safe call: session could theoretically become null between check and usage
+            activeSession?.let { session ->
+                Scaffold(
+                    bottomBar = {
+                        // Show full-screen timer countdown when rest timer is active
+                        if (session.isTimerRunning) {
+                            NavigationBar {
+                                Box(
+                                    modifier
+                                        .fillMaxWidth()
+                                        .background(color = cs.background),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    val minutes = session.timerSecondsRemaining / 60
+                                    val seconds = session.timerSecondsRemaining % 60
+                                    Text(
+                                        text = String.format("%d:%02d", minutes, seconds),
+                                        fontSize = 70.sp,
+                                        textAlign = TextAlign.Center,
+                                        color = cs.onBackground
+                                    )
+                                }
                             }
                         }
                     }
-                }
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier.verticalScroll(
-                        state= rememberScrollState()
-                    ),
-                ) {
-                   RoundBackButton(
-                       navController = navController,
-                       modifier = Modifier.padding(innerPadding)
-                   )
+                ) { innerPadding ->
                     Column(
-                        horizontalAlignment = Alignment.Start,
-                        modifier = Modifier.padding(horizontal = 20.dp)
+                        modifier.verticalScroll(
+                            state = rememberScrollState()
+                        ),
                     ) {
-                        Row(
-                            modifier = BorderBoxModifier(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
-
-                            var showDialog by remember { mutableStateOf(false) }
-                            var notes by remember { mutableStateOf(session.notes) }
-
-                            RoundedButton(
-                                buttonText = stringResource(R.string.finish),
-                                onClick = { showDialog = true },
-                            )
-
-                            if (showDialog) {
-                                AlertDialog(
-                                    containerColor = cs.tertiary,
-                                    textContentColor = cs.onTertiary,
-                                    titleContentColor = cs.onTertiary,
-                                    onDismissRequest = { showDialog = false },
-                                    title = { Text(text = "Add a note before finishing?") },
-                                    text = {
-                                        OutlinedTextField(
-                                            colors = outlinedFieldColors(),
-                                            value = notes,
-                                            onValueChange = {
-                                                notes = it
-                                                viewModel.updateNotes(it)
-                                            },
-                                            label = { Text(text = stringResource(R.string.workout_notes)) },
-
-                                            )
-                                    },
-                                    confirmButton = {
-                                        TextButton(
-                                            onClick = {
-                                                viewModel.completeWorkout()
-                                                showDialog = false
-                                                navController.popBackStack()
-                                            },
-                                            colors = textButtonColor()
-                                        ) {
-                                            Text(text = stringResource(R.string.finish_workout))
-                                        }
-                                    },
-                                    dismissButton = {
-                                        TextButton(
-                                            onClick = { showDialog = false },
-                                            colors = textButtonColor()
-                                        ) {
-                                            Text(text = stringResource(R.string.cancel))
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                        Text(
-                            session.template.name,
-                            fontSize = 30.sp,
-                            modifier = Modifier.padding(vertical = 10.dp)
+                        RoundBackButton(
+                            navController = navController,
+                            modifier = Modifier.padding(innerPadding)
                         )
-
-                        Box(
-                            modifier = Modifier.width(120.dp)
-                        ) {
-                            TimerTextField(
-                                time = session.timerMinutes,
-                                onTimeChange = { viewModel.updateTimerMinutes(it) }
-                            )
-                        }
-
                         Column(
-                            verticalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier
-                                .padding(top = 10.dp),
+                            horizontalAlignment = Alignment.Start,
+                            modifier = Modifier.padding(horizontal = 20.dp)
                         ) {
-                            session.modifiedExercises.exercises.forEachIndexed { exerciseIndex, exSet ->
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
+                            // Header row: Current time and Finish button
+                            Row(
+                                modifier = BorderBoxModifier(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(viewModel.getCurrentTimeString(), fontSize = 20.sp)
 
-                                ) {
-                                    Text(
-                                        exSet.name,
-                                        fontSize = 15.sp
-                                    )
-                                }
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp)
+                                var showDialog by remember { mutableStateOf(false) }
+                                var notes by remember { mutableStateOf(session.notes) }
 
-                                ) {
-                                    val y = exSet.sets.size //icon
-                                    val h = 75
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.sets),
-                                            fontSize = 10.sp,
-                                            modifier = Modifier
-                                        )
-                                        for (i in 1..y) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                modifier = Modifier
-                                                    .height(50.dp)
-                                            ) {
-                                                Text(
-                                                    "$i",
-                                                    fontSize = 15.sp
+                                RoundedButton(
+                                    buttonText = stringResource(R.string.finish),
+                                    onClick = { showDialog = true },
+                                )
+                                // Finish workout dialog with optional notes
+                                if (showDialog) {
+                                    AlertDialog(
+                                        containerColor = cs.tertiary,
+                                        textContentColor = cs.onTertiary,
+                                        titleContentColor = cs.onTertiary,
+                                        onDismissRequest = { showDialog = false },
+                                        title = { Text(text = "Add a note before finishing?") },
+                                        text = {
+                                            OutlinedTextField(
+                                                colors = outlinedFieldColors(),
+                                                value = notes,
+                                                onValueChange = {
+                                                    notes = it
+                                                    viewModel.updateNotes(it)
+                                                },
+                                                label = { Text(text = stringResource(R.string.workout_notes)) },
                                                 )
+                                        },
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    viewModel.completeWorkout()
+                                                    showDialog = false
+                                                    navController.popBackStack()
+                                                },
+                                                colors = textButtonColor()
+                                            ) {
+                                                Text(text = stringResource(R.string.finish_workout))
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = { showDialog = false },
+                                                colors = textButtonColor()
+                                            ) {
+                                                Text(text = stringResource(R.string.cancel))
                                             }
                                         }
-                                    }
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
-                                    ) {
-                                        WorkoutTextField(
-                                            label = stringResource(R.string.kg),
-                                            exSet = exSet,
-                                            type = "kg"
-                                        )
-                                    }
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
-                                    ) {
-                                        WorkoutTextField(
-                                            label = stringResource(R.string.reps),
-                                            exSet = exSet,
-                                            type = "reps"
-                                        )
-                                    }
-                                    Column(
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = TextFieldModifier(height = h.dp * y)
+                                    )
+                                }
+                            }
+                            // Workout template name
+                            Text(
+                                session.template.name,
+                                fontSize = 30.sp,
+                                modifier = Modifier.padding(vertical = 10.dp)
+                            )
+                            // Rest timer duration selector
+                            Box(
+                                modifier = Modifier.width(120.dp)
+                            ) {
+                                TimerTextField(
+                                    time = session.timerMinutes,
+                                    onTimeChange = { viewModel.updateTimerMinutes(it) }
+                                )
+                            }
+                            // Exercise list with sets, reps, weight, and completion checkboxes
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(5.dp),
+                                modifier = Modifier
+                                    .padding(top = 10.dp),
+                            ) {
+                                session.modifiedExercises.exercises.forEachIndexed { exerciseIndex, exSet ->
+                                    // Exercise name header
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp)
 
                                     ) {
-                                        Icon(
-                                            Icons.Default.Check,
-                                            contentDescription = stringResource(R.string.done_set),
-                                            tint = cs.onBackground
+                                        Text(
+                                            exSet.name,
+                                            fontSize = 15.sp
                                         )
+                                    }
+                                    // Exercise table: Set number | Weight | Reps | Completed checkbox
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
 
-                                        exSet.sets.forEachIndexed { setIndex, _ ->
-                                            Checkbox(
-                                                colors = AppCheckBox.checkBoxColor(),
-                                                checked = session.completedSets.getOrNull(exerciseIndex)
-                                                    ?.getOrNull(setIndex) ?: false,
-                                                onCheckedChange = { isChecked ->
-                                                    viewModel.updateCompletedSets(
-                                                        exerciseIndex,
-                                                        setIndex,
-                                                        isChecked
-                                                    )
-
-                                                    if(isChecked) {
-                                                        viewModel.startTimer()
-                                                    }
-                                                }
+                                    ) {
+                                        val numberOfSets = exSet.sets.size //icon
+                                        val rowHeight = 75
+                                        // Column 1: Set numbers
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = TextFieldModifier(height = rowHeight.dp * numberOfSets)
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.sets),
+                                                fontSize = 10.sp,
+                                                modifier = Modifier
                                             )
+                                            for (i in 1..numberOfSets) {
+                                                Row(
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    modifier = Modifier
+                                                        .height(50.dp)
+                                                ) {
+                                                    Text(
+                                                        "$i",
+                                                        fontSize = 15.sp
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        // Column 2: Weight input fields
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = TextFieldModifier(height = rowHeight.dp * numberOfSets)
+                                        ) {
+                                            WorkoutTextField(
+                                                label = stringResource(R.string.kg),
+                                                exSet = exSet,
+                                                type = "kg"
+                                            )
+                                        }
+                                        // Column 3: Reps input fields
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = TextFieldModifier(height = rowHeight.dp * numberOfSets)
+                                        ) {
+                                            WorkoutTextField(
+                                                label = stringResource(R.string.reps),
+                                                exSet = exSet,
+                                                type = "reps"
+                                            )
+                                        }
+                                        // Column 4: Completion checkboxes
+                                        Column(
+                                            verticalArrangement = Arrangement.SpaceBetween,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            modifier = TextFieldModifier(height = rowHeight.dp * numberOfSets)
+
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Check,
+                                                contentDescription = stringResource(R.string.done_set),
+                                                tint = cs.onBackground
+                                            )
+
+                                            exSet.sets.forEachIndexed { setIndex, _ ->
+                                                Checkbox(
+                                                    colors = AppCheckBox.checkBoxColor(),
+                                                    // Safe null handling: returns false if indices out of bounds
+                                                    checked = session.completedSets.getOrNull(
+                                                        exerciseIndex
+                                                    )
+                                                        ?.getOrNull(setIndex) ?: false,
+                                                    onCheckedChange = { isChecked ->
+                                                        viewModel.updateCompletedSets(
+                                                            exerciseIndex,
+                                                            setIndex,
+                                                            isChecked
+                                                        )
+                                                        // Auto-start rest timer when set is completed
+                                                        if (isChecked) {
+                                                            viewModel.startTimer()
+                                                        }
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
