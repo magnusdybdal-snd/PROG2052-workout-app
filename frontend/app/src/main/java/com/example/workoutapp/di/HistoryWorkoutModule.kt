@@ -22,6 +22,8 @@ object HistoryWorkoutModule {
         dao: HistoryWorkoutDao
     ): HistoryWorkoutRepository = HistoryWorkoutRepositoryImpl(api, dao)
 
+    // TODO: USECASES ARE NOT NEEDED IN MODUE. THEY HAVE THEYR OWN INJECT
+    // TODO: ONLY REPO LINKING FROM DOMAIN -> DATA IS NEEDED HERE
     @Provides
     @Singleton
     fun provideHistoryWorkoutUseCase(
