@@ -8,7 +8,7 @@ object Routes {
     const val EXERCISES = "exercises"
     const val NEWTEMP = "newTemp"
     const val EDITTEMP = "editTemp/{tempId}"
-    const val WORKTEMP = "workTemp/{tempId}"
+    const val WORKTEMP = "workTemp"
 
     // HistoryDetail
     const val HISTORY_DETAIL = "historyDetail/{workoutId}"

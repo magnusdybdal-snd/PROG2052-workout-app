@@ -2,11 +2,14 @@
 package com.example.workoutapp.app
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -18,8 +21,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -41,7 +48,8 @@ import com.example.workoutapp.features.history.HistoryPage
 import com.example.workoutapp.features.home.HomePage
 import com.example.workoutapp.features.login.LoginPage
 import com.example.workoutapp.features.new_template.NewTemplatePage
-import kotlinx.coroutines.flow.firstOrNull
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.text.font.FontWeight
 
 /**
  * Main screen
@@ -52,7 +60,8 @@ import kotlinx.coroutines.flow.firstOrNull
 fun MainScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    preferences: UserPreferences = UserPreferences(LocalContext.current) // for checking if user logged in
+    preferences: UserPreferences = UserPreferences(LocalContext.current), // for checking if user logged in
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val token by preferences.token.collectAsState(initial = null)
     val startDestination = if(isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
@@ -78,6 +87,28 @@ fun MainScreen(
     // Show or hide the bottom-bar.
     val showBottomBar = navItemList.any{ item ->
         currentDestination.isOnRoute(item.route)}
+
+    // Check if there is an active workout going on
+    val activeSession by mainViewModel.activeWorkoutManager.activeSession.collectAsState()
+    val hasActiveWorkout = activeSession != null
+    val isOnWorkoutPage = currentDestination?.route == Routes.WORKTEMP
+
+    LaunchedEffect(token) {
+        val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+        // User logged out, navigate to login page
+        if (token == null && currentRoute != Routes.LOGIN) {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive = true }
+            }
+        // User just logged in, navigate to home
+        } else if (token != null && currentRoute == Routes.LOGIN) {
+            navController.navigate(Routes.WORKOUT) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
+
 
     Scaffold(
         bottomBar = {
@@ -106,6 +137,62 @@ fun MainScreen(
                     }
                 }
             }
+        },
+
+        floatingActionButton = {
+            val cs = MaterialTheme.colorScheme
+            // Show floating action button if not on workout page and has an active workout
+            if (hasActiveWorkout && !isOnWorkoutPage) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Routes.WORKTEMP) {
+                            launchSingleTop = true
+                        }
+                    },
+                    containerColor = cs.primary,
+                    contentColor = cs.onPrimary
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Resume Workout"
+                        )
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            // Workout name (header)
+                            Text(
+                                text = activeSession?.template?.name ?: "Workout",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            // Timer or "Resume Workout" (subtitle)
+                            val subtitleText = activeSession?.let { session ->
+                                if (session.isTimerRunning) {
+                                    val minutes = session.timerSecondsRemaining / 60
+                                    val seconds = session.timerSecondsRemaining % 60
+                                    "Rest timer: ${String.format("%d:%02d", minutes, seconds)}"
+                                } else {
+                                    "Resume Workout"
+                                }
+                            } ?: "Resume Workout"
+
+                            Text(
+                                text = subtitleText,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+            }
         }
     ) { innerPadding ->
         NavHost(
@@ -125,12 +212,11 @@ fun MainScreen(
                 val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
                 EditTemplatePage(templateId.toInt(), Modifier, navController)
             }
-            composable(
-                route = Routes.WORKTEMP,
-                arguments = listOf(navArgument("tempId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val templateId = backStackEntry.arguments?.getString("tempId") ?: "0"
-                ActiveWorkoutPage(templateId.toInt(), Modifier, navController)
+            composable(Routes.WORKTEMP) {
+                ActiveWorkoutPage(
+                    modifier = Modifier,
+                    navController = navController
+                )
             }
 
             composable(
@@ -146,7 +232,6 @@ fun MainScreen(
             }
         }
     }
-
 }
 
 private fun NavDestination?.isOnRoute(route: String): Boolean {

@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -20,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.workoutapp.core.core_ui.theme.AppTextField
@@ -32,8 +35,12 @@ import com.example.workoutapp.domain.models.WorkoutTemplate
 
 /**
  * Displays text field and corresponding label.
+ *
  * @param label Information to user, displayed above set.
  * @param exSet data class of TemplateExercise
+ * @param type Field type: kg or reps
+ * @param set The specific set to display/edit
+ *
  * @see WorkoutTextField Overloaded to handle NewTemplateExercise
  */
 @Composable
@@ -43,14 +50,41 @@ fun WorkoutTextField(
     type: String,
     set: com.example.workoutapp.domain.models.Set
 ){
-    var text by remember {mutableStateOf("")}
-    var isValid by remember {mutableStateOf(true)}
     val focusManager = LocalFocusManager.current
 
+    // Get initial value from the set (shows template value or previously entered value)
+    val initialValue = when (type.lowercase()) {
+        "kg" -> if (set.kg == 0.0) "" else set.kg.toString()
+        "reps" -> if (set.rep == 0) "" else set.rep.toString()
+        else -> ""
+    }
+
+    // Use TextFieldValue to control selection
+    var textFieldValue by remember(set, type) {
+        mutableStateOf(TextFieldValue(initialValue))
+    }
+    var isValid by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    var shouldSelectAll by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isFocused, shouldSelectAll) {
+        if (isFocused && shouldSelectAll && textFieldValue.text.isNotEmpty()) {
+            textFieldValue = textFieldValue.copy(
+                selection = TextRange(0, textFieldValue.text.length)
+            )
+            shouldSelectAll = false
+        }
+    }
+
+
     TextField(
-        value = text,
-        onValueChange = { newValue: String ->
-            text = newValue.filter { it.isDigit() || it == '.' }
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            // Only allow digits and decimal point
+            val filtered = newValue.copy(
+                text = newValue.text.filter { it.isDigit() || it == '.' }
+            )
+            textFieldValue = filtered
         },
         isError = !isValid,
         keyboardOptions = KeyboardOptions(
@@ -59,8 +93,8 @@ fun WorkoutTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                validateAndSave(text, type, set){valid ->
-                isValid = valid
+                validateAndSave(textFieldValue.text, type, set){valid ->
+                    isValid = valid
                 }
                 focusManager.clearFocus()
             }
@@ -72,8 +106,15 @@ fun WorkoutTextField(
             .width(100.dp)
             .height(50.dp)
             .onFocusChanged{ focusState ->
-                if (!focusState.isFocused){
-                    validateAndSave(text,type,set){valid ->
+                if (focusState.isFocused && !isFocused) {
+                    // First time focused: Trigger selection via lauched effect
+                    isFocused = true
+                    shouldSelectAll = true
+                } else if (!focusState.isFocused && isFocused) {
+                    // Lost focus: save the value
+                    isFocused = false
+                    shouldSelectAll = false
+                    validateAndSave(textFieldValue.text, type, set) { valid ->
                         isValid = valid
                     }
                 }
@@ -94,13 +135,39 @@ fun WorkoutTextField(
     type: String,
     set: com.example.workoutapp.domain.models.Set
 ){
-    var text by remember {mutableStateOf("")}
-    var isValid by remember {mutableStateOf(true)}
+    val focusManager = LocalFocusManager.current
+
+    // Get initial value from the set
+    val initialValue = when (type.lowercase()) {
+        "kg" -> if (set.kg == 0.0) "" else set.kg.toString()
+        "reps" -> if (set.rep == 0) "" else set.rep.toString()
+        else -> ""
+    }
+
+    var textFieldValue by remember(set, type) {
+        mutableStateOf(TextFieldValue(initialValue))
+    }
+    var isValid by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    var shouldSelectAll by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isFocused, shouldSelectAll) {
+        if (isFocused && shouldSelectAll && textFieldValue.text.isNotEmpty()) {
+            textFieldValue = textFieldValue.copy(
+                selection = TextRange(0, textFieldValue.text.length)
+            )
+            shouldSelectAll = false
+        }
+    }
+
 
     TextField(
-        value = text,
-        onValueChange = { newValue: String ->
-            text = newValue.filter { it.isDigit() || it == '.' }
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            val filtered = newValue.copy(
+                text = newValue.text.filter { it.isDigit() || it == '.' }
+            )
+            textFieldValue = filtered
         },
         isError = !isValid,
         keyboardOptions = KeyboardOptions(
@@ -109,9 +176,10 @@ fun WorkoutTextField(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                validateAndSave(text, type, set){valid ->
+                validateAndSave(textFieldValue.text, type, set){valid ->
                     isValid = valid
                 }
+                focusManager.clearFocus()
             }
         ),
         singleLine = true,
@@ -120,9 +188,14 @@ fun WorkoutTextField(
         modifier = Modifier
             .width(100.dp)
             .height(50.dp)
-            .onFocusChanged{ focusState ->
-                if (!focusState.isFocused){
-                    validateAndSave(text,type,set){valid ->
+            .onFocusChanged { focusState ->
+                if (focusState.isFocused && !isFocused) {
+                    isFocused = true
+                    shouldSelectAll = true
+                } else if (!focusState.isFocused) {
+                    isFocused = false
+                    shouldSelectAll = false
+                    validateAndSave(textFieldValue.text, type, set) { valid ->
                         isValid = valid
                     }
                 }
@@ -164,7 +237,7 @@ fun TimerTextField(
     time: Int,
     onTimeChange: (Int) -> Unit // Lift the state up
 ) {
-    var text by remember { mutableStateOf(time.toString()) }
+    var text by remember(time) { mutableStateOf(time.toString()) }
 
     TextField(
         value = text,
@@ -195,7 +268,7 @@ private fun String.isValidDecimal(maxDecimals: Int = 2): Boolean{
     return if (parts.size == 2) {
         parts[0].all {it.isDigit()} &&
         parts[1].all {it.isDigit()} &&
-        parts[2].length <= maxDecimals
+        parts[1].length <= maxDecimals
     } else{
         all {it.isDigit() || it == '.'}
     }

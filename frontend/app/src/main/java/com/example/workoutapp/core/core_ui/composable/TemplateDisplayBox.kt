@@ -26,8 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.core.core_navigation.Routes
 import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifier
 import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
 import com.example.workoutapp.features.home.WorkoutTemplatesViewModel
 
 /**
@@ -41,7 +43,7 @@ fun TemplateDisplayContent (
     template: WorkoutTemplate,
     navController: NavController,
     index: Int,
-    viewModel: WorkoutTemplatesViewModel = hiltViewModel()
+    viewModel: WorkoutTemplatesViewModel = hiltViewModel(),
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -56,10 +58,15 @@ fun TemplateDisplayContent (
             fontSize = 20.sp
         )
         Row {
-            StandardButton(
+            StandardButtonCustomRoute(
                 buttonText = "Start",
+                onClick = {
+                    if (!viewModel.activeWorkoutManager.hasActiveWorkout()) {
+                        viewModel.activeWorkoutManager.startWorkout(template)
+                    }
+                    navController.navigate(Routes.WORKTEMP)
+                },
                 navController = navController,
-                route = "worktemp/$index"
             )
 
             IconButton(onClick = { expanded = !expanded }) {

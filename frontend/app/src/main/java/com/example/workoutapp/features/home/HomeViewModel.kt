@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.WorkoutTemplate
+import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
 import com.example.workoutapp.domain.usecases.DeleteWorkoutTemplateUseCase
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ data class WorkoutTemplatesUiState(
 class WorkoutTemplatesViewModel @Inject constructor(
     private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase,
     private val deleteWorkoutTemplatesUseCase: DeleteWorkoutTemplateUseCase,
+    val activeWorkoutManager: ActiveWorkoutManager
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutTemplatesUiState())
