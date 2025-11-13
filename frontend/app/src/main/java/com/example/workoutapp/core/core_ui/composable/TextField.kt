@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -62,8 +63,19 @@ fun WorkoutTextField(
     var textFieldValue by remember(set, type) {
         mutableStateOf(TextFieldValue(initialValue))
     }
-    var isValid by remember {mutableStateOf(true)}
-    var hasBeenFocused by remember(set, type) { mutableStateOf(false) }
+    var isValid by remember { mutableStateOf(true) }
+    var isFocused by remember { mutableStateOf(false) }
+    var shouldSelectAll by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isFocused, shouldSelectAll) {
+        if (isFocused && shouldSelectAll && textFieldValue.text.isNotEmpty()) {
+            textFieldValue = textFieldValue.copy(
+                selection = TextRange(0, textFieldValue.text.length)
+            )
+            shouldSelectAll = false
+        }
+    }
+
 
     TextField(
         value = textFieldValue,
@@ -94,18 +106,17 @@ fun WorkoutTextField(
             .width(100.dp)
             .height(50.dp)
             .onFocusChanged{ focusState ->
-                if (!focusState.isFocused && !hasBeenFocused){
-                    // First time focused: select all text for easy editing
-                    hasBeenFocused = true
-                    textFieldValue = textFieldValue.copy(
-                        selection = TextRange(0, textFieldValue.text.length)
-                    )
-                } else if (!focusState.isFocused) {
+                if (focusState.isFocused && !isFocused) {
+                    // First time focused: Trigger selection via lauched effect
+                    isFocused = true
+                    shouldSelectAll = true
+                } else if (!focusState.isFocused && isFocused) {
                     // Lost focus: save the value
+                    isFocused = false
+                    shouldSelectAll = false
                     validateAndSave(textFieldValue.text, type, set) { valid ->
                         isValid = valid
                     }
-                    hasBeenFocused = false
                 }
             }
     )
@@ -137,7 +148,18 @@ fun WorkoutTextField(
         mutableStateOf(TextFieldValue(initialValue))
     }
     var isValid by remember { mutableStateOf(true) }
-    var hasBeenFocused by remember(set, type) { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
+    var shouldSelectAll by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isFocused, shouldSelectAll) {
+        if (isFocused && shouldSelectAll && textFieldValue.text.isNotEmpty()) {
+            textFieldValue = textFieldValue.copy(
+                selection = TextRange(0, textFieldValue.text.length)
+            )
+            shouldSelectAll = false
+        }
+    }
+
 
     TextField(
         value = textFieldValue,
@@ -167,16 +189,15 @@ fun WorkoutTextField(
             .width(100.dp)
             .height(50.dp)
             .onFocusChanged { focusState ->
-                if (focusState.isFocused && !hasBeenFocused) {
-                    hasBeenFocused = true
-                    textFieldValue = textFieldValue.copy(
-                        selection = TextRange(0, textFieldValue.text.length)
-                    )
+                if (focusState.isFocused && !isFocused) {
+                    isFocused = true
+                    shouldSelectAll = true
                 } else if (!focusState.isFocused) {
+                    isFocused = false
+                    shouldSelectAll = false
                     validateAndSave(textFieldValue.text, type, set) { valid ->
                         isValid = valid
                     }
-                    hasBeenFocused = false
                 }
             }
     )
