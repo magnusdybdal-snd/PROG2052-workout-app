@@ -118,9 +118,13 @@ fun ActiveWorkoutPage(
                         }
                     }
                 ) { innerPadding ->
+                    val bottomBarHeight = if (session.isTimerRunning) 120.dp else 0.dp
+
+
                     Column(
                         modifier = Modifier
                             .verticalScroll(state = rememberScrollState())
+                            .padding(bottom = bottomBarHeight)
                             .imePadding()
                             .pointerInput(Unit) {
                                 detectTapGestures(
