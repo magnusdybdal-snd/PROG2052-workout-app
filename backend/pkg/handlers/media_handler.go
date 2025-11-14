@@ -7,6 +7,8 @@ import (
 )
 
 func HandleMedia() http.Handler {
-	wd,_:= os.Getwd()
-	return http.FileServer(http.Dir(filepath.Join(wd,"assets/exercises")))
+	exe, _ := os.Executable()
+	base := filepath.Dir(exe)
+	mediaPath := filepath.Join(base, "assets/exercises")
+	return http.FileServer(http.Dir(mediaPath))
 }
