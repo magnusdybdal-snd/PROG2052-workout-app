@@ -50,6 +50,9 @@ import com.example.workoutapp.features.login.LoginPage
 import com.example.workoutapp.features.new_template.NewTemplatePage
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.text.font.FontWeight
+import com.example.workoutapp.core.core_ui.composable.LoadingStateView
+import com.example.workoutapp.domain.models.AuthState
+import com.example.workoutapp.features.auth.AuthViewModel
 
 /**
  * Main screen
@@ -60,21 +63,29 @@ import androidx.compose.ui.text.font.FontWeight
 fun MainScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    preferences: UserPreferences = UserPreferences(LocalContext.current), // for checking if user logged in
+    authViewModel: AuthViewModel = hiltViewModel(),
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    val token by preferences.token.collectAsState(initial = null)
-    val startDestination = if(isTokenExpired(token)) Routes.LOGIN else Routes.WORKOUT
+    val authState by authViewModel.authState.collectAsState()
 
-    // TODO: THIS IS TO BE SWITCHED WITH A PROPER SPLASH SCREEN
-    LaunchedEffect(token) {
-        if (token.isNullOrBlank() || isTokenExpired(token)) {
-            preferences.clearAuthData()
-            navController.navigate(Routes.LOGIN) {
-                popUpTo(0) { inclusive=true }
-            }
+    //
+    // Check authenticatoin state from viewmodel
+    //
+
+    when (authState) {
+        is AuthState.Loading -> {
+            LoadingStateView()
+            return
         }
+        is AuthState.Unauthenticated -> {
+            LoginPage(Modifier, navController)
+            return
+        }
+        // Authenticated, continue below
+        is AuthState.Authenticated -> Unit
     }
+
+    // Main content if authenticated below:
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
         NavItem("Workouts", Routes.WORKOUT, Icons.Default.PlayArrow),
@@ -92,23 +103,6 @@ fun MainScreen(
     val activeSession by mainViewModel.activeWorkoutManager.activeSession.collectAsState()
     val hasActiveWorkout = activeSession != null
     val isOnWorkoutPage = currentDestination?.route == Routes.WORKTEMP
-
-    LaunchedEffect(token) {
-        val currentRoute = navController.currentBackStackEntry?.destination?.route
-
-        // User logged out, navigate to login page
-        if (token == null && currentRoute != Routes.LOGIN) {
-            navController.navigate(Routes.LOGIN) {
-                popUpTo(0) { inclusive = true }
-            }
-        // User just logged in, navigate to home
-        } else if (token != null && currentRoute == Routes.LOGIN) {
-            navController.navigate(Routes.WORKOUT) {
-                popUpTo(Routes.LOGIN) { inclusive = true }
-            }
-        }
-    }
-
 
     Scaffold(
         bottomBar = {
@@ -197,7 +191,7 @@ fun MainScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = startDestination, // First page, client would see
+            startDestination = Routes.WORKOUT, // First page user would see
             modifier = modifier.padding(innerPadding)
         ) {
             composable(Routes.LOGIN)     { LoginPage(Modifier,navController) }
