@@ -20,9 +20,9 @@ func addRoutes(
 		Endpoints
 	*/
 	// GET /exercises
-	mux.Handle(EXERCISES_ROUTE, handlers.HandleExercises(container.ExerciseService))
+	mux.Handle(EXERCISES_ROUTE, handlers.HandleExercises(container.ExerciseService, cfg.HOST_URL + MEDIA_ROUTE))
 	// GET /exercises/{exerciseId}
-	mux.Handle(EXERCISES_ID_ROUTE, handlers.HandleOneExercise(container.ExerciseService))
+	mux.Handle(EXERCISES_ID_ROUTE, handlers.HandleOneExercise(container.ExerciseService, cfg.HOST_URL + MEDIA_ROUTE))
 
 	// GET, POST /sessions
 	mux.Handle(SESSIONS_ROUTE, AuthenticateUser(cfg, handlers.HandleSession(container.SessionService)))

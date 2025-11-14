@@ -13,14 +13,13 @@ import (
 /*
 GET  /exercises      -> get all
 GET  /exercises/{id} -> get one
-POST /exercises      -> create new
 */
 
 /*
 handler for GET /exercises
 returns all exercises in database
 */
-func HandleExercises(serv domain.ExerciseService) http.HandlerFunc {
+func HandleExercises(serv domain.ExerciseService, url string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
@@ -32,7 +31,7 @@ func HandleExercises(serv domain.ExerciseService) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := serv.GetAll(ctx,limit)
+		data, err := serv.GetAll(ctx,limit, url)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
@@ -42,7 +41,7 @@ func HandleExercises(serv domain.ExerciseService) http.HandlerFunc {
 	}
 }
 
-func HandleOneExercise(serv domain.ExerciseService) http.HandlerFunc {
+func HandleOneExercise(serv domain.ExerciseService, url string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			utils.HandleError(w, http.StatusMethodNotAllowed, fmt.Errorf("bad method"), utils.ErrMsgNotAllowed)
@@ -57,7 +56,7 @@ func HandleOneExercise(serv domain.ExerciseService) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		data, err := serv.GetOne(ctx, id)
+		data, err := serv.GetOne(ctx, id, url)
 		if err != nil {
 			utils.HandleError(w, http.StatusInternalServerError, err, utils.ErrMsgInternal)
 			return
