@@ -16,11 +16,11 @@ type mockExerciseService struct {
 	GetOneFunc func(ctx context.Context, id string) (domain.Exercises, error)
 }
 
-func (m *mockExerciseService) GetAll(ctx context.Context, limit int) ([]domain.Exercises, error) {
+func (m *mockExerciseService) GetAll(ctx context.Context, limit int, url string) ([]domain.Exercises, error) {
 	return m.GetAllFunc(ctx, limit)
 }
 
-func (m *mockExerciseService) GetOne(ctx context.Context, id string) (domain.Exercises, error) {
+func (m *mockExerciseService) GetOne(ctx context.Context, id string, url string) (domain.Exercises, error) {
 	return m.GetOneFunc(ctx, id)
 }
 
@@ -29,7 +29,7 @@ func TestGetAllExercises(t *testing.T) {
 		GetAllFunc: func(ctx context.Context, limit int) ([]domain.Exercises, error) {
 			return []domain.Exercises{
 				{
-					Id:               "JrOHAZc",
+					ExerciseId:       "JrOHAZc",
 					Name:             "Barbell Stiff Leg Good Morning",
 					TargetMuscles:    []string{"Hamstrings", "Glutes"},
 					BodyParts:        []string{"Lower Back", "Legs"},
@@ -43,7 +43,7 @@ func TestGetAllExercises(t *testing.T) {
 					},
 				},
 				{
-					Id:               "7F1DVzn",
+					ExerciseId:       "7F1DVzn",
 					Name:             "Lever Front Pulldown",
 					TargetMuscles:    []string{"Latissimus Dorsi"},
 					BodyParts:        []string{"Back"},
@@ -57,7 +57,7 @@ func TestGetAllExercises(t *testing.T) {
 					},
 				},
 				{
-					Id:               "gAwDzB3",
+					ExerciseId:       "gAwDzB3",
 					Name:             "Cable Triceps Pushdown (V-Bar)",
 					TargetMuscles:    []string{"Triceps Brachii"},
 					BodyParts:        []string{"Arms"},
@@ -77,7 +77,7 @@ func TestGetAllExercises(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/exercises", nil)
 	w := httptest.NewRecorder()
 
-	handler := handlers.HandleExercises(mockSvc)
+	handler := handlers.HandleExercises(mockSvc, "http://test.com")
 	handler(w, req)
 
 	if w.Code != http.StatusOK {
@@ -98,7 +98,7 @@ func TestGetOneExercise(t *testing.T) {
 	mockSvc := &mockExerciseService{
 		GetOneFunc: func(ctx context.Context, id string) (domain.Exercises, error) {
 			return domain.Exercises{
-				Id:               "gAwDzB3",
+				ExerciseId:       "gAwDzB3",
 				Name:             "Cable Triceps Pushdown (V-Bar)",
 				TargetMuscles:    []string{"Triceps Brachii"},
 				BodyParts:        []string{"Arms"},
@@ -118,7 +118,7 @@ func TestGetOneExercise(t *testing.T) {
 	req.SetPathValue("exerciseId", "gAwDzB3")
 	w := httptest.NewRecorder()
 
-	handler := handlers.HandleOneExercise(mockSvc)
+	handler := handlers.HandleOneExercise(mockSvc, "http://test.com")
 	handler(w, req)
 
 	if w.Code != http.StatusOK {

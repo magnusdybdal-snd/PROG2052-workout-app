@@ -3,7 +3,7 @@ package domain
 import "context"
 
 type Exercises struct {
-	Id               string   `json:"exerciseId"`
+	ExerciseId       string   `json:"exerciseId"`
 	Name             string   `json:"name"`
 	TargetMuscles    []string `json:"targetMuscles"`
 	BodyParts        []string `json:"bodyParts"`
@@ -21,8 +21,8 @@ type ExerciseRepository interface {
 
 // Domain interface for service implementation
 type ExerciseService interface {
-	GetAll(ctx context.Context, limit int) ([]Exercises, error)
-	GetOne(ctx context.Context, id string) (Exercises, error)
+	GetAll(ctx context.Context, limit int, url string) ([]Exercises, error)
+	GetOne(ctx context.Context, id string, url string) (Exercises, error)
 }
 
 type TypeSet int32
