@@ -9,11 +9,11 @@ data class ExerciseEntity(
     @PrimaryKey
     val exerciseId: String,
     val name: String,
-    val targetMuscles: String, // JSON array as string
-    val bodyParts: String, // JSON array as string
-    val equipments: String, // JSON array as string
-    val secondaryMuscles: String, // JSON array as string
+    val targetMuscles: List<String>, // JSON array as string
+    val bodyParts: List<String>, // JSON array as string
+    val equipments: List<String>, // JSON array as string
+    val secondaryMuscles: List<String>, // JSON array as string
     val gifUrl: String?,
-    val instructions: String, // JSON array as string
+    val instructions: List<String>, // JSON array as string
     val lastUpdated: Long = System.currentTimeMillis()
 )

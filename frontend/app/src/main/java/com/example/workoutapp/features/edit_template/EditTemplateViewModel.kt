@@ -74,14 +74,16 @@ class EditTemplateViewModel @Inject constructor(  // @Inject = Hilt can construc
     fun loadExercises() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+
             try {
-                val data = getExercisesUseCase()
-                Log.d("EditTemplateViewModel", "Fetched ${data.size} exercises")
-                _uiState.update { current ->
-                    current.copy(
-                        exercises = data.sortedBy { it.name.lowercase() },
-                        isLoading = false
-                    )
+                getExercisesUseCase().collect { exercises ->
+                    Log.d("EditTemplateViewModel", "Fetched ${exercises.size} exercises")
+                    _uiState.update { current ->
+                        current.copy(
+                            exercises = exercises.sortedBy { it.name.lowercase() },
+                            isLoading = false
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message ?: "Unknown error") }

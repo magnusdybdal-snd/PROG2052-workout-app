@@ -4,15 +4,15 @@ import android.content.Context
 import android.util.Log
 import com.example.workoutapp.data.database.dao.ExerciseDao
 import com.example.workoutapp.data.database.entities.ExerciseEntity
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class ExerciseInitializer @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val exerciseDao: ExerciseDao
 ) {
     private val json = Json { ignoreUnknownKeys = true }
@@ -40,14 +40,16 @@ class ExerciseInitializer @Inject constructor(
                 ExerciseEntity(
                     exerciseId = dto.exerciseId,
                     name = dto.name,
-                    targetMuscles = json.encodeToString(dto.targetMuscles),
-                    bodyParts = json.encodeToString(dto.bodyParts),
-                    equipments = json.encodeToString(dto.equipments),
-                    secondaryMuscles = json.encodeToString(dto.secondaryMuscles),
+                    targetMuscles = dto.targetMuscles,
+                    bodyParts = dto.bodyParts,
+                    equipments = dto.equipments,
+                    secondaryMuscles = dto.secondaryMuscles,
                     gifUrl = dto.gifUrl,
-                    instructions = json.encodeToString(dto.instructions)
+                    instructions = dto.instructions
                 )
             }
+
+            exerciseDao.insertExercises(entities)
 
             Log.d("ExerciseInitializer", "Loaded ${entities.size} exercises into ROOM")
         } catch (e: Exception) {

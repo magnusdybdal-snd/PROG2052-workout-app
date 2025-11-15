@@ -3,8 +3,10 @@ package com.example.workoutapp.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.workoutapp.data.database.dao.ExerciseDao
 import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.dao.TemplateDao
+import com.example.workoutapp.data.database.entities.ExerciseEntity
 import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
 import com.example.workoutapp.data.database.entities.history.SetEntity
 import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEntity
@@ -27,9 +29,12 @@ import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
         // Template entities
         TemplateEntity::class,
         TemplateExerciseEntity::class,
-        TemplateSetEntity::class
+        TemplateSetEntity::class,
+
+        // Exercise entities
+        ExerciseEntity::class
        ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 // Needs a converter as Room does not support Duration and LocalDate
@@ -38,4 +43,5 @@ abstract class AppDatabase : RoomDatabase() {
     // Provides access to local CRUD operations for history workouts
     abstract fun historyWorkoutDao(): HistoryWorkoutDao
     abstract fun workoutTemplateDao(): TemplateDao
+    abstract fun ExerciseDao(): ExerciseDao
 }
