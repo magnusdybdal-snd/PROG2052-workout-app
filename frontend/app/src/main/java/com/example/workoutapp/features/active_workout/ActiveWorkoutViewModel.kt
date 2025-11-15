@@ -113,34 +113,52 @@ class ActWorkViewModel @Inject constructor(
      */
     fun addSetToExercise(exerciseIndex: Int) {
         activeWorkoutManager.updateSession { session ->
-            // Create new set with default values
+            // Guard: invalid index -> just return current session
+            if (exerciseIndex !in session.modifiedExercises.exercises.indices) {
+                return@updateSession session
+            }
+
+            // New set with default values
             val newSet = Set(
                 rep = 0,
                 kg = 0.0,
                 typeSet = 0
             )
 
-            // Update the modified exercises with the new set
-            val updatedExercises = session.modifiedExercises.copy(
-                exercises = session.modifiedExercises.exercises.toMutableList().apply {
-                    this[exerciseIndex] = this[exerciseIndex].copy(
-                        sets = this[exerciseIndex].sets.toMutableList().apply {
-                            add(newSet)
-                        }
-                    )
-                }
+            // 1) Update modifiedExercises
+            val exercisesList = session.modifiedExercises.exercises.toMutableList()
+            val exercise = exercisesList[exerciseIndex]
+
+            val updatedSetsForExercise = exercise.sets.toMutableList().apply {
+                add(newSet)
+            }
+
+            exercisesList[exerciseIndex] = exercise.copy(sets = updatedSetsForExercise)
+
+            val updatedModifiedExercises = session.modifiedExercises.copy(
+                exercises = exercisesList
             )
 
-            // Update completedSets to include tracking for the new set
-            val updatedCompletedSets = session.completedSets.toMutableList().apply {
-                this[exerciseIndex] = this[exerciseIndex].toMutableList().apply {
-                    add(false)  // New set starts as not completed
+            // 2) Update completedSets
+            val completedSetsList = session.completedSets.toMutableList()
+
+            // Make sure there is a row for this exercise
+            if (exerciseIndex >= completedSetsList.size) {
+                // No row yet -> create one with same size as updated sets, all false
+                completedSetsList.add(
+                    MutableList(updatedSetsForExercise.size) { false }
+                )
+            } else {
+                // Row exists -> just add a new "false" for the new set
+                val row = completedSetsList[exerciseIndex].toMutableList().apply {
+                    add(false)
                 }
+                completedSetsList[exerciseIndex] = row
             }
 
             session.copy(
-                modifiedExercises = updatedExercises,
-                completedSets = updatedCompletedSets
+                modifiedExercises = updatedModifiedExercises,
+                completedSets = completedSetsList
             )
         }
     }
