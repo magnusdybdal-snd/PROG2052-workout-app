@@ -290,31 +290,38 @@ class ActWorkViewModel @Inject constructor(
     }
 
     fun addExerciseToActiveSession(exercise: Exercise) {
-        val current = activeSession.value ?: return
-
-        val newSessionExercise = TemplateExercise(
-            exerciseId = exercise.exerciseId,
-            name = exercise.name,
-            sets = mutableListOf(
-                Set(
-                    rep = 0,
-                    kg = 0.0,
-                    typeSet = 0,
+        activeWorkoutManager.updateSession { session ->
+            // Build the new exercise in the same type as modifiedExercises.exercises
+            val newExercise = TemplateExercise(
+                exerciseId = exercise.exerciseId,
+                name = exercise.name,
+                sets = mutableListOf(
+                    Set(
+                        rep = 0,
+                        kg = 0.0,
+                        typeSet = 0,
+                    )
                 )
             )
-        )
 
-        val updatedExercises = current.modifiedExercises.exercises.toMutableList().apply {
-            add(newSessionExercise)
-        }
+            // 1) Add exercise to modifiedExercises
+            val updatedExercises = session.modifiedExercises.exercises
+                .toMutableList()
+                .apply { add(newExercise) }
 
-        val updatedSession = current.copy(
-            modifiedExercises = current.modifiedExercises.copy(
-                exercises = updatedExercises
+            // 2) Add a completedSets row for this new exercise (all false)
+            val newCompletedRow = MutableList(newExercise.sets.size) { false }
+            val updatedCompletedSets = session.completedSets
+                .toMutableList()
+                .apply { add(newCompletedRow) }
+
+            // 3) Return updated session
+            session.copy(
+                modifiedExercises = session.modifiedExercises.copy(
+                    exercises = updatedExercises
+                ),
+                completedSets = updatedCompletedSets
             )
-        )
-
-        // Whatever mechanism you already use to update the active session:
-        activeWorkoutManager.updateSession{current -> updatedSession}
+        }
     }
 }
