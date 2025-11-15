@@ -5,12 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/db/repository"
 	"gitlab.stud.idi.ntnu.no/gruppe-1/prog2052-prosjekt/backend/pkg/domain"
 )
 
 type ExerciseServiceImpl struct {
-	Repo *repository.ExerciseRepository
+	Repo domain.ExerciseRepository
 
 	// Caching members
 	cache         []domain.Exercises
@@ -22,8 +21,16 @@ type ExerciseServiceImpl struct {
 
 }
 
+func NewExerciseService(exRepo domain.ExerciseRepository) *ExerciseServiceImpl {
+	return &ExerciseServiceImpl{
+		Repo: exRepo,
+		cacheDuration: 30 * time.Second,
+	}
+}
+
 func (s *ExerciseServiceImpl) GetAll(ctx context.Context, limit int, url string) ([]domain.Exercises, error) {
 	//check cache
+
 	s.mu.RLock() // mutex lock
 	if s.cache != nil && time.Since(s.cacheAt) < s.cacheDuration {
 		cached := make([]domain.Exercises, len(s.cache))
@@ -43,6 +50,7 @@ func (s *ExerciseServiceImpl) GetAll(ctx context.Context, limit int, url string)
 	for i := range exercises {
 		exercises[i].GifUrl = url + exercises[i].ExerciseId + ".gif"
 	}
+	// copy over for caching
 	s.mu.Lock()
 	s.cache = exercises
 	s.cacheAt = time.Now()
