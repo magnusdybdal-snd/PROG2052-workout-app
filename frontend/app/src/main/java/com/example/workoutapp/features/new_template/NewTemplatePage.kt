@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.clickable
+
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -73,10 +77,16 @@ fun NewTemplatePage(
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
+
         else -> {
+            // Page state
             var name by remember { mutableStateOf("") }
             val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
             val exerciseNames = remember { mutableStateListOf<String>() }
+
+            // Exercise picker state
+            var showExercisePicker by remember { mutableStateOf(false) }
+            var searchString by remember { mutableStateOf("") }
 
             Column(
                 modifier = modifier
@@ -173,182 +183,183 @@ fun NewTemplatePage(
                         modifier = Modifier.padding(vertical = 10.dp)
                     )
 
-                    var expanded by remember { mutableStateOf(false) }
-                    var searchString by remember { mutableStateOf("") }
-
                     Box(
                         modifier = Modifier
                             .padding(16.dp)
                     ) {
-                        Button(onClick = { expanded = !expanded }) {
+                        Button(onClick = { showExercisePicker = true }) {
                             Text(text = stringResource(R.string.add_exercise))
                         }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                                searchString = "" // Reset search when closing
-                            },
-                            containerColor = cs.tertiary
-                        ) {
-                            // Search TextField inside the dropdown
-                            TextField(
-                                value = searchString,
-                                onValueChange = { searchString = it },
-                                placeholder = {
-                                    Text(
-                                        text = "Search exercise",
-                                        color = cs.onBackground
-                                    )
+
+                        // ------- EXERCISE PICKER MODAL (WITH SEARCH + LAZYCOLUMN) -------
+                        if (showExercisePicker) {
+                            AlertDialog(
+                                onDismissRequest = {
+                                    showExercisePicker = false
+                                    searchString = ""
                                 },
-                                singleLine = true,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            )
+                                title = { Text("Select Exercise") },
+                                text = {
+                                    Column(modifier = Modifier.height(400.dp)) {
 
-                            // Filter exercises based on search query
-                            val filteredExercises = state.exercises.filter {
-                                it.name.contains(searchString, ignoreCase = true)
-                            }
-
-                            filteredExercises.forEach { exercise ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = exercise.name,
-                                            color = cs.onTertiary
+                                        // Search input
+                                        TextField(
+                                            value = searchString,
+                                            onValueChange = { searchString = it },
+                                            placeholder = { Text("Search exercise") },
+                                            singleLine = true,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(bottom = 8.dp)
                                         )
-                                    },
-                                    onClick = {
-                                        exercises.add(
-                                            NewTemplateExercise(
-                                                exerciseId = exercise.exerciseId,
-                                                name = exercise.name,
-                                                sets = mutableStateListOf(
-                                                    Set(
-                                                        rep = 0,
-                                                        kg = 0.0,
-                                                        typeSet = 0,
-                                                    )
-                                                )
-                                            )
-                                        )
-                                        exerciseNames.add(exercise.name)
-                                        expanded = !expanded
-                                        searchString = ""
-                                    }
-                                )
-                            }
 
-                            if (filteredExercises.isEmpty()) {
-                                Text(
-                                    text = "No exercises found",
-                                    color = cs.onTertiary,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-                    }
+                                        val filtered = state.exercises.filter {
+                                            it.name.contains(searchString, ignoreCase = true)
+                                        }
 
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier
-                            .padding(top = 10.dp),
-                    ) {
-                        exercises.forEachIndexed { exerciseIndex, exSet ->
-                            // Exercise name with remove button
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
-                            ) {
-                                Text(
-                                    exerciseNames[exerciseIndex],
-                                    fontSize = 15.sp
-                                )
-                                IconButton(
-                                    onClick = {
-                                        exercises.removeAt(exerciseIndex)
-                                        exerciseNames.removeAt(exerciseIndex)
+                                        LazyColumn(
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            items(filtered) { exercise ->
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .clickable {
+                                                            // Add exercise to template
+                                                            exercises.add(
+                                                                NewTemplateExercise(
+                                                                    exerciseId = exercise.exerciseId,
+                                                                    name = exercise.name,
+                                                                    sets = mutableStateListOf(
+                                                                        Set(0, 0.0, 0)
+                                                                    )
+                                                                )
+                                                            )
+                                                            exerciseNames.add(exercise.name)
+                                                            showExercisePicker = false
+                                                            searchString = ""
+                                                        }
+                                                        .padding(12.dp)
+                                                ) {
+                                                    Text(exercise.name)
+                                                }
+                                            }
+                                        }
+
+                                        if (filtered.isEmpty()) {
+                                            Text("No exercises found", color = cs.onBackground)
+                                        }
                                     }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Remove exercise"
-                                    )
+                                },
+                                confirmButton = {},
+                                dismissButton = {
+                                    TextButton(onClick = { showExercisePicker = false }) {
+                                        Text("Close")
+                                    }
                                 }
-                            }
+                            )
+                        }
 
-                            // Header Row
-                            ExerciseWorkoutHeaderRow()
 
-                            // Loop through each set
-                            exSet.sets.forEachIndexed { setIndex, set ->
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
+                            modifier = Modifier
+                                .padding(top = 10.dp),
+                        ) {
+                            exercises.forEachIndexed { exerciseIndex, exSet ->
+                                // Exercise name with remove button
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 8.dp)
-                                        .height(75.dp)
                                 ) {
-                                    // Set Number
                                     Text(
-                                        "${setIndex + 1}",
-                                        fontSize = 15.sp,
-                                        modifier = Modifier.width(50.dp)
+                                        exerciseNames[exerciseIndex],
+                                        fontSize = 15.sp
                                     )
-
-                                    // KG TextField
-                                    WorkoutTextField(
-                                        label = stringResource(R.string.kg),
-                                        exSet = exSet,
-                                        type = "kg",
-                                        set = set
-                                    )
-
-                                    // Reps TextField
-                                    WorkoutTextField(
-                                        label = stringResource(R.string.reps),
-                                        exSet = exSet,
-                                        type = "reps",
-                                        set = set
-                                    )
-
-                                    // Remove set button
                                     IconButton(
                                         onClick = {
-                                            exSet.sets.removeAt(setIndex)
-                                        },
-                                        modifier = Modifier.width(50.dp)
+                                            exercises.removeAt(exerciseIndex)
+                                            exerciseNames.removeAt(exerciseIndex)
+                                        }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Close,
-                                            contentDescription = "Remove set"
+                                            contentDescription = "Remove exercise"
                                         )
                                     }
                                 }
-                            }
 
-                            // Add set button
-                            IconButton(
-                                onClick = {
-                                    exSet.sets.add(
-                                        Set(
-                                            rep = 0,
-                                            kg = 0.0,
-                                            typeSet = 0,
+                                // Header Row
+                                ExerciseWorkoutHeaderRow()
+
+                                // Loop through each set
+                                exSet.sets.forEachIndexed { setIndex, set ->
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+                                            .height(75.dp)
+                                    ) {
+                                        // Set Number
+                                        Text(
+                                            "${setIndex + 1}",
+                                            fontSize = 15.sp,
+                                            modifier = Modifier.width(50.dp)
                                         )
+
+                                        // KG TextField
+                                        WorkoutTextField(
+                                            label = stringResource(R.string.kg),
+                                            exSet = exSet,
+                                            type = "kg",
+                                            set = set
+                                        )
+
+                                        // Reps TextField
+                                        WorkoutTextField(
+                                            label = stringResource(R.string.reps),
+                                            exSet = exSet,
+                                            type = "reps",
+                                            set = set
+                                        )
+
+                                        // Remove set button
+                                        IconButton(
+                                            onClick = {
+                                                exSet.sets.removeAt(setIndex)
+                                            },
+                                            modifier = Modifier.width(50.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Remove set"
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Add set button
+                                IconButton(
+                                    onClick = {
+                                        exSet.sets.add(
+                                            Set(
+                                                rep = 0,
+                                                kg = 0.0,
+                                                typeSet = 0,
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = stringResource(R.string.add_set)
                                     )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.add_set)
-                                )
                             }
                         }
                     }
