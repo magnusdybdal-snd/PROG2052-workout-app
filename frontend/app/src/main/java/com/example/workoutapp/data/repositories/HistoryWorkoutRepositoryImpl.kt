@@ -2,7 +2,7 @@ package com.example.workoutapp.data.repositories
 
 import android.util.Log
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.database.dao.history.HistoryWorkoutDao
+import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
 import com.example.workoutapp.data.database.entities.history.SetEntity
 import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEntity

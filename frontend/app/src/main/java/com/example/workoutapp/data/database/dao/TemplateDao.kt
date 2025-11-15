@@ -1,7 +1,6 @@
-package com.example.workoutapp.data.database.dao.templates
+package com.example.workoutapp.data.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,7 +12,7 @@ import com.example.workoutapp.data.database.entities.templates.TemplateWithExerc
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Data Access Object (DAO) for managing [TemplateEntity] records in the local Room database.
+ * Data Access Object (DAO) for managing [com.example.workoutapp.data.database.entities.templates.TemplateEntity] records in the local Room database.
  *
  * This interface provides methods for:
  * - Observing all stored templates as a [kotlinx.coroutines.flow.Flow] for reactive UI updates
@@ -101,16 +100,16 @@ interface TemplateDao {
     //  Nested inserts
     //--------------------------
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertExercise(exercise: TemplateExerciseEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertExercises(exercises: List<TemplateExerciseEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertSet(set: TemplateSetEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertSets(sets: List<TemplateSetEntity>)
 
     //--------------------------

@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.workoutapp.data.database.AppDatabase
-import com.example.workoutapp.data.database.dao.history.HistoryWorkoutDao
+import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

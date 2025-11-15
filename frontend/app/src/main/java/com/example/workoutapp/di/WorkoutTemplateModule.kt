@@ -1,7 +1,7 @@
 package com.example.workoutapp.di
 
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.database.dao.templates.TemplateDao
+import com.example.workoutapp.data.database.dao.TemplateDao
 import com.example.workoutapp.data.repositories.WorkoutTemplateRepositoryImpl
 import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
