@@ -6,13 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -51,15 +46,16 @@ fun ExercisesPage(
 ) {
     val state by viewModel.uiState.collectAsState()
     val cs = MaterialTheme.colorScheme
+
     var showOverlay by remember { mutableStateOf(false) }
     var selectedExercise by remember { mutableStateOf<Exercise?>(null) }
+    var searchString by remember { mutableStateOf("") }
 
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
-        else -> {
-            var searchString by remember { mutableStateOf("") }
 
+        else -> {
             Column(
                 modifier = PageColumnModifier(),
                 verticalArrangement = Arrangement.Top,
@@ -83,37 +79,35 @@ fun ExercisesPage(
                         .fillMaxWidth()
                 )
 
-                Column( // All exercises
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.Center,
+                // Pre filter list
+                val filteredList = remember(state.exercises, searchString) {
+                    if (searchString.isBlank()) {
+                        state.exercises
+                    } else {
+                        state.exercises.filter {
+                            it.name.contains(searchString, ignoreCase = true)
+                        }
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),   // ← THIS MAKES THE LIST SCROLL PROPERLY
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    state.exercises.forEach { exercise: Exercise ->
-                        if (searchString != "") {
-                            if (exercise.name.contains(searchString)) {
-                                Box(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedExercise = exercise
-                                            showOverlay = true
-                                        }
-                                ) {
-                                    ExerciseDisplayBox(exercise)
+                    items(filteredList, { it.exerciseId }) { exercise ->
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selectedExercise = exercise
+                                    showOverlay = true
                                 }
-                            }
-                        } else {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        selectedExercise = exercise
-                                        showOverlay = true }
-                            ) {
-                                ExerciseDisplayBox(exercise)
-                            }
+                        ) {
+                            ExerciseDisplayBox(exercise)
                         }
-
                     }
                 }
             }
