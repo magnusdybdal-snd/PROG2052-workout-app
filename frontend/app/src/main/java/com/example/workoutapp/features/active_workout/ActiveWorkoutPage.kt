@@ -1,5 +1,7 @@
 package com.example.workoutapp.features.active_workout
 
+import android.R.attr.text
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +18,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,6 +59,10 @@ import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifie
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
 import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
+import com.example.workoutapp.domain.models.NewTemplateExercise
+import com.example.workoutapp.domain.models.SessionExercise
+import com.example.workoutapp.domain.models.Set
+import androidx.compose.material3.DropdownMenu
 
 /**
  * Displays the active workout screen where users can track their sets in real-time.
@@ -92,6 +101,11 @@ fun ActiveWorkoutPage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
+            val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
+            val exerciseNames = remember { mutableStateListOf<String>() }
+            var searchString by remember { mutableStateOf("") }
+            var expanded by remember { mutableStateOf(false) }
+
             // Safe call: session could theoretically become null between check and usage
             activeSession?.let { session ->
                 Scaffold(
@@ -120,9 +134,9 @@ fun ActiveWorkoutPage(
                 ) { innerPadding ->
                     val bottomBarHeight = if (session.isTimerRunning) 120.dp else 0.dp
 
-
                     Column(
-                        modifier = Modifier
+                        modifier = modifier
+                            .padding(innerPadding)
                             .verticalScroll(state = rememberScrollState())
                             .padding(bottom = bottomBarHeight)
                             .imePadding()
@@ -136,7 +150,7 @@ fun ActiveWorkoutPage(
                     ) {
                         RoundBackButton(
                             navController = navController,
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(horizontal = 20.dp)
                         )
                         Column(
                             horizontalAlignment = Alignment.Start,
@@ -209,15 +223,75 @@ fun ActiveWorkoutPage(
                                 fontSize = 30.sp,
                                 modifier = Modifier.padding(vertical = 10.dp)
                             )
-                            // Rest timer duration selector
-                            Box(
-                                modifier = Modifier.width(120.dp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                TimerTextField(
-                                    time = session.timerMinutes,
-                                    onTimeChange = { viewModel.updateTimerMinutes(it) }
-                                )
-                            }
+                                // Rest timer duration selector
+                                Box(
+                                    modifier = Modifier.width(120.dp)
+                                ) {
+                                    TimerTextField(
+                                        time = session.timerMinutes,
+                                        onTimeChange = { viewModel.updateTimerMinutes(it) }
+                                    )
+                                }
+
+                                // Add exercise dropdown anchored to the button
+                                Box {
+                                    Button(onClick = { expanded = true
+                                    Log.d("Add exercise button", "Button clicked")}) {
+                                        Text(text = stringResource(R.string.add_exercise))
+                                    }
+
+                                    DropdownMenu(
+                                        expanded = expanded,
+                                        onDismissRequest = { expanded = false }
+                                    ) {
+                                        // Filter exercises based on search query
+                                        val filteredExercises = state.exercises.filter {
+                                            it.name.contains(searchString, ignoreCase = true)
+                                        }
+                                        if (filteredExercises.isEmpty()) {
+                                            // 🔹 Show a disabled "no exercises" row instead of nothing
+                                            DropdownMenuItem(
+                                                text = { Text("No exercises available") },
+                                                onClick = { /* no-op */ })
+                                        } else{
+
+                                        filteredExercises.forEach { exercise ->
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text(
+                                                        text = exercise.name,
+                                                        color = cs.onTertiary
+                                                    )
+                                                },
+                                                onClick = {
+                                                    exercises.add(
+                                                        NewTemplateExercise(
+                                                            exerciseId = exercise.exerciseId,
+                                                            name = exercise.name,
+                                                            sets = mutableStateListOf(
+                                                                Set(
+                                                                    rep = 0,
+                                                                    kg = 0.0,
+                                                                    typeSet = 0,
+                                                                )
+                                                            )
+                                                        )
+                                                    )
+                                                    exerciseNames.add(exercise.name)
+                                                    searchString = ""
+                                                    expanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                }
+                            } // END ADD EXERCISE
+
                             // Exercise list with sets, reps, weight, and completion checkboxes
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(5.dp),

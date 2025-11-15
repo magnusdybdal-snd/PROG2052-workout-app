@@ -1,12 +1,17 @@
 package com.example.workoutapp.features.active_workout
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.workoutapp.domain.models.Exercise
+import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
+import com.example.workoutapp.domain.usecases.GetExercisesUseCase
 import com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +34,7 @@ import javax.inject.Inject
  */
 data class ActiveWorkoutUiState(
     val isLoading: Boolean = false,
+    val exercises: List<Exercise> = emptyList(),
     val error: String? = null
 )
 
@@ -45,7 +51,8 @@ data class ActiveWorkoutUiState(
 @HiltViewModel
 class ActWorkViewModel @Inject constructor(
     private val postHistoryWorkoutUseCase: PostHistoryWorkoutUseCase,
-    val activeWorkoutManager: ActiveWorkoutManager
+    val activeWorkoutManager: ActiveWorkoutManager,
+    private val getExercisesUseCase: GetExercisesUseCase
 ) : ViewModel() {
 
     // Expose active session from ActiveWorkoutManager
@@ -55,6 +62,13 @@ class ActWorkViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ActiveWorkoutUiState())
     // This immutable instance is for the UI, read only
     val uiState: StateFlow<ActiveWorkoutUiState> = _uiState
+
+    init {
+        viewModelScope.launch {
+            val result = getExercisesUseCase()
+            _uiState.update { it.copy(exercises = result) }
+        }
+    }
 
     /**
      * Marks a set as completed (checkbox checked/unchecked)
