@@ -177,7 +177,7 @@ fun ActiveWorkoutPage(
                                                     viewModel.updateNotes(it)
                                                 },
                                                 label = { Text(text = stringResource(R.string.workout_notes)) },
-                                                )
+                                            )
                                         },
                                         confirmButton = {
                                             TextButton(
@@ -221,8 +221,7 @@ fun ActiveWorkoutPage(
                             // Exercise list with sets, reps, weight, and completion checkboxes
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
-                                modifier = Modifier
-                                    .padding(top = 10.dp),
+                                modifier = Modifier.padding(top = 10.dp),
                             ) {
                                 session.modifiedExercises.exercises.forEachIndexed { exerciseIndex, exSet ->
                                     // Exercise name header
@@ -232,7 +231,6 @@ fun ActiveWorkoutPage(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = 8.dp)
-
                                     ) {
                                         Text(
                                             exSet.name,
@@ -276,38 +274,43 @@ fun ActiveWorkoutPage(
                                                 set = set
                                             )
 
-                                                Checkbox(
-                                                    colors = AppCheckBox.checkBoxColor(),
-                                                    // Safe null handling: returns false if indices out of bounds
-                                                    checked = session.completedSets.getOrNull(
-                                                        exerciseIndex
+                                            Checkbox(
+                                                colors = AppCheckBox.checkBoxColor(),
+                                                checked = session.completedSets
+                                                    .getOrNull(exerciseIndex)
+                                                    ?.getOrNull(setIndex) ?: false,
+                                                onCheckedChange = { isChecked ->
+                                                    viewModel.updateCompletedSets(
+                                                        exerciseIndex,
+                                                        setIndex,
+                                                        isChecked
                                                     )
-                                                        ?.getOrNull(setIndex) ?: false,
-                                                    onCheckedChange = { isChecked ->
-                                                        viewModel.updateCompletedSets(
-                                                            exerciseIndex,
-                                                            setIndex,
-                                                            isChecked
-                                                        )
-                                                        // Auto-start rest timer when set is completed
-                                                        if (isChecked) {
-                                                            viewModel.startTimer()
-                                                        }
-                                                    },
-                                                    modifier = Modifier.width(50.dp)
-                                                )
-                                            }
+                                                    if (isChecked) {
+                                                        viewModel.startTimer()
+                                                    }
+                                                },
+                                                modifier = Modifier.width(50.dp)
+                                            )
                                         }
-                                    // Add set button (OUTSIDE the set loop, INSIDE the exercise loop)
-                                    IconButton(
-                                        onClick = {
-                                            viewModel.addSetToExercise(exerciseIndex)
-                                        }
+                                    }
+
+                                    // 🔽 Add set button for THIS exercise
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                                        horizontalArrangement = Arrangement.Start
                                     ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = stringResource(R.string.add_set)
-                                        )
+                                        IconButton(
+                                            onClick = {
+                                                viewModel.addSetToExercise(exerciseIndex)
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Add,
+                                                contentDescription = stringResource(R.string.add_set)
+                                            )
+                                        }
                                     }
                                 }
                             }
