@@ -101,8 +101,6 @@ fun ActiveWorkoutPage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-            val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
-            val exerciseNames = remember { mutableStateListOf<String>() }
             var searchString by remember { mutableStateOf("") }
             var expanded by remember { mutableStateOf(false) }
 
@@ -268,21 +266,7 @@ fun ActiveWorkoutPage(
                                                     )
                                                 },
                                                 onClick = {
-                                                    exercises.add(
-                                                        NewTemplateExercise(
-                                                            exerciseId = exercise.exerciseId,
-                                                            name = exercise.name,
-                                                            sets = mutableStateListOf(
-                                                                Set(
-                                                                    rep = 0,
-                                                                    kg = 0.0,
-                                                                    typeSet = 0,
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                    exerciseNames.add(exercise.name)
-                                                    searchString = ""
+                                                       viewModel.addExerciseToActiveSession(exercise)
                                                     expanded = false
                                                 }
                                             )

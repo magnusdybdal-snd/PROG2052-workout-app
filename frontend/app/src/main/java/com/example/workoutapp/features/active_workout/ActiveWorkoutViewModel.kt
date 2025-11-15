@@ -1,5 +1,6 @@
 package com.example.workoutapp.features.active_workout
 
+import android.R.attr.name
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.workoutapp.domain.models.NewTemplateExercise
 import com.example.workoutapp.domain.models.Session
 import com.example.workoutapp.domain.models.SessionExercise
 import com.example.workoutapp.domain.models.Set
+import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
 import com.example.workoutapp.domain.usecases.GetExercisesUseCase
@@ -287,4 +289,32 @@ class ActWorkViewModel @Inject constructor(
         return currentTime.format(formatter)
     }
 
+    fun addExerciseToActiveSession(exercise: Exercise) {
+        val current = activeSession.value ?: return
+
+        val newSessionExercise = TemplateExercise(
+            exerciseId = exercise.exerciseId,
+            name = exercise.name,
+            sets = mutableListOf(
+                Set(
+                    rep = 0,
+                    kg = 0.0,
+                    typeSet = 0,
+                )
+            )
+        )
+
+        val updatedExercises = current.modifiedExercises.exercises.toMutableList().apply {
+            add(newSessionExercise)
+        }
+
+        val updatedSession = current.copy(
+            modifiedExercises = current.modifiedExercises.copy(
+                exercises = updatedExercises
+            )
+        )
+
+        // Whatever mechanism you already use to update the active session:
+        activeWorkoutManager.updateSession{current -> updatedSession}
+    }
 }
