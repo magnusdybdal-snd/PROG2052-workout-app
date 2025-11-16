@@ -47,9 +47,7 @@ func NewContainer(cfg *config.Config) (*ServiceContainer, error) {
 	}
 
 	// Starting up Services
-	exerciseService := &services.ExerciseServiceImpl{
-		Repo: exerciseRepo,
-	}
+	exerciseService := services.NewExerciseService(exerciseRepo)
 
 	templateService := services.NewTemplateService(templateRepo, exerciseRepo)
 
