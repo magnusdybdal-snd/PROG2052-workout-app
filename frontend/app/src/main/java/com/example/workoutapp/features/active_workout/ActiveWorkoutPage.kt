@@ -89,13 +89,13 @@ fun ActiveWorkoutPage(
     val focusManager = LocalFocusManager.current
     val activeSession by viewModel.activeSession.collectAsState()
 
-    // Guard: Navigate back if no active workout session exists
+    /*/ Guard: Navigate back if no active workout session exists
     if (activeSession == null) {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
         return
-    }
+    }*/
 
     when {
         state.isLoading -> LoadingStateView()
