@@ -22,8 +22,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -198,7 +196,12 @@ fun NewTemplatePage(
                                     showExercisePicker = false
                                     searchString = ""
                                 },
-                                title = { Text("Select Exercise") },
+                                title = {
+                                    Text(
+                                        "Select Exercise",
+                                        color = cs.onTertiary
+                                    )
+                                },
                                 text = {
                                     Column(modifier = Modifier.height(400.dp)) {
 
@@ -208,6 +211,7 @@ fun NewTemplatePage(
                                             onValueChange = { searchString = it },
                                             placeholder = { Text("Search exercise") },
                                             singleLine = true,
+                                            colors = fieldColors(),
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(bottom = 8.dp)
@@ -241,20 +245,23 @@ fun NewTemplatePage(
                                                         }
                                                         .padding(12.dp)
                                                 ) {
-                                                    Text(exercise.name)
+                                                    Text(
+                                                        exercise.name,
+                                                        color = cs.onTertiary
+                                                    )
                                                 }
                                             }
                                         }
 
                                         if (filtered.isEmpty()) {
-                                            Text("No exercises found", color = cs.onBackground)
+                                            Text("No exercises found", color = cs.onTertiary)
                                         }
                                     }
                                 },
                                 confirmButton = {},
                                 dismissButton = {
                                     TextButton(onClick = { showExercisePicker = false }) {
-                                        Text("Close")
+                                        Text("Close", color = cs.onTertiary)
                                     }
                                 }
                             )
