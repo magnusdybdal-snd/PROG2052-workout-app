@@ -217,7 +217,7 @@ class ApiService @Inject constructor(
      */
     suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout) {
         val token = getAuthHeader()
-        client.put("$baseUrl/templates/${historyWorkout.id}") {
+        client.put("$baseUrl/session/${historyWorkout.id}") {
             contentType(ContentType.Application.Json)
             setBody(historyWorkout)
             token?.let {
