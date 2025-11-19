@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExercisePickerDialog
 import com.example.workoutapp.core.core_ui.composable.ExerciseWorkoutHeaderRow
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
@@ -84,7 +85,6 @@ fun NewTemplatePage(
 
             // Exercise picker state
             var showExercisePicker by remember { mutableStateOf(false) }
-            var searchString by remember { mutableStateOf("") }
 
             Column(
                 modifier = modifier
@@ -189,83 +189,25 @@ fun NewTemplatePage(
                             Text(text = stringResource(R.string.add_exercise))
                         }
 
-                        // ------- EXERCISE PICKER MODAL (WITH SEARCH + LAZYCOLUMN) -------
-                        if (showExercisePicker) {
-                            AlertDialog(
-                                onDismissRequest = {
-                                    showExercisePicker = false
-                                    searchString = ""
-                                },
-                                title = {
-                                    Text(
-                                        "Select Exercise",
-                                        color = cs.onTertiary
-                                    )
-                                },
-                                text = {
-                                    Column(modifier = Modifier.height(400.dp)) {
-
-                                        // Search input
-                                        TextField(
-                                            value = searchString,
-                                            onValueChange = { searchString = it },
-                                            placeholder = { Text("Search exercise") },
-                                            singleLine = true,
-                                            colors = fieldColors(),
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(bottom = 8.dp)
+                        // Reusable Exercise Picker Dialog
+                        ExercisePickerDialog(
+                            showDialog = showExercisePicker,
+                            exercises = state.exercises,
+                            onDismiss = { showExercisePicker = false },
+                            onExerciseSelected = { exercise ->
+                                exercises.add(
+                                    NewTemplateExercise(
+                                        exerciseId = exercise.exerciseId,
+                                        name = exercise.name,
+                                        sets = mutableStateListOf(
+                                            Set(0, 0.0, 0)
                                         )
-
-                                        val filtered = state.exercises.filter {
-                                            it.name.contains(searchString, ignoreCase = true)
-                                        }
-
-                                        LazyColumn(
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            items(filtered) { exercise ->
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .clickable {
-                                                            // Add exercise to template
-                                                            exercises.add(
-                                                                NewTemplateExercise(
-                                                                    exerciseId = exercise.exerciseId,
-                                                                    name = exercise.name,
-                                                                    sets = mutableStateListOf(
-                                                                        Set(0, 0.0, 0)
-                                                                    )
-                                                                )
-                                                            )
-                                                            exerciseNames.add(exercise.name)
-                                                            showExercisePicker = false
-                                                            searchString = ""
-                                                        }
-                                                        .padding(12.dp)
-                                                ) {
-                                                    Text(
-                                                        exercise.name,
-                                                        color = cs.onTertiary
-                                                    )
-                                                }
-                                            }
-                                        }
-
-                                        if (filtered.isEmpty()) {
-                                            Text("No exercises found", color = cs.onTertiary)
-                                        }
-                                    }
-                                },
-                                confirmButton = {},
-                                dismissButton = {
-                                    TextButton(onClick = { showExercisePicker = false }) {
-                                        Text("Close", color = cs.onTertiary)
-                                    }
-                                }
-                            )
-                        }
+                                    )
+                                )
+                                exerciseNames.add(exercise.name)
+                                showExercisePicker = false
+                            }
+                        )
 
 
                         Column(

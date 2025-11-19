@@ -17,13 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,6 +41,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExercisePickerDialog
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
 import com.example.workoutapp.core.core_ui.composable.RoundedButton
@@ -140,81 +138,42 @@ fun EditTemplatePage(
 
                     WorkoutNameTextField(temp = template)
 
-                    var expanded by remember { mutableStateOf(false) }
-                    var searchString by remember { mutableStateOf("") }
+                    var showExercisePicker by remember { mutableStateOf(false) }
 
                     Box(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Button(onClick = { expanded = !expanded }) {
+                        Button(onClick = { showExercisePicker = true }) {
                             Text(text = stringResource(R.string.add_exercise))
                         }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                                searchString = "" // Reset search when closing
-                            },
-                            containerColor = cs.tertiary
-                        ) {
-                            // Search TextField inside the dropdown
-                            TextField(
-                                value = searchString,
-                                onValueChange = { searchString = it },
-                                placeholder = {
-                                    Text(
-                                        text = "Search exercise",
-                                        color = cs.onBackground
-                                    )
-                                },
-                                singleLine = true,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            )
 
-                            // Filter exercises based on search query
-                            val filteredExercises = state.exercises.filter { ex ->
-                                template.exercises.none { it.exerciseId == ex.exerciseId } &&
-                                        ex.name.contains(searchString, ignoreCase = true)
-                            }
+                        // Filter out exercises that are already in the template
+                        val availableExercises = state.exercises.filter { exercise ->
+                            template.exercises.none { it.exerciseId == exercise.exerciseId }
+                        }
 
-                            filteredExercises.forEach { exercise ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = exercise.name,
-                                            color = cs.onTertiary
-                                        )
-                                    },
-                                    onClick = {
-                                        template.exercises.add(
-                                            TemplateExercise(
-                                                exerciseId = exercise.exerciseId,
-                                                name = exercise.name,
-                                                sets = mutableStateListOf(
-                                                    Set(
-                                                        rep = 0,
-                                                        kg = 0.0,
-                                                        typeSet = 0,
-                                                    )
-                                                )
+                        // Reusable Exercise Picker Dialog
+                        ExercisePickerDialog(
+                            showDialog = showExercisePicker,
+                            exercises = availableExercises,
+                            onDismiss = { showExercisePicker = false },
+                            onExerciseSelected = { exercise ->
+                                template.exercises.add(
+                                    TemplateExercise(
+                                        exerciseId = exercise.exerciseId,
+                                        name = exercise.name,
+                                        sets = mutableStateListOf(
+                                            Set(
+                                                rep = 0,
+                                                kg = 0.0,
+                                                typeSet = 0,
                                             )
                                         )
-                                        expanded = !expanded
-                                        searchString = ""
-                                    }
+                                    )
                                 )
+                                showExercisePicker = false
                             }
-
-                            if (filteredExercises.isEmpty()) {
-                                Text(
-                                    text = "No exercises found",
-                                    color = cs.onTertiary,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
+                        )
                     }
 
                     Column(
