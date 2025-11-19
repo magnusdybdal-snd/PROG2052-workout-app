@@ -32,7 +32,7 @@ func (r *TemplateRepository) FindAll(ctx context.Context, userId string) ([]doma
 	entityLen := len(entity)
 
 	if entityLen == 0 {
-		return nil, fmt.Errorf("no data found for user")
+		return []domain.Template{}, nil 
 	}
 
 	// convert to domain

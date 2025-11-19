@@ -30,7 +30,7 @@ func (r *SessionRepository) FindAll(ctx context.Context, userId string) ([]domai
 	entityLen := len(entity)
 
 	if entityLen == 0 {
-		return nil, fmt.Errorf("no data found")
+		return []domain.Session{},nil 
 	}
 	response := make([]domain.Session, entityLen)
 	for i, v := range entity {
