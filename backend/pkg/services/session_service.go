@@ -17,7 +17,7 @@ func (s *SessionServiceImpl) GetAll(ctx context.Context, userId string, include 
 		return domain.Session{}, err
 	}
 	if !include {
-		return domain.Session{}, nil
+		return sess, nil
 	}
 
 	var expandedSession []domain.ExpandedSession
