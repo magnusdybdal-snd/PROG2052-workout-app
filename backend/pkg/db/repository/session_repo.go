@@ -21,10 +21,12 @@ func (r *SessionRepository) FindAll(ctx context.Context, userId string) ([]domai
 	if err != nil {
 		return nil, err
 	}
+
+	defer cursor.Close(ctx)
+
 	if err := cursor.All(ctx, &entity); err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
 	entityLen := len(entity)
 
 	if entityLen == 0 {
