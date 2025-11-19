@@ -26,12 +26,13 @@ data class HistoryWorkoutDto(
 )
 
 /**
- * Data transfer object for a template exercise, containing all the data
- * from en exercise plus a list of set(s)
- * TODO: Add notes later
+ * Data transfer object for a workout exercise, containing exercise ID,
+ * name, and a list of set(s)
+ * Note: No longer includes full exercise details (removed ?include=exercises)
  */
 @Serializable
 data class WorkoutExerciseDto(
-    val exercise: ExerciseDto,
+    val exerciseId: String,
+    val name: String,
     val sets: List<SetDto>
 )

@@ -1,5 +1,6 @@
 package com.example.workoutapp.data.api
 
+import android.util.Log
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
@@ -20,6 +21,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 /**
@@ -166,7 +169,7 @@ class ApiService @Inject constructor(
      */
     suspend fun getHistoryWorkouts(): List<HistoryWorkoutDto> {
         val token = getAuthHeader()
-        return client.get("$baseUrl/sessions?include=exercises") {
+        return client.get("$baseUrl/sessions") {
             token?.let {
                 headers {
                     append("Authorization", "Bearer $it")
@@ -184,6 +187,26 @@ class ApiService @Inject constructor(
      * @param session The completed workout session with all performance data
      */
     suspend fun postHistoryWorkout(session: Session) {
+        // Log the session data being sent
+        try {
+            val json = Json { prettyPrint = true }
+            val jsonString = json.encodeToString(session)
+            Log.d("ApiService", "=== POSTING SESSION TO BACKEND ===")
+            Log.d("ApiService", "Session ID: ${session.sessionId}")
+            Log.d("ApiService", "Session Name: ${session.name}")
+            Log.d("ApiService", "Number of Exercises: ${session.exercises.size}")
+            Log.d("ApiService", "Full JSON Body:")
+            Log.d("ApiService", jsonString)
+            Log.d("ApiService", "=====================================")
+
+            // Log each exercise ID for debugging
+            session.exercises.forEachIndexed { index, exercise ->
+                Log.d("ApiService", "Exercise[$index] ID: ${exercise.exerciseId}, Name: ${exercise.name}, Sets: ${exercise.sets.size}")
+            }
+        } catch (e: Exception) {
+            Log.e("ApiService", "Failed to serialize session for logging: ${e.message}")
+        }
+
         val token = getAuthHeader()
         client.post("$baseUrl/sessions") {
             contentType(ContentType.Application.Json)

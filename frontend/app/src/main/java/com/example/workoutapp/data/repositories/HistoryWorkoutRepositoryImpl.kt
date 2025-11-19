@@ -132,8 +132,8 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     WorkoutExerciseEntity(
                         id = UUID.randomUUID().toString(),
                         workoutId = dto.historyWorkoutId,
-                        exerciseId = exDto.exercise.exerciseId,
-                        name = exDto.exercise.name
+                        exerciseId = exDto.exerciseId,
+                        name = exDto.name
                     )
                 }
 
