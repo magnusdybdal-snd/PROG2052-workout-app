@@ -14,7 +14,7 @@ type SessionServiceImpl struct {
 func (s *SessionServiceImpl) GetAll(ctx context.Context, userId string, include bool) (interface{}, error) {
 	sess, err := s.Repo.FindAll(ctx, userId)
 	if err != nil {
-		return domain.Session{}, err
+		return []domain.Session{}, err
 	}
 	if !include {
 		return sess, nil
@@ -31,7 +31,7 @@ func (s *SessionServiceImpl) GetAll(ctx context.Context, userId string, include 
 		for _, et := range se.Exercises {
 			ex, err := s.RepoExer.FindOne(ctx, et.ExerciseId)
 			if err != nil {
-				return domain.Session{}, err
+				return []domain.Session{}, err
 			}
 			newSession.Exercises = append(newSession.Exercises, domain.ExpandedExerciseTemplate{
 				Exercise: ex,

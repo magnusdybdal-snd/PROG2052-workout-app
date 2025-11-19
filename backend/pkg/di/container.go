@@ -16,34 +16,41 @@ import (
 	Initilize services and repositories
 */
 
+const (
+	dbName = "TrainingApp"
+	exerciseColl = "exercises"
+	templateColl = "templates"
+	sessionColl  = "sessions"
+)
+
 type ServiceContainer struct {
 	ExerciseService domain.ExerciseService
 	TemplateService domain.TemplateService
 	SessionService  domain.SessionService
-	DB *mongo.Client
-	Logger *zap.Logger
+	DB              *mongo.Client
+	Logger          *zap.Logger
 }
 
 // Starting up all services and repositories
 func NewContainer(cfg *config.Config) (*ServiceContainer, error) {
 	mongoDB, err := db.InitDB(cfg.UriDB)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	loggerService, err := utils.NewLogger(cfg.Mode)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	// Starting repository for data access
 	exerciseRepo := &repository.ExerciseRepository{
-		Coll: mongoDB.Database("TrainingApp").Collection("exercises"),
+		Coll: mongoDB.Database(dbName).Collection(exerciseColl),
 	}
 	templateRepo := &repository.TemplateRepository{
-		Coll: mongoDB.Database("TrainingApp").Collection("templates"),
+		Coll: mongoDB.Database(dbName).Collection(templateColl),
 	}
 	sessionRepo := &repository.SessionRepository{
-		Coll: mongoDB.Database("TrainingApp").Collection("sessions"),
+		Coll: mongoDB.Database(dbName).Collection(sessionColl),
 	}
 
 	// Starting up Services
@@ -58,8 +65,8 @@ func NewContainer(cfg *config.Config) (*ServiceContainer, error) {
 	return &ServiceContainer{
 		ExerciseService: exerciseService,
 		TemplateService: templateService,
-		SessionService: sessionService,
-		DB: mongoDB,
-		Logger: loggerService,
-	},nil
+		SessionService:  sessionService,
+		DB:              mongoDB,
+		Logger:          loggerService,
+	}, nil
 }
