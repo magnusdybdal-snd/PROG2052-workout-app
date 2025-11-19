@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	Host                 string
+	HOST_URL             string
 	Port                 string
 	UriDB                string
 	Mode                 string
@@ -28,13 +29,18 @@ func LoadConfig() *Config {
 		host = "0.0.0.0"
 	}
 
+	host_url := os.Getenv("HOST_URL")
+	if host_url == "" {
+		log.Fatal("Missing HOST_URL")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	UriDb := os.Getenv("MONGO_URI")
-	if port == "" {
+	if UriDb == "" {
 		log.Fatal("MONGO_URI is required but not set")
 	}
 	mode := os.Getenv("MODE")
@@ -58,6 +64,7 @@ func LoadConfig() *Config {
 
 	return &Config{
 		Host:                 host,
+		HOST_URL:             host_url,
 		Port:                 port,
 		UriDB:                UriDb,
 		Mode:                 mode,

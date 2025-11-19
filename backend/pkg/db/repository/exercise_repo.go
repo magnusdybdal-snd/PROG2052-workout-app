@@ -22,10 +22,12 @@ func (r *ExerciseRepository) FindAll(ctx context.Context, limit int) ([]domain.E
 	if err != nil {
 		return nil, err
 	}
+
+	defer cursor.Close(ctx)
+
 	if err := cursor.All(ctx, &data); err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
 	if len(data) == 0 {
 		return nil, fmt.Errorf("no data found")
 	}
@@ -39,8 +41,7 @@ func (r *ExerciseRepository) FindOne(ctx context.Context, id string) (domain.Exe
 
 	err := r.Coll.FindOne(ctx, filter).Decode(&data)
 	if err != nil {
-		var empty domain.Exercises
-		return empty, err
+		return domain.Exercises{}, err
 	}
 
 	return data, nil

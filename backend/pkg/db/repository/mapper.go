@@ -23,7 +23,7 @@ func toDomainExerciseTemplate(e []models.ExerciseTemplateEntity) []domain.Exerci
 	for i, v := range e {
 		exercises[i] = domain.ExerciseIdTemplate{
 			ExerciseId: v.ExerciseId,
-			Name:       v.ExerciseId,
+			Name:       v.Name,
 			Sets:       toDomainSets(v.Sets),
 		}
 	}
@@ -61,7 +61,7 @@ func toEntityExerciseTemplate(e []domain.ExerciseIdTemplate) []models.ExerciseTe
 	for i, v := range e {
 		exercises[i] = models.ExerciseTemplateEntity{
 			ExerciseId: v.ExerciseId,
-			Name:       v.ExerciseId,
+			Name:       v.Name,
 			Sets:       toEntitySets(v.Sets),
 		}
 	}

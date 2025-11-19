@@ -21,14 +21,16 @@ func (r *SessionRepository) FindAll(ctx context.Context, userId string) ([]domai
 	if err != nil {
 		return nil, err
 	}
+
+	defer cursor.Close(ctx)
+
 	if err := cursor.All(ctx, &entity); err != nil {
 		return nil, err
 	}
-	defer cursor.Close(ctx)
 	entityLen := len(entity)
 
 	if entityLen == 0 {
-		return nil, fmt.Errorf("no data found")
+		return []domain.Session{},nil 
 	}
 	response := make([]domain.Session, entityLen)
 	for i, v := range entity {
