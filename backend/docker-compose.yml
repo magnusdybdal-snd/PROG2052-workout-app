@@ -8,4 +8,24 @@ services:
       env_file:
         - .env
 
+    caddy:
+      image: caddy:latest
+      container_name: caddy
+      ports:
+        - "80:80"   # public HTTP port - required to have a http
+        - "443:443" # public HTTPS port - encrypted traffic
+      volumes:
+        - ./Caddyfile:/etc/caddy/Caddyfile
+        - caddy_data:/data
+        - caddy_config:/config
+      depends_on:
+        - backend
+      networks:
+        - internal
+  
+networks:
+  internal:
+volumes:
+  caddy_data:
+  caddy_config:
     
