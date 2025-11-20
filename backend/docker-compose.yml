@@ -1,12 +1,16 @@
+version: "3.8"
+
 services:
     backend: 
       build: .
       container_name: backend
       restart: always
-      ports:
+      expose:
         - "${PORT}:${PORT}"
       env_file:
         - .env
+      networks:
+        - app-network
 
     caddy:
       image: caddy:latest
@@ -21,10 +25,10 @@ services:
       depends_on:
         - backend
       networks:
-        - internal
-  
+        - app-network
+   
 networks:
-  internal:
+  app-network:
 volumes:
   caddy_data:
   caddy_config:

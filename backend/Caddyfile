@@ -1,3 +1,19 @@
 :80 {
     reverse_proxy backend:8080
+    header {
+        # Security headers
+        Strict-Transport-Security max-age=31536000;
+        X-Content-Type-Options nosniff;
+        X-Frame-Options DENY;
+    }
+}
+
+:443 {
+    reverse_proxy backend:8080
+    header {
+        # Security headers
+        Strict-Transport-Security max-age=31536000;
+        X-Content-Type-Options nosniff;
+        X-Frame-Options DENY;
+    }
 }
