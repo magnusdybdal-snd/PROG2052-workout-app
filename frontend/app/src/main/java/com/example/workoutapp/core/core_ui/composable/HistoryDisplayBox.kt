@@ -1,6 +1,7 @@
 package com.example.workoutapp.core.core_ui.composable
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,8 @@ fun HistoryDisplayBox(
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val padding = Modifier.padding(start = 8.dp)
+    var expanded by remember { mutableStateOf(false) }
+
     Row(
         modifier = BorderBoxModifier(),
         verticalAlignment = Alignment.CenterVertically,
@@ -77,29 +80,30 @@ fun HistoryDisplayBox(
             text = it.date.toString(),
             textAlign = TextAlign.End
         )
-        var expanded by remember { mutableStateOf(false) }
 
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "Extra"
-            )
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
+        Box {
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Extra"
+                )
             }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(text = "Delete session")
-                },
-                onClick = {
-                    viewModel.deleteSession(it)
-                    expanded = !expanded
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
                 }
-            )
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(text = "Delete session")
+                    },
+                    onClick = {
+                        viewModel.deleteSession(it)
+                        expanded = !expanded
+                    }
+                )
+            }
         }
     }
 }
