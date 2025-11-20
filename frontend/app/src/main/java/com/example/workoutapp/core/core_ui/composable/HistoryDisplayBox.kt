@@ -9,11 +9,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +43,7 @@ fun HistoryDisplayBox(
 ) {
     val padding = Modifier.padding(start = 8.dp)
     var expanded by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Row(
         modifier = BorderBoxModifier(),
@@ -99,11 +104,45 @@ fun HistoryDisplayBox(
                         Text(text = "Delete session")
                     },
                     onClick = {
-                        viewModel.deleteSession(it)
-                        expanded = !expanded
+                        showDeleteDialog = true
+                        expanded = false
                     }
                 )
             }
         }
+    }
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = {
+                Text("Delete Session?")
+            },
+            text = { Text("Are you sure you want to delete workout completed on ${it.date}?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteSession(it)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
