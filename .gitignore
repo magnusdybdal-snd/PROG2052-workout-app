@@ -1,1 +1,8 @@
 .DS_Store
+
+# Claude Code files
+.claude/
+.claude_code/
+claude_code.log
+.claudesync/
+CLAUDE.md
