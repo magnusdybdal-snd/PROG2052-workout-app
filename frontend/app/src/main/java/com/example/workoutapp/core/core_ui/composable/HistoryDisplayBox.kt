@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Info
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,10 +58,13 @@ fun HistoryDisplayBox(
                 text = it.name,
                 fontSize = 20.sp
             )
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Time Icon",
+                    modifier = Modifier.size(16.dp)
                 )
                 Text(
                     text = "%02d:%02d:%02d".format(
@@ -66,16 +72,21 @@ fun HistoryDisplayBox(
                         it.duration.toMinutes() % 60,
                         it.duration.seconds % 60
                     ),
+                    fontSize = 12.sp,
                     modifier = padding
                 )
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 12.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
                         contentDescription = "",
-                        modifier = padding
+                        modifier = Modifier.size(16.dp)
                     )
                     Text( // Total volume
                         text = it.totalVolume.toString(),
+                        fontSize = 12.sp,
                         modifier = padding
                     )
                 }
@@ -83,11 +94,18 @@ fun HistoryDisplayBox(
         } // end column 1 "workout text
         Text(
             text = it.date.toString(),
-            textAlign = TextAlign.End
+            textAlign = TextAlign.End,
+            maxLines = 1,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp)
         )
 
         Box {
-            IconButton(onClick = { expanded = !expanded }) {
+            IconButton(
+                onClick = { expanded = !expanded },
+                modifier = Modifier.offset(x = 8.dp)
+            ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Extra"
