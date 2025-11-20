@@ -114,8 +114,9 @@ fun HistoryPage(
                                     }
                             ) {
                                 HistoryDisplayBox(
-                                    it = workout,
-                                    viewModel)
+                                    workout = workout,
+                                    viewModel = viewModel
+                                )
                             }
                         }
                     }
