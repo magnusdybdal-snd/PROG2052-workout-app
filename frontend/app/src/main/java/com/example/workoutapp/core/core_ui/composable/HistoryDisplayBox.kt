@@ -39,7 +39,9 @@ import com.example.workoutapp.domain.models.HistoryWorkout
 import com.example.workoutapp.features.history.HistoryViewModel
 import java.time.Duration
 
-// Constants for consistent styling
+/**
+ * Constants for consistent styling across HistoryDisplayBox components.
+ */
 private object HistoryDisplayConstants {
     val WORKOUT_NAME_TEXT_SIZE = 20.sp
     val DETAIL_TEXT_SIZE = 12.sp
@@ -50,11 +52,24 @@ private object HistoryDisplayConstants {
     val ICON_OFFSET = 8.dp
 }
 
-// Extension function for duration formatting
+/**
+ * Formats a Duration to a human-readable time string in HH:MM:SS format.
+ *
+ * @return Formatted string like "01:23:45"
+ */
 private fun Duration.toFormattedString(): String =
     "%02d:%02d:%02d".format(toHours(), toMinutes() % 60, seconds % 60)
 
-
+/**
+ * Displays a single workout session in the history list.
+ *
+ * Shows workout name, duration, volume, date, and provides options to delete the session.
+ * The component is clickable (handled by parent) and includes a dropdown menu with delete option.
+ *
+ * @param workout The workout session to display
+ * @param cs Color scheme for theming. 
+ * @param viewModel ViewModel for handling delete operations
+ */
 @Composable
 fun HistoryDisplayBox(
     workout: HistoryWorkout,
@@ -64,23 +79,29 @@ fun HistoryDisplayBox(
     val detailPadding = Modifier.padding(start = HistoryDisplayConstants.DETAIL_START_PADDING)
     var expanded by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // Reuse button colors for both dialog buttons to avoid duplication
     val dialogButtonColors = ButtonDefaults.textButtonColors(
         contentColor = cs.onBackground
     )
 
+    // Main horizontal layout: left (workout info) | center (date) | right (menu)
     Row(
         modifier = BorderBoxModifier(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Left section: Workout name and details (duration + volume)
         Column {
             Text(
                 text = workout.name,
                 fontSize = HistoryDisplayConstants.WORKOUT_NAME_TEXT_SIZE
             )
+            // Duration and volume indicators in a single row
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Duration section (timer icon + time)
                 Icon(
                     painter = painterResource(R.drawable.ic_timer),
                     contentDescription = "Duration",
@@ -94,6 +115,7 @@ fun HistoryDisplayBox(
 
                 Spacer(Modifier.width(HistoryDisplayConstants.VOLUME_SPACING))
 
+                // Volume section (exercise icon + total volume)
                 Icon(
                     painter = painterResource(R.drawable.ic_exercise),
                     contentDescription = "Volume",
@@ -106,19 +128,22 @@ fun HistoryDisplayBox(
                 )
             }
         }
+
+        // Center section: Date (right-aligned with flexible width)
         Text(
             text = workout.date.toString(),
             textAlign = TextAlign.End,
             maxLines = 1,
             modifier = Modifier
-                .weight(1f)
+                .weight(1f) // Takes remaining space
                 .padding(start = HistoryDisplayConstants.DATE_START_PADDING)
         )
 
+        // Right section: Three-dot menu with dropdown
         Box {
             IconButton(
                 onClick = { expanded = !expanded },
-                modifier = Modifier.offset(x = HistoryDisplayConstants.ICON_OFFSET)
+                modifier = Modifier.offset(x = HistoryDisplayConstants.ICON_OFFSET) // Shift closer to edge
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
@@ -143,6 +168,8 @@ fun HistoryDisplayBox(
             }
         }
     }
+
+    // Delete confirmation dialog - shown when user clicks delete from dropdown menu
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
