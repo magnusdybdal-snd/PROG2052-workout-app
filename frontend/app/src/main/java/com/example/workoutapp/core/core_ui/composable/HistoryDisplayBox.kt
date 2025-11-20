@@ -89,17 +89,11 @@ fun HistoryDisplayBox(
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
-            },
-            //containerColor = cs.tertiary
+            }
         ) {
-            // Search TextField inside the dropdown
-
             DropdownMenuItem(
                 text = {
-                    Text(
-                        text = "Delete session",
-                        //color = cs.onTertiary
-                    )
+                    Text(text = "Delete session")
                 },
                 onClick = {
                     viewModel.deleteSession(it)

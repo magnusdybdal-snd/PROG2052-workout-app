@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -43,6 +44,7 @@ fun TemplateDisplayContent (
     template: WorkoutTemplate,
     navController: NavController,
     index: Int,
+    cs: ColorScheme = MaterialTheme.colorScheme,
     viewModel: WorkoutTemplatesViewModel = hiltViewModel(),
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -79,18 +81,10 @@ fun TemplateDisplayContent (
                 expanded = expanded,
                 onDismissRequest = {
                     expanded = false
-                },
-                //containerColor = cs.tertiary
+                }
             ) {
-                // Search TextField inside the dropdown
-
                 DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "Delete template",
-                            //color = cs.onTertiary
-                        )
-                    },
+                    text = { Text(text = "Delete template") },
                     onClick = {
                         showDeleteDialog = true
                         expanded = false
@@ -98,12 +92,7 @@ fun TemplateDisplayContent (
                 )
 
                 DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "Edit template",
-                            //color = cs.onTertiary
-                        )
-                    },
+                    text = { Text(text = "Edit template") },
                     onClick = {
                         navController.navigate("editTemp/$index")
                         expanded = !expanded
@@ -115,7 +104,9 @@ fun TemplateDisplayContent (
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Template?") },
+            title = {
+                Text ("Delete Template?")
+            },
             text = { Text("Are you sure you want to delete ${template.name}?") },
             confirmButton = {
                 TextButton(
