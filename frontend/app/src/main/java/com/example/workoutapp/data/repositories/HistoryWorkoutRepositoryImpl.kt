@@ -2,7 +2,7 @@ package com.example.workoutapp.data.repositories
 
 import android.util.Log
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.database.dao.history.HistoryWorkoutDao
+import com.example.workoutapp.data.database.dao.HistoryWorkoutDao
 import com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity
 import com.example.workoutapp.data.database.entities.history.SetEntity
 import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEntity
@@ -132,8 +132,8 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
                     WorkoutExerciseEntity(
                         id = UUID.randomUUID().toString(),
                         workoutId = dto.historyWorkoutId,
-                        exerciseId = exDto.exercise.exerciseId,
-                        name = exDto.exercise.name
+                        exerciseId = exDto.exerciseId,
+                        name = exDto.name
                     )
                 }
 

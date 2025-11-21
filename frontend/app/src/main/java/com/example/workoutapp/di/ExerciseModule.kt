@@ -1,7 +1,9 @@
 package com.example.workoutapp.di
 
 import com.example.workoutapp.data.api.ApiService
+import com.example.workoutapp.data.database.ExerciseInitializer
 import com.example.workoutapp.data.database.UserPreferences
+import com.example.workoutapp.data.database.dao.ExerciseDao
 import com.example.workoutapp.data.repositories.ExercisesRepositoryImpl
 import com.example.workoutapp.domain.repositories.ExercisesRepository
 import com.example.workoutapp.domain.usecases.GetExercisesUseCase
@@ -33,8 +35,11 @@ object ExerciseModule {
     @Provides
     @Singleton
     fun provideExercisesRepository(
-        api: ApiService
-    ): ExercisesRepository = ExercisesRepositoryImpl(api)
+        api: ApiService,
+        dao: ExerciseDao,
+        initializer: ExerciseInitializer,
+        userPreferences: UserPreferences
+    ): ExercisesRepository = ExercisesRepositoryImpl(api, dao, initializer, userPreferences)
 
     // Provides the use case, which is just a thin wrapper around the repository.
     // Now any ViewModel can inject GetExercisesUseCase directly.

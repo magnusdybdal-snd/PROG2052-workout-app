@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.clickable
+
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -18,8 +22,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExercisePickerDialog
 import com.example.workoutapp.core.core_ui.composable.ExerciseWorkoutHeaderRow
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
@@ -73,10 +76,15 @@ fun NewTemplatePage(
     when {
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
+
         else -> {
+            // Page state
             var name by remember { mutableStateOf("") }
             val exercises = remember { mutableStateListOf<NewTemplateExercise>() }
             val exerciseNames = remember { mutableStateListOf<String>() }
+
+            // Exercise picker state
+            var showExercisePicker by remember { mutableStateOf(false) }
 
             Column(
                 modifier = modifier
@@ -173,182 +181,134 @@ fun NewTemplatePage(
                         modifier = Modifier.padding(vertical = 10.dp)
                     )
 
-                    var expanded by remember { mutableStateOf(false) }
-                    var searchString by remember { mutableStateOf("") }
-
                     Box(
                         modifier = Modifier
                             .padding(16.dp)
                     ) {
-                        Button(onClick = { expanded = !expanded }) {
+                        Button(onClick = { showExercisePicker = true }) {
                             Text(text = stringResource(R.string.add_exercise))
                         }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                                searchString = "" // Reset search when closing
-                            },
-                            containerColor = cs.tertiary
+
+                        // Reusable Exercise Picker Dialog
+                        ExercisePickerDialog(
+                            showDialog = showExercisePicker,
+                            exercises = state.exercises,
+                            onDismiss = { showExercisePicker = false },
+                            onExerciseSelected = { exercise ->
+                                exercises.add(
+                                    NewTemplateExercise(
+                                        exerciseId = exercise.exerciseId,
+                                        name = exercise.name,
+                                        sets = mutableStateListOf(
+                                            Set(0, 0.0, 0)
+                                        )
+                                    )
+                                )
+                                exerciseNames.add(exercise.name)
+                                showExercisePicker = false
+                            }
+                        )
+
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
+                            modifier = Modifier
+                                .padding(top = 10.dp),
                         ) {
-                            // Search TextField inside the dropdown
-                            TextField(
-                                value = searchString,
-                                onValueChange = { searchString = it },
-                                placeholder = {
-                                    Text(
-                                        text = "Search exercise",
-                                        color = cs.onBackground
-                                    )
-                                },
-                                singleLine = true,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            )
-
-                            // Filter exercises based on search query
-                            val filteredExercises = state.exercises.filter {
-                                it.name.contains(searchString, ignoreCase = true)
-                            }
-
-                            filteredExercises.forEach { exercise ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = exercise.name,
-                                            color = cs.onTertiary
-                                        )
-                                    },
-                                    onClick = {
-                                        exercises.add(
-                                            NewTemplateExercise(
-                                                exerciseId = exercise.exerciseId,
-                                                name = exercise.name,
-                                                sets = mutableStateListOf(
-                                                    Set(
-                                                        rep = 0,
-                                                        kg = 0.0,
-                                                        typeSet = 0,
-                                                    )
-                                                )
-                                            )
-                                        )
-                                        exerciseNames.add(exercise.name)
-                                        expanded = !expanded
-                                        searchString = ""
-                                    }
-                                )
-                            }
-
-                            if (filteredExercises.isEmpty()) {
-                                Text(
-                                    text = "No exercises found",
-                                    color = cs.onTertiary,
-                                    modifier = Modifier.padding(8.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier
-                            .padding(top = 10.dp),
-                    ) {
-                        exercises.forEachIndexed { exerciseIndex, exSet ->
-                            // Exercise name with remove button
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
-                            ) {
-                                Text(
-                                    exerciseNames[exerciseIndex],
-                                    fontSize = 15.sp
-                                )
-                                IconButton(
-                                    onClick = {
-                                        exercises.removeAt(exerciseIndex)
-                                        exerciseNames.removeAt(exerciseIndex)
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Remove exercise"
-                                    )
-                                }
-                            }
-
-                            // Header Row
-                            ExerciseWorkoutHeaderRow()
-
-                            // Loop through each set
-                            exSet.sets.forEachIndexed { setIndex, set ->
+                            exercises.forEachIndexed { exerciseIndex, exSet ->
+                                // Exercise name with remove button
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 8.dp)
-                                        .height(75.dp)
                                 ) {
-                                    // Set Number
                                     Text(
-                                        "${setIndex + 1}",
-                                        fontSize = 15.sp,
-                                        modifier = Modifier.width(50.dp)
+                                        exerciseNames[exerciseIndex],
+                                        fontSize = 15.sp
                                     )
-
-                                    // KG TextField
-                                    WorkoutTextField(
-                                        label = stringResource(R.string.kg),
-                                        exSet = exSet,
-                                        type = "kg",
-                                        set = set
-                                    )
-
-                                    // Reps TextField
-                                    WorkoutTextField(
-                                        label = stringResource(R.string.reps),
-                                        exSet = exSet,
-                                        type = "reps",
-                                        set = set
-                                    )
-
-                                    // Remove set button
                                     IconButton(
                                         onClick = {
-                                            exSet.sets.removeAt(setIndex)
-                                        },
-                                        modifier = Modifier.width(50.dp)
+                                            exercises.removeAt(exerciseIndex)
+                                            exerciseNames.removeAt(exerciseIndex)
+                                        }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Close,
-                                            contentDescription = "Remove set"
+                                            contentDescription = "Remove exercise"
                                         )
                                     }
                                 }
-                            }
 
-                            // Add set button
-                            IconButton(
-                                onClick = {
-                                    exSet.sets.add(
-                                        Set(
-                                            rep = 0,
-                                            kg = 0.0,
-                                            typeSet = 0,
+                                // Header Row
+                                ExerciseWorkoutHeaderRow()
+
+                                // Loop through each set
+                                exSet.sets.forEachIndexed { setIndex, set ->
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+                                            .height(75.dp)
+                                    ) {
+                                        // Set Number
+                                        Text(
+                                            "${setIndex + 1}",
+                                            fontSize = 15.sp,
+                                            modifier = Modifier.width(50.dp)
                                         )
+
+                                        // KG TextField
+                                        WorkoutTextField(
+                                            label = stringResource(R.string.kg),
+                                            exSet = exSet,
+                                            type = "kg",
+                                            set = set
+                                        )
+
+                                        // Reps TextField
+                                        WorkoutTextField(
+                                            label = stringResource(R.string.reps),
+                                            exSet = exSet,
+                                            type = "reps",
+                                            set = set
+                                        )
+
+                                        // Remove set button
+                                        IconButton(
+                                            onClick = {
+                                                exSet.sets.removeAt(setIndex)
+                                            },
+                                            modifier = Modifier.width(50.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Remove set"
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Add set button
+                                IconButton(
+                                    onClick = {
+                                        exSet.sets.add(
+                                            Set(
+                                                rep = 0,
+                                                kg = 0.0,
+                                                typeSet = 0,
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = stringResource(R.string.add_set)
                                     )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.add_set)
-                                )
                             }
                         }
                     }

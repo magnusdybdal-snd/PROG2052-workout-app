@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,16 +38,22 @@ class ExercisesViewModel @Inject constructor(  // @Inject = Hilt can construct t
     }
 
     fun loadExercises() {
+        val flow = getExercisesUseCase()
+
+        // Set initial snapshot
+        _uiState.value = ExercisesUiState(
+            exercises = flow.value,
+            isLoading = false
+        )
+        Log.d("ExerciseViewModel", "Initial ViewModel read: ${flow.value.size}")
+
+        // Collect updates when DB finishes loading
         viewModelScope.launch {
-            _uiState.value = ExercisesUiState(isLoading = true)
-            try {
-                val data = getExercisesUseCase()
-                // On success update the state with data in exercises
-                Log.d("ExercisesViewModel", "Fetched ${data.size} exercises")
-                _uiState.value = ExercisesUiState(exercises = data.sortedBy { it.name.lowercase() })
-            // On failure update the state with an error message
-            } catch (e: Exception) {
-                _uiState.value = ExercisesUiState(error = e.message ?: "Unknown error")
+            flow.collect { list ->
+                _uiState.value = ExercisesUiState(
+                    exercises = list,
+                    isLoading = false
+                )
             }
         }
     }

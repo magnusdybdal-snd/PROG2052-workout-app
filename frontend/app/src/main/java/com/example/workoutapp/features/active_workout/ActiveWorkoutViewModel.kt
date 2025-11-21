@@ -67,8 +67,10 @@ class ActWorkViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val result = getExercisesUseCase()
-            _uiState.update { it.copy(exercises = result) }
+            // Collect from the StateFlow to get the List<Exercise>
+            getExercisesUseCase().collect { exerciseList ->
+                _uiState.update { it.copy(exercises = exerciseList) }
+            }
         }
     }
 

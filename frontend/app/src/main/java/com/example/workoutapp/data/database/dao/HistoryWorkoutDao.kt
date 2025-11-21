@@ -1,4 +1,4 @@
-package com.example.workoutapp.data.database.dao.history
+package com.example.workoutapp.data.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -12,7 +12,7 @@ import com.example.workoutapp.data.database.entities.history.WorkoutExerciseEnti
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Data Access Object (DAO) for managing [HistoryWorkoutEntity] records in the local Room database.
+ * Data Access Object (DAO) for managing [com.example.workoutapp.data.database.entities.history.HistoryWorkoutEntity] records in the local Room database.
  *
  * This interface provides methods for:
  * - Observing all stored workouts as a [kotlinx.coroutines.flow.Flow] for reactive UI updates

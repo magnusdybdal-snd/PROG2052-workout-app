@@ -44,12 +44,14 @@ class NewTempViewModel @Inject constructor(  // @Inject = Hilt can construct thi
     fun loadExercises() {
         viewModelScope.launch {
             _uiState.value = ExercisesUiState(isLoading = true)
+
             try {
-                val data = getExercisesUseCase()
-                // On success update the state with data in exercises
-                Log.d("ExercisesViewModel", "Fetched ${data.size} exercises")
-                _uiState.value = ExercisesUiState(exercises = data.sortedBy { it.name.lowercase() })
-                // On failure update the state with an error message
+                getExercisesUseCase().collect { exercises ->
+                    // On success update the state with data in exercises
+                    Log.d("ExercisesViewModel", "Fetched ${exercises.size} exercises")
+                    _uiState.value = ExercisesUiState(exercises = exercises.sortedBy { it.name.lowercase() })
+                }
+            // On failure update the state with an error message
             } catch (e: Exception) {
                 _uiState.value = ExercisesUiState(error = e.message ?: "Unknown error")
             }

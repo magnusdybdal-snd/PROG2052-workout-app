@@ -2,7 +2,7 @@ package com.example.workoutapp.data.repositories
 
 import android.util.Log
 import com.example.workoutapp.data.api.ApiService
-import com.example.workoutapp.data.database.dao.templates.TemplateDao
+import com.example.workoutapp.data.database.dao.TemplateDao
 import com.example.workoutapp.data.database.entities.templates.TemplateEntity
 import com.example.workoutapp.data.database.entities.templates.TemplateExerciseEntity
 import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
