@@ -1,6 +1,7 @@
 package com.example.workoutapp.core.core_ui.composable
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -43,6 +45,7 @@ fun TemplateDisplayContent (
     template: WorkoutTemplate,
     navController: NavController,
     index: Int,
+    cs: ColorScheme = MaterialTheme.colorScheme,
     viewModel: WorkoutTemplatesViewModel = hiltViewModel(),
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -69,53 +72,44 @@ fun TemplateDisplayContent (
                 navController = navController,
             )
 
-            IconButton(onClick = { expanded = !expanded }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Extra"
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = {
-                    expanded = false
-                },
-                //containerColor = cs.tertiary
-            ) {
-                // Search TextField inside the dropdown
-
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "Delete template",
-                            //color = cs.onTertiary
-                        )
-                    },
-                    onClick = {
-                        showDeleteDialog = true
+            Box {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Extra"
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = {
                         expanded = false
                     }
-                )
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(text = "Delete template") },
+                        onClick = {
+                            showDeleteDialog = true
+                            expanded = false
+                        }
+                    )
 
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "Edit template",
-                            //color = cs.onTertiary
-                        )
-                    },
-                    onClick = {
-                        navController.navigate("editTemp/$index")
-                        expanded = !expanded
-                    }
-                )
+                    DropdownMenuItem(
+                        text = { Text(text = "Edit template") },
+                        onClick = {
+                            navController.navigate("editTemp/$index")
+                            expanded = !expanded
+                        }
+                    )
+                }
             }
         }
     }
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Template?") },
+            title = {
+                Text ("Delete Template?")
+            },
             text = { Text("Are you sure you want to delete ${template.name}?") },
             confirmButton = {
                 TextButton(
