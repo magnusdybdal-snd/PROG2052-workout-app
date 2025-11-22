@@ -201,6 +201,13 @@ docker build -t backend .
 docker run -p 8000:8000 --env-file .env backend
 ```
 
+## Uthenting av TLS sertificate
+note this changes for new host device
+```go
+docker cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+
+```
+
 ## Eksterne Bibliotek
 [godotenv](https://github.com/joho/godotenv)
 - setter miljø variabler

@@ -9,7 +9,7 @@ import io.ktor.client.HttpClient
 import javax.inject.Singleton
 
 
-const val server: String = "10.212.168.186:8080"
+const val server: String = "10.212.168.186"
 // Special emulator localhost port
 const val emulatorHost = "10.0.2.2:8080"
 
@@ -35,6 +35,6 @@ object KtorClient{
     @Singleton
     // Instead of hardcoding the URL everywhere, we provide it once.
     // If you later change servers, only this provider changes.
-    fun provideBaseUrl():String = "http://${server}/api/v1"
+    fun provideBaseUrl():String = "https://${server}/api/v1"
 
 }

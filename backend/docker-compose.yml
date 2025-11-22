@@ -1,12 +1,10 @@
-version: "3.8"
-
 services:
     backend: 
       build: .
       container_name: backend
       restart: always
       expose:
-        - "${PORT}:${PORT}"
+        - "${PORT}"
       env_file:
         - .env
       networks:
@@ -18,6 +16,9 @@ services:
       ports:
         - "80:80"   # public HTTP port - required to have a http
         - "443:443" # public HTTPS port - encrypted traffic
+      environment:
+        - HOST=${HOST}
+        - PORT=${PORT}
       volumes:
         - ./Caddyfile:/etc/caddy/Caddyfile
         - caddy_data:/data
