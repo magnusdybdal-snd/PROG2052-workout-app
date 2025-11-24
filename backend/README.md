@@ -201,8 +201,22 @@ docker build -t backend .
 docker run -p 8000:8000 --env-file .env backend
 ```
 
+## TLS håndtering
+```bash
+mkdir certs
+cd certs
+
+
+openssl req -x509 -newkey rsa:2048 \
+  -keyout server.key \
+  -out server.crt \
+  -sha256 -days=365 -nodes \
+  -subj "/CN=your server name" \
+```
+
+
 ## Uthenting av TLS sertificate
-note this changes for new host device
+Denne endrer seg etter platform
 ```go
 docker cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
 

@@ -17,10 +17,11 @@ services:
         - "80:80"   # public HTTP port - required to have a http
         - "443:443" # public HTTPS port - encrypted traffic
       environment:
-        - HOST=${HOST}
         - PORT=${PORT}
       volumes:
         - ./Caddyfile:/etc/caddy/Caddyfile
+        - ./certs/server.crt:/etc/certs/server.crt # moving over the certificate
+        - ./certs/server.key:/etc/certs/server.key
         - caddy_data:/data
         - caddy_config:/config
       depends_on:
