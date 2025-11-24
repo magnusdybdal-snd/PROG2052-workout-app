@@ -24,10 +24,9 @@ func LoadConfig() *Config {
 		log.Println("No .env file present")
 	}
 
-	host := os.Getenv("HOST")
-	if host == "" {
-		host = "0.0.0.0"
-	}
+	//host := os.Getenv("HOST")
+	host := "0.0.0.0" // Caddy and openstack handle propper networking
+
 
 	host_url := os.Getenv("HOST_URL")
 	if host_url == "" {
