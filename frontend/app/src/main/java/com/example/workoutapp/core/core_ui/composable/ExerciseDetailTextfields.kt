@@ -24,7 +24,7 @@ fun ExerciseDetailTextField(
 
         )
         Text(
-            text = values.joinToString(", ") { it.replaceFirstChar { char -> char.uppercase() } },
+            text = values.joinToString(", "),
             color = cs.onBackground
         )
     }

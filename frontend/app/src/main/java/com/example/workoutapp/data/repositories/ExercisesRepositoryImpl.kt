@@ -34,7 +34,6 @@ class ExercisesRepositoryImpl @Inject constructor(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("Testing", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             initializer.initializeIfNeeded()
 
             // Eager loading. Preload exercises to stop lag (many elements)
@@ -63,13 +62,21 @@ class ExercisesRepositoryImpl @Inject constructor(
 
     fun ExerciseEntity.toDomain() = Exercise(
         exerciseId = exerciseId,
-        name = name,
-        targetMuscles = targetMuscles,
-        bodyParts = bodyParts,
-        equipments = equipments,
-        secondaryMuscles = secondaryMuscles,
+        name = name.toTitleCase(),
+        targetMuscles = targetMuscles.map { it.toTitleCase() },
+        bodyParts = bodyParts.map { it.toTitleCase() },
+        equipments = equipments.map { it.toTitleCase() },
+        secondaryMuscles = secondaryMuscles.map { it.toTitleCase() },
         gifUrl = gifUrl,
         instructions = instructions
     )
+
+    // Helper function to format strings with correct capitalisation
+    fun String.toTitleCase(): String {
+        return split(" ")
+            .joinToString(" ") { word ->
+                word.replaceFirstChar { it.uppercase() }
+            }
+    }
 }
 
