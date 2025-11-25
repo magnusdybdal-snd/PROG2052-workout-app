@@ -10,6 +10,11 @@ data class Exercise(
     val bodyParts: List<String>,
     val equipments: List<String>,
     val secondaryMuscles: List<String>,
-    val gifUrl: String?,
+    val gifUrl: String?, // Remote URL for detail page
     val instructions: List<String>
-)
+) {
+    // Helper function to get local thumbnail path
+    fun getLocalThumbnailPath(): String {
+        return "file:///android_asset/exercise_thumbs/${exerciseId}.webp"
+    }
+}
