@@ -51,7 +51,6 @@ fun HomePage(modifier: Modifier = Modifier,
             Column (
                 modifier = PageColumnModifier()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 PageHeading(
