@@ -38,7 +38,7 @@ fun ExerciseDisplayBox(
 
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(exercise.gifUrl)
+                .data(exercise.getLocalThumbnailPath()) // Use local path
                 .crossfade(true)
                 .build(),
             imageLoader = imageLoader,
