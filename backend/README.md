@@ -201,25 +201,49 @@ docker build -t backend .
 docker run -p 8000:8000 --env-file .env backend
 ```
 
-## TLS håndtering
+## Uthenting av server sertificat
+
+### Klient sertifikat
 ```bash
-mkdir certs
-cd certs
+mkcd certs
+openssl genrsa -out ca.key 4096
 
-
-openssl req -x509 -newkey rsa:2048 \
-  -keyout server.key \
-  -out server.crt \
-  -sha256 -days=365 -nodes \
-  -subj "/CN=your server name" \
+openssl req -x509 -new -nodes \
+  -key ca.key \
+  -sha256 -days 3650 \
+  -out ca.crt \
+  -subj "/CN=<your-ca-name>" \
+  -addext "basicConstraints=critical,CA:TRUE" \
+  -addext "keyUsage=critical,keyCertSign,cRLSign"
 ```
 
+### Server nøkkel 
+```bash
+openssl genrsa -out server.key 2048
+```
 
-## Uthenting av TLS sertificate
-Denne endrer seg etter platform
-```go
-docker cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+### Server sertifikat
+```bash
+openssl req -new -key server.key -out server.csr \
+  -subj "/CN=<your-ca-name" \
+  -addext "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:10.212.168.186" \
+  -addext "keyUsage=digitalSignature,keyEncipherment" \
+  -addext "extendedKeyUsage=serverAuth"
+```
 
+### Signer server sertifikat med klient sertifikat
+```bash
+openssl x509 -req \
+  -in server.csr \
+  -CA ca.crt -CAkey ca.key -CAcreateserial \
+  -out server.crt \
+  -days 365 -sha256 \
+  -extfile <(printf "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:10.212.168.186\nkeyUsage=digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth")
+```
+
+### Lager fullchain for klient og caddy
+```bash
+cat server.crt ca.crt > fullchain.crt
 ```
 
 ## Eksterne Bibliotek
