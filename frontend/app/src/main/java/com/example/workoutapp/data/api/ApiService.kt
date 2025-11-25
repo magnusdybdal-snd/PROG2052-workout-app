@@ -94,6 +94,10 @@ class ApiService @Inject constructor(
         }.body()
     }
 
+    suspend fun getExampleTemplates(): List<WorkoutTemplateDto> {
+        return client.get("$baseUrl/example-templates").body()
+    }
+
     /**
      * Creates a new workout template on the backend.
      *

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.session_manager.ActiveWorkoutManager
+import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
 import com.example.workoutapp.domain.usecases.DeleteWorkoutTemplateUseCase
 import com.example.workoutapp.domain.usecases.GetWorkoutTemplatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 data class WorkoutTemplatesUiState(
     val isLoading: Boolean = false,
     val workoutTemplates: List<WorkoutTemplate> = emptyList(),
+    val exampleTemplates: List<WorkoutTemplate> = emptyList(),
     val error: String? = null
 )
 
@@ -28,6 +30,7 @@ data class WorkoutTemplatesUiState(
 class WorkoutTemplatesViewModel @Inject constructor(
     private val getWorkoutTemplatesUseCase: GetWorkoutTemplatesUseCase,
     private val deleteWorkoutTemplatesUseCase: DeleteWorkoutTemplateUseCase,
+    private val repository: WorkoutTemplateRepository,
     val activeWorkoutManager: ActiveWorkoutManager
 ): ViewModel() {
 
@@ -36,6 +39,7 @@ class WorkoutTemplatesViewModel @Inject constructor(
 
     init {
         observeWorkoutTemplates()
+        observeExampleTemplates()
         syncFromApi()
     }
 
@@ -71,6 +75,25 @@ class WorkoutTemplatesViewModel @Inject constructor(
                 getWorkoutTemplatesUseCase.syncNow()
             } catch (e: Exception) {
                 Log.e("TemplateViewModel", "Sync failed: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * Observe example templates from Room DB and sync with API
+     */
+    private fun observeExampleTemplates() {
+        viewModelScope.launch {
+            try {
+                repository.getExampleTemplates()
+                    .catch { e ->
+                        Log.e("TemplateViewModel", "Error fetching example templates: ${e.message}")
+                    }
+                    .collect { examples ->
+                        _uiState.update { it.copy(exampleTemplates = examples) }
+                    }
+            } catch (e: Exception) {
+                Log.e("TemplateViewModel", "Failed to observe example templates: ${e.message}")
             }
         }
     }
