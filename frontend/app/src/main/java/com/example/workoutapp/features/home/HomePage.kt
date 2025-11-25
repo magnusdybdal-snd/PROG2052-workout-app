@@ -98,14 +98,15 @@ fun HomePage(modifier: Modifier = Modifier,
                         displayText = "Example " +
                                 stringResource(R.string.workouts).lowercase()
                     )
-                    /*for (i in 1..4) {
+                    state.exampleTemplates.forEachIndexed { index, workoutTemplate ->
                         TemplateDisplayContent(
-                            template = state.workoutTemplates[0], //"Example $i",
+                            template = workoutTemplate,
                             navController = navController,
-                            route = i - 1,
-                            viewModel = viewModel
+                            index = index,
+                            viewModel = viewModel,
+                            isExample = true
                         )
-                    }*/
+                    }
                 }
             }
         }
