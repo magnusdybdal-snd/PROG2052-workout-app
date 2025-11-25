@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <!-- Your backend API host -->
-        <domain includeSubdomains="true">10.212.168.186</domain>
+    <base-config>
+        <trust-anchors>
+            <!-- Trust preinstalled CAs -->
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">10.212.168.186/</domain>
+        <trust-anchors>
+            <certificates src="@raw/ca" />
+        </trust-anchors>
     </domain-config>
 </network-security-config>
