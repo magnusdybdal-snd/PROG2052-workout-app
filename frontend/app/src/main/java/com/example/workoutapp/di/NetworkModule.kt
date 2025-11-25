@@ -1,9 +1,11 @@
 package com.example.workoutapp.di
 
+import android.content.Context
 import com.example.workoutapp.data.api.KtorClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import javax.inject.Singleton
@@ -29,7 +31,9 @@ object KtorClient{
     // Perfect for HttpClient because it’s expensive to create.
     @Singleton
     // Actually builds the Ktor HttpClient. (see KtorClient.kt)
-    fun provideKtorClient(): HttpClient = KtorClient.instance
+    fun provideKtorClient(
+        @ApplicationContext context: Context
+    ): HttpClient = KtorClient.create(context)
 
     @Provides
     @Singleton
