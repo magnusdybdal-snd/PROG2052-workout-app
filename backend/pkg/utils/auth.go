@@ -19,7 +19,7 @@ type AuthResponse struct {
 func CreateToken(userId, secret string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userId,
-		"exp":     time.Now().Add(1000000 * time.Hour).Unix(),
+		"exp":     time.Now().Add(2160 * time.Hour).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenStr, err := token.SignedString([]byte(secret))
