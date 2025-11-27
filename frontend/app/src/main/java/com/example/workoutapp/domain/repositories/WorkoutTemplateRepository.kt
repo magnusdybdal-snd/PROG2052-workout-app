@@ -1,6 +1,5 @@
 package com.example.workoutapp.domain.repositories
 
-import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import kotlinx.coroutines.flow.Flow

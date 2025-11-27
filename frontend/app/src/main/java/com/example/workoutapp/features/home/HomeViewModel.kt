@@ -53,16 +53,20 @@ class WorkoutTemplatesViewModel @Inject constructor(
                 .onEach { templates ->
                     Log.d("TemplateViewmodel", "Received ${templates.size} templates from flow")
 
-                    _uiState.value = WorkoutTemplatesUiState(
-                        isLoading = false,
-                        workoutTemplates = templates.sortedByDescending { it.createdAt },
-                    )
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            workoutTemplates = templates.sortedByDescending { it.createdAt }
+                        )
+                    }
                 }
                 .catch { e ->
-                    _uiState.value = WorkoutTemplatesUiState(
-                        isLoading = false,
-                        error = e.message ?: "Unknown error"
-                    )
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message ?: "Unknown error"
+                        )
+                    }
                 }
                 .collect()
 
@@ -90,6 +94,7 @@ class WorkoutTemplatesViewModel @Inject constructor(
                         Log.e("TemplateViewModel", "Error fetching example templates: ${e.message}")
                     }
                     .collect { examples ->
+                        Log.d("TemplateViewModel", "Received ${examples.size} example templates from flow")
                         _uiState.update { it.copy(exampleTemplates = examples) }
                     }
             } catch (e: Exception) {

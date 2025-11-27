@@ -25,3 +25,23 @@ data class TemplateExerciseDto(
     val exercise: ExerciseDto,
     val sets: List<SetDto>
 )
+
+/**
+ * Data transfer object for example templates (flat structure from backend)
+ */
+@Serializable
+data class ExampleTemplateDto(
+    val templateId: String,
+    val name: String,
+    val exercises: List<ExampleTemplateExerciseDto>
+)
+
+/**
+ * Data transfer object for example template exercise (flat structure without nested exercise object)
+ */
+@Serializable
+data class ExampleTemplateExerciseDto(
+    val exerciseId: String,
+    val name: String,
+    val sets: List<SetDto>
+)

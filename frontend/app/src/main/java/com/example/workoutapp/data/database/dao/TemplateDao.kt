@@ -89,7 +89,7 @@ interface TemplateDao {
     //--------------------------
 
     @Transaction
-    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
+    @Query("SELECT * FROM templates WHERE isExample = false AND isDeleted = 0 ORDER BY createdAt DESC")
     fun getAllTemplatesWithExercises(): Flow<List<TemplateWithExercises>>
 
     @Transaction

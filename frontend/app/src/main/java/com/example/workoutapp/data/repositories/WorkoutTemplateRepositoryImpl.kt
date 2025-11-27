@@ -62,7 +62,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 // Fetch from API
                 val exampleTemplates = api.getExampleTemplates()
 
-                // Map to entities (same pattern as getWorkoutTemplates())
+                // Map to entities using ExampleTemplateDto (flat structure)
                 val mappedTemplates = exampleTemplates.map { dto ->
                     val templateEntity = TemplateEntity(
                         id = dto.templateId,
@@ -72,13 +72,13 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                         createdAt = LocalDateTime.now()
                     )
 
-                    // Map exercises
+                    // Map exercises (flat structure - no nested exercise object)
                     val exerciseEntities = dto.exercises.map { exerciseDto ->
                         TemplateExerciseEntity(
                             id = UUID.randomUUID().toString(),
                             templateId = dto.templateId,
-                            exerciseId = exerciseDto.exercise.exerciseId,
-                            name = exerciseDto.exercise.name
+                            exerciseId = exerciseDto.exerciseId,
+                            name = exerciseDto.name
                         )
                     }
 
