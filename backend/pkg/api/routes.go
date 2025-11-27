@@ -34,6 +34,9 @@ func addRoutes(
 	// GET /templates/{templateId}
 	mux.Handle(TEMPLATES_ID_ROUTE, AuthenticateUser(cfg, handlers.HandleOneTemplate(container.TemplateService)))
 
+	// GET /workout-example
+	mux.Handle(EXAMPLE_TEMPLATE_ROUTE, handlers.HandleExampleTemplate(container.ExampleTemplateService))
+
 	// POST /auth/google
 	mux.Handle(AUTH_ROUTE, handlers.HandleAuth(cfg))
 
