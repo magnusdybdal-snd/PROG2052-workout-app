@@ -1,6 +1,5 @@
 package com.example.workoutapp.features.active_workout
 
-import android.R.attr.text
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,10 +28,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.workoutapp.R
 import com.example.workoutapp.core.core_ui.composable.ErrorStateView
+import com.example.workoutapp.core.core_ui.composable.ExercisePickerDialog
 import com.example.workoutapp.core.core_ui.composable.ExerciseWorkoutHeaderRow
 import com.example.workoutapp.core.core_ui.composable.LoadingStateView
 import com.example.workoutapp.core.core_ui.composable.RoundBackButton
@@ -59,10 +56,7 @@ import com.example.workoutapp.core.core_ui.composable.modifiers.BorderBoxModifie
 import com.example.workoutapp.core.core_ui.theme.AppCheckBox
 import com.example.workoutapp.core.core_ui.theme.AppOutlinedTextField.outlinedFieldColors
 import com.example.workoutapp.core.core_ui.theme.AppTextButton.textButtonColor
-import com.example.workoutapp.domain.models.NewTemplateExercise
-import com.example.workoutapp.domain.models.SessionExercise
-import com.example.workoutapp.domain.models.Set
-import androidx.compose.material3.DropdownMenu
+
 
 /**
  * Displays the active workout screen where users can track their sets in real-time.
@@ -101,8 +95,7 @@ fun ActiveWorkoutPage(
         state.isLoading -> LoadingStateView()
         state.error != null -> ErrorStateView(state.error)
         else -> {
-            var searchString by remember { mutableStateOf("") }
-            var expanded by remember { mutableStateOf(false) }
+            var showExercisePicker by remember { mutableStateOf(false) }
 
             // Safe call: session could theoretically become null between check and usage
             activeSession?.let { session ->
@@ -235,44 +228,25 @@ fun ActiveWorkoutPage(
                                     )
                                 }
 
-                                // Add exercise dropdown anchored to the button
+                                // Add exercise button with picker dialog
                                 Box {
-                                    Button(onClick = { expanded = true
-                                    Log.d("Add exercise button", "Button clicked")}) {
+                                    Button(onClick = {
+                                        showExercisePicker = true
+                                        Log.d("Add exercise button", "Button clicked")
+                                    }) {
                                         Text(text = stringResource(R.string.add_exercise))
                                     }
 
-                                    DropdownMenu(
-                                        expanded = expanded,
-                                        onDismissRequest = { expanded = false }
-                                    ) {
-                                        // Filter exercises based on search query
-                                        val filteredExercises = state.exercises.filter {
-                                            it.name.contains(searchString, ignoreCase = true)
+                                    // Reusable Exercise Picker Dialog
+                                    ExercisePickerDialog(
+                                        showDialog = showExercisePicker,
+                                        exercises = state.exercises,
+                                        onDismiss = { showExercisePicker = false },
+                                        onExerciseSelected = { exercise ->
+                                            viewModel.addExerciseToActiveSession(exercise)
+                                            showExercisePicker = false
                                         }
-                                        if (filteredExercises.isEmpty()) {
-                                            // 🔹 Show a disabled "no exercises" row instead of nothing
-                                            DropdownMenuItem(
-                                                text = { Text("No exercises available") },
-                                                onClick = { /* no-op */ })
-                                        } else{
-
-                                        filteredExercises.forEach { exercise ->
-                                            DropdownMenuItem(
-                                                text = {
-                                                    Text(
-                                                        text = exercise.name,
-                                                        color = cs.onTertiary
-                                                    )
-                                                },
-                                                onClick = {
-                                                       viewModel.addExerciseToActiveSession(exercise)
-                                                    expanded = false
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
+                                    )
                                 }
                             } // END ADD EXERCISE
 
