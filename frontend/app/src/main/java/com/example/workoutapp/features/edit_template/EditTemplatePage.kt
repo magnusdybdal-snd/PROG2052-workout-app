@@ -123,16 +123,11 @@ fun EditTemplatePage(
                                 templateId = template.templateId,
                                 name = template.name,
                                 createdAt = template.createdAt,
-                                exercises = template.exercises
+                                exercises = exercises.toMutableList()
                             )
                             viewModel.editTemplate(editedWorkout)
                             showSaveSuccess = true
                             isSaving = false
-
-                            viewModel.viewModelScope.launch {
-                                kotlinx.coroutines.delay(1500)
-                                navController.popBackStack()
-                            }
                         },
                     )
 
@@ -149,7 +144,7 @@ fun EditTemplatePage(
 
                         // Filter out exercises that are already in the template
                         val availableExercises = state.exercises.filter { exercise ->
-                            template.exercises.none { it.exerciseId == exercise.exerciseId }
+                            exercises.none { it.exerciseId == exercise.exerciseId }
                         }
 
                         // Reusable Exercise Picker Dialog
@@ -158,7 +153,7 @@ fun EditTemplatePage(
                             exercises = availableExercises,
                             onDismiss = { showExercisePicker = false },
                             onExerciseSelected = { exercise ->
-                                template.exercises.add(
+                                exercises.add(
                                     TemplateExercise(
                                         exerciseId = exercise.exerciseId,
                                         name = exercise.name,
@@ -180,7 +175,7 @@ fun EditTemplatePage(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier.padding(top = 10.dp),
                     ) {
-                        template.exercises.forEachIndexed { exerciseIndex, exSet ->
+                        exercises.forEachIndexed { exerciseIndex, exSet ->
                             // Exercise name with remove button
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -195,7 +190,7 @@ fun EditTemplatePage(
                                 )
                                 IconButton(
                                     onClick = {
-                                        template.exercises.removeAt(exerciseIndex)
+                                        exercises.removeAt(exerciseIndex)
                                     }
                                 ) {
                                     Icon(
@@ -285,7 +280,7 @@ fun EditTemplatePage(
                             // Add set button
                             IconButton(
                                 onClick = {
-                                    template.exercises[exerciseIndex].sets.add(
+                                    exercises[exerciseIndex].sets.add(
                                         Set(
                                             rep = 0,
                                             kg = 0.0,
