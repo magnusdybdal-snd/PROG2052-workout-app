@@ -3,6 +3,8 @@ package com.example.workoutapp.core.core_ui.composable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -55,7 +57,7 @@ fun ExercisePickerDialog(
             )
         },
         text = {
-            Column(modifier = Modifier.height(400.dp)) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 // Search input
                 TextField(
                     value = searchString,
