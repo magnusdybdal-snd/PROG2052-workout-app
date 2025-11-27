@@ -182,8 +182,7 @@ fun NewTemplatePage(
                     )
 
                     Box(
-                        modifier = Modifier
-                            .padding(16.dp)
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Button(onClick = { showExercisePicker = true }) {
                             Text(text = stringResource(R.string.add_exercise))
@@ -208,14 +207,13 @@ fun NewTemplatePage(
                                 showExercisePicker = false
                             }
                         )
+                    }
 
-
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier
-                                .padding(top = 10.dp),
-                        ) {
-                            exercises.forEachIndexed { exerciseIndex, exSet ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.padding(top = 10.dp),
+                    ) {
+                        exercises.forEachIndexed { exerciseIndex, exSet ->
                                 // Exercise name with remove button
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -316,4 +314,3 @@ fun NewTemplatePage(
             }
         }
     }
-}
