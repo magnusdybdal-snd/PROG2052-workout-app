@@ -57,7 +57,36 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getExampleTemplates(): Flow<List<WorkoutTemplate>> {
-        return withContext(Dispatchers.IO) {
+        // Return Flow from Room immediately (don't block on API)
+        return dao.getExampleTemplates().map { templates ->
+            templates.map { fullTemplate ->
+                WorkoutTemplate(
+                    templateId = fullTemplate.template.id,
+                    name = fullTemplate.template.name,
+                    createdAt = fullTemplate.template.createdAt,
+                    exercises = fullTemplate.exercises.map { exerciseWithSets ->
+                        TemplateExercise(
+                            exerciseId = exerciseWithSets.exercise.exerciseId,
+                            name = exerciseWithSets.exercise.name,
+                            sets = exerciseWithSets.sets.map { setEntity ->
+                                Set(
+                                    rep = setEntity.rep,
+                                    kg = setEntity.kg,
+                                    typeSet = setEntity.typeSet
+                                )
+                            }.toMutableList()
+                        )
+                    }.toMutableList()
+                )
+            }
+        }
+    }
+
+    /**
+     * Sync example templates from API to Room in the background
+     */
+    override suspend fun syncExampleTemplates() {
+        withContext(Dispatchers.IO) {
             try {
                 // Fetch from API
                 val exampleTemplates = api.getExampleTemplates()
@@ -105,31 +134,7 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                Log.e("TemplateRepo", "Error fetching example templates: ${e.message}")
-            }
-
-            // Return Flow from Room (single source of truth)
-            dao.getExampleTemplates().map { templates ->
-                templates.map { fullTemplate ->
-                    WorkoutTemplate(
-                        templateId = fullTemplate.template.id,
-                        name = fullTemplate.template.name,
-                        createdAt = fullTemplate.template.createdAt,
-                        exercises = fullTemplate.exercises.map { exerciseWithSets ->
-                            TemplateExercise(
-                                exerciseId = exerciseWithSets.exercise.exerciseId,
-                                name = exerciseWithSets.exercise.name,
-                                sets = exerciseWithSets.sets.map { setEntity ->
-                                    Set(
-                                        rep = setEntity.rep,
-                                        kg = setEntity.kg,
-                                        typeSet = setEntity.typeSet
-                                    )
-                                }.toMutableList()
-                            )
-                        }.toMutableList()
-                    )
-                }
+                Log.e("TemplateRepo", "Error syncing example templates: ${e.message}")
             }
         }
     }

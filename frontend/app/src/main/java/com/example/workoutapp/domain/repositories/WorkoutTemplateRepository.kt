@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface WorkoutTemplateRepository {
     suspend fun getWorkoutTemplates(): List<WorkoutTemplate>
     suspend fun getExampleTemplates(): Flow<List<WorkoutTemplate>>
+    suspend fun syncExampleTemplates()
     suspend fun postWorkoutTemplate(newTemplate: NewTemplate)
     suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate)
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate)

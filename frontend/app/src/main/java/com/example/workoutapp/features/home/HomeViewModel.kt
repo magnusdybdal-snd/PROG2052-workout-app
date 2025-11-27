@@ -77,6 +77,7 @@ class WorkoutTemplatesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 getWorkoutTemplatesUseCase.syncNow()
+                repository.syncExampleTemplates()
             } catch (e: Exception) {
                 Log.e("TemplateViewModel", "Sync failed: ${e.message}")
             }
