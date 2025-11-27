@@ -3,6 +3,7 @@ package com.example.workoutapp.features.login
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -86,11 +91,28 @@ fun LoginPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            Image(
+                painter = painterResource(id = R.drawable.pbb_logo),
+                contentDescription = "PowerLog Logo",
+                modifier = Modifier.size(150.dp)
+            )
+
+            Spacer(Modifier.height(24.dp))
+
             Text(
-                text = "Workout App",
-                fontSize = 32.sp,
+                text = "PowerLog",
+                fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = "Log in to use PowerLog",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
@@ -102,9 +124,16 @@ fun LoginPage(
                 is LoginState.Success -> {} // hides button
                 else -> Button(
                     onClick = { launcher.launch(googleSignInClient.signInIntent) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    )
                 ) {
-                    Text("Sign in with Google")
+                    Text(
+                        text = "Sign in with Google",
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
                 }
             }
 
