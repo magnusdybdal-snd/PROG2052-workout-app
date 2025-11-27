@@ -101,7 +101,7 @@ fun ExerciseDetailPage(
                         contentDescription = "Exercise demonstration",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .size(200.dp)
+                            .size(300.dp)
                             .align(Alignment.CenterHorizontally)
                             .padding(horizontal = 20.dp),
                         placeholder = rememberAsyncImagePainter(
