@@ -1,6 +1,7 @@
 package com.example.workoutapp.data.api
 
 import android.util.Log
+import com.example.workoutapp.data.api.dto.ExampleTemplateDto
 import com.example.workoutapp.data.api.dto.ExerciseDto
 import com.example.workoutapp.data.api.dto.HistoryWorkoutDto
 import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
@@ -81,17 +82,32 @@ class ApiService @Inject constructor(
      * Templates are used as blueprints for starting new workout sessions.
      *
      * @return List of workout template DTOs with nested exercise data
-     * TODO: Add user authentication to fetch only current user's templates
      */
     suspend fun getWorkoutTemplates(): List<WorkoutTemplateDto> {
         val token = getAuthHeader()
-        return client.get("$baseUrl/templates?include=exercises") {
+        val response = client.get("$baseUrl/templates?include=exercises") {
             token?.let {
                 headers {
                     append("Authorization", "Bearer $it")
                 }
             }
-        }.body()
+        }
+        val jsonString = response.body<String>()
+        Log.d("ApiService", "=== GET WORKOUT TEMPLATES RESPONSE ===")
+        Log.d("ApiService", jsonString)
+        Log.d("ApiService", "======================================")
+
+        return response.body()
+    }
+
+    suspend fun getExampleTemplates(): List<ExampleTemplateDto> {
+        val response = client.get("$baseUrl/example-templates?include=exercises")
+        val jsonString = response.body<String>()
+        Log.d("ApiService", "=== GET EXAMPLE TEMPLATES RESPONSE ===")
+        Log.d("ApiService", jsonString)
+        Log.d("ApiService", "======================================")
+
+        return response.body()
     }
 
     /**

@@ -35,6 +35,7 @@ data class TemplateEntity(
 
     /** Mark the template for deletion. Used to make sure API and Room are synced, also when offline */
     val isDeleted : Boolean = false,
+    val isExample : Boolean = false,
 
     /** Created timestamp. */
     val createdAt: LocalDateTime

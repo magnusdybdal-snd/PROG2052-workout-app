@@ -89,12 +89,16 @@ interface TemplateDao {
     //--------------------------
 
     @Transaction
-    @Query("SELECT * FROM templates WHERE isDeleted = 0 ORDER BY createdAt DESC")
+    @Query("SELECT * FROM templates WHERE isExample = false AND isDeleted = 0 ORDER BY createdAt DESC")
     fun getAllTemplatesWithExercises(): Flow<List<TemplateWithExercises>>
 
     @Transaction
     @Query("SELECT * FROM templates WHERE id = :id LIMIT 1")
     suspend fun getTemplateWithExercises(id: String): TemplateWithExercises?
+
+    @Transaction
+    @Query("SELECT * FROM templates WHERE isExample = true AND isDeleted = 0 ORDER BY createdAt DESC")
+    fun getExampleTemplates(): Flow<List<TemplateWithExercises>>
 
     //--------------------------
     //  Nested inserts

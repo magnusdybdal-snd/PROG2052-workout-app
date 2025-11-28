@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -47,6 +48,7 @@ fun TemplateDisplayContent (
     index: Int,
     cs: ColorScheme = MaterialTheme.colorScheme,
     viewModel: WorkoutTemplatesViewModel = hiltViewModel(),
+    isExample: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -72,34 +74,40 @@ fun TemplateDisplayContent (
                 navController = navController,
             )
 
-            Box {
-                IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Extra"
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = {
-                        expanded = false
+            // Only show menu for user templates, not examples
+            if (!isExample) {
+                Box {
+                    IconButton(
+                        onClick = { expanded = !expanded },
+                        modifier = Modifier.offset(x = 8.dp) // Shift closer to edge
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Extra"
+                        )
                     }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text(text = "Delete template") },
-                        onClick = {
-                            showDeleteDialog = true
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
                             expanded = false
                         }
-                    )
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Delete template") },
+                            onClick = {
+                                showDeleteDialog = true
+                                expanded = false
+                            }
+                        )
 
-                    DropdownMenuItem(
-                        text = { Text(text = "Edit template") },
-                        onClick = {
-                            navController.navigate("editTemp/$index")
-                            expanded = !expanded
-                        }
-                    )
+                        DropdownMenuItem(
+                            text = { Text(text = "Edit template") },
+                            onClick = {
+                                navController.navigate("editTemp/$index")
+                                expanded = !expanded
+                            }
+                        )
+                    }
                 }
             }
         }

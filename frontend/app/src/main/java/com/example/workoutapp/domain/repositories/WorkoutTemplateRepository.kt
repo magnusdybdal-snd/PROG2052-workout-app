@@ -1,6 +1,5 @@
 package com.example.workoutapp.domain.repositories
 
-import com.example.workoutapp.data.api.dto.WorkoutTemplateDto
 import com.example.workoutapp.domain.models.NewTemplate
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface WorkoutTemplateRepository {
     suspend fun getWorkoutTemplates(): List<WorkoutTemplate>
+    suspend fun getExampleTemplates(): Flow<List<WorkoutTemplate>>
     suspend fun postWorkoutTemplate(newTemplate: NewTemplate)
     suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate)
     suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate)

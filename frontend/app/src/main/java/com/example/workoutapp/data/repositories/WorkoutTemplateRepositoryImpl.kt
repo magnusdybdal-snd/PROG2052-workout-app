@@ -12,8 +12,10 @@ import com.example.workoutapp.domain.models.Set
 import com.example.workoutapp.domain.models.TemplateExercise
 import com.example.workoutapp.domain.models.WorkoutTemplate
 import com.example.workoutapp.domain.repositories.WorkoutTemplateRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
@@ -50,6 +52,84 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
                         )
                     }.toMutableList()
                 )
+            }
+        }
+    }
+
+    override suspend fun getExampleTemplates(): Flow<List<WorkoutTemplate>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Fetch from API
+                val exampleTemplates = api.getExampleTemplates()
+
+                // Map to entities using ExampleTemplateDto (flat structure)
+                val mappedTemplates = exampleTemplates.map { dto ->
+                    val templateEntity = TemplateEntity(
+                        id = dto.templateId,
+                        name = dto.name,
+                        isSynced = true,
+                        isExample = true,  // Mark as example template
+                        createdAt = LocalDateTime.now()
+                    )
+
+                    // Map exercises (flat structure - no nested exercise object)
+                    val exerciseEntities = dto.exercises.map { exerciseDto ->
+                        TemplateExerciseEntity(
+                            id = UUID.randomUUID().toString(),
+                            templateId = dto.templateId,
+                            exerciseId = exerciseDto.exerciseId,
+                            name = exerciseDto.name
+                        )
+                    }
+
+                    // Map sets
+                    val setEntities = dto.exercises.flatMapIndexed { index, exDto ->
+                        val parentExerciseId = exerciseEntities[index].id
+                        exDto.sets.map { setDto ->
+                            TemplateSetEntity(
+                                id = UUID.randomUUID().toString(),
+                                exerciseEntityId = parentExerciseId,
+                                rep = setDto.rep,
+                                kg = setDto.kg,
+                                typeSet = setDto.typeSet
+                            )
+                        }
+                    }
+
+                    Triple(templateEntity, exerciseEntities, setEntities)
+                }
+
+                // Insert to Room
+                if (mappedTemplates.isNotEmpty()) {
+                    dao.insertFullTemplates(mappedTemplates)
+                }
+
+            } catch (e: Exception) {
+                Log.e("TemplateRepo", "Error fetching example templates: ${e.message}")
+            }
+
+            // Return Flow from Room (single source of truth)
+            dao.getExampleTemplates().map { templates ->
+                templates.map { fullTemplate ->
+                    WorkoutTemplate(
+                        templateId = fullTemplate.template.id,
+                        name = fullTemplate.template.name,
+                        createdAt = fullTemplate.template.createdAt,
+                        exercises = fullTemplate.exercises.map { exerciseWithSets ->
+                            TemplateExercise(
+                                exerciseId = exerciseWithSets.exercise.exerciseId,
+                                name = exerciseWithSets.exercise.name,
+                                sets = exerciseWithSets.sets.map { setEntity ->
+                                    Set(
+                                        rep = setEntity.rep,
+                                        kg = setEntity.kg,
+                                        typeSet = setEntity.typeSet
+                                    )
+                                }.toMutableList()
+                            )
+                        }.toMutableList()
+                    )
+                }
             }
         }
     }
