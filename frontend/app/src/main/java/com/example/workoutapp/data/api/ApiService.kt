@@ -85,29 +85,17 @@ class ApiService @Inject constructor(
      */
     suspend fun getWorkoutTemplates(): List<WorkoutTemplateDto> {
         val token = getAuthHeader()
-        val response = client.get("$baseUrl/templates?include=exercises") {
+        return client.get("$baseUrl/templates?include=exercises") {
             token?.let {
                 headers {
                     append("Authorization", "Bearer $it")
                 }
             }
-        }
-        val jsonString = response.body<String>()
-        Log.d("ApiService", "=== GET WORKOUT TEMPLATES RESPONSE ===")
-        Log.d("ApiService", jsonString)
-        Log.d("ApiService", "======================================")
-
-        return response.body()
+        }.body()
     }
 
     suspend fun getExampleTemplates(): List<ExampleTemplateDto> {
-        val response = client.get("$baseUrl/example-templates?include=exercises")
-        val jsonString = response.body<String>()
-        Log.d("ApiService", "=== GET EXAMPLE TEMPLATES RESPONSE ===")
-        Log.d("ApiService", jsonString)
-        Log.d("ApiService", "======================================")
-
-        return response.body()
+        return client.get("$baseUrl/example-templates?include=exercises").body()
     }
 
     /**
