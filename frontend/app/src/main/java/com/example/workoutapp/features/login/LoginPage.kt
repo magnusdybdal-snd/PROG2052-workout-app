@@ -3,6 +3,8 @@ package com.example.workoutapp.features.login
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,18 +12,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.workoutapp.R
+import com.example.workoutapp.core.core_navigation.Routes
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.example.workoutapp.R
-import com.example.workoutapp.core.core_navigation.Routes
 import kotlinx.coroutines.delay
 
 
@@ -74,9 +80,13 @@ fun LoginPage(
         }
     }
 
+    val cs = MaterialTheme.colorScheme
+    val isDarkTheme = isSystemInDarkTheme()
+
+
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = cs.background
     ) {
         Column(
             modifier = Modifier
@@ -85,12 +95,29 @@ fun LoginPage(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Draws white logo if in darkmode, black logo if not darkmode.
+            Image(
+                painter =
+                    if (isDarkTheme)painterResource(id = R.drawable.pbb_logo_white)
+                    else painterResource(id = R.drawable.pbb_logo_black),
+                contentDescription = "PowerLog Logo",
+                modifier = Modifier.size(350.dp),
+            )
 
             Text(
-                text = "Workout App",
-                fontSize = 32.sp,
+                text = "PowerLog",
+                fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = cs.onBackground,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Text(
+                text = "Log in to use PowerLog",
+                fontSize = 16.sp,
+                color = cs.onBackground,
                 textAlign = TextAlign.Center
             )
 
@@ -102,9 +129,16 @@ fun LoginPage(
                 is LoginState.Success -> {} // hides button
                 else -> Button(
                     onClick = { launcher.launch(googleSignInClient.signInIntent) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = cs.tertiary
+                    )
                 ) {
-                    Text("Sign in with Google")
+                    Text(
+                        text = "Sign in with Google",
+                        color = cs.onTertiary
+                    )
                 }
             }
 
@@ -113,7 +147,7 @@ fun LoginPage(
             if (loginState is LoginState.Error) {
                 Text(
                     text = "Login failed: ${(loginState as LoginState.Error).message}",
-                    color = MaterialTheme.colorScheme.error,
+                    color = cs.error,
                     textAlign = TextAlign.Center
                 )
             }
