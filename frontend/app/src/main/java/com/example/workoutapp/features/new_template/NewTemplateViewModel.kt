@@ -26,7 +26,7 @@ import javax.inject.Inject
  */
 data class NewTemplateUiState(
     val isLoading: Boolean = false,
-    val templates: List<Exercise> = emptyList(),
+    val exercises: List<Exercise> = emptyList(),
     val error: String? = null
 )
 
@@ -45,12 +45,12 @@ class NewTempViewModel @Inject constructor(
     private val postWorkoutTemplateUseCase: PostWorkoutTemplateUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ExercisesUiState())
+    private val _uiState = MutableStateFlow(NewTemplateUiState())
 
     /**
      * Observable UI state for the new template screen.
      */
-    val uiState: StateFlow<ExercisesUiState> = _uiState
+    val uiState: StateFlow<NewTemplateUiState> = _uiState
 
     init {
         loadExercises()
@@ -63,17 +63,17 @@ class NewTempViewModel @Inject constructor(
      */
     fun loadExercises() {
         viewModelScope.launch {
-            _uiState.value = ExercisesUiState(isLoading = true)
+            _uiState.value = NewTemplateUiState(isLoading = true)
 
             try {
                 getExercisesUseCase().collect { exercises ->
                     // On success update the state with data in exercises
                     Log.d("ExercisesViewModel", "Fetched ${exercises.size} exercises")
-                    _uiState.value = ExercisesUiState(exercises = exercises.sortedBy { it.name.lowercase() })
+                    _uiState.value = NewTemplateUiState(exercises = exercises.sortedBy { it.name.lowercase() })
                 }
             // On failure update the state with an error message
             } catch (e: Exception) {
-                _uiState.value = ExercisesUiState(error = e.message ?: "Unknown error")
+                _uiState.value = NewTemplateUiState(error = e.message ?: "Unknown error")
             }
         }
     }
