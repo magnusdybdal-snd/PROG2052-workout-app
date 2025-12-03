@@ -17,7 +17,18 @@ import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
 /**
  * The main Room database for the Workout app.
  *
- * Contains all DAOs and serves as the single access point to persisted local data.
+ * Serves as the single source of truth for all local data, including:
+ * - **Exercise Library**: Pre-loaded ~1500 exercises from assets
+ * - **Workout Templates**: User-created workout plans
+ * - **Workout History**: Completed workouts with sets and notes
+ *
+ * The database uses a relational structure with separate tables for workouts/templates
+ * and their nested exercises/sets, connected via foreign key relationships.
+ *
+ * **Synchronization**: Room is authoritative; repositories sync with backend API
+ * for backup and multi-device support.
+ *
+ * **Current Version**: 15 (incremented on schema changes)
  */
 @Database(
     entities = [
@@ -37,11 +48,27 @@ import com.example.workoutapp.data.database.entities.templates.TemplateSetEntity
     version = 15,
     exportSchema = false
 )
-// Needs a converter as Room does not support Duration and LocalDate
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    // Provides access to local CRUD operations for history workouts
+
+    /**
+     * Provides access to workout history CRUD operations.
+     *
+     * @return DAO for managing completed workouts
+     */
     abstract fun historyWorkoutDao(): HistoryWorkoutDao
+
+    /**
+     * Provides access to workout template CRUD operations.
+     *
+     * @return DAO for managing workout templates
+     */
     abstract fun workoutTemplateDao(): TemplateDao
+
+    /**
+     * Provides access to exercise library operations.
+     *
+     * @return DAO for managing the exercise library
+     */
     abstract fun ExerciseDao(): ExerciseDao
 }
