@@ -40,14 +40,26 @@ class ApiService @Inject constructor(
     private val baseUrl: String,
     private val preferences: UserPreferences
 ) {
+
+    /**
+     * Retrieves the JWT token from DataStore for request authentication.
+     *
+     * @return JWT token string, or null if not logged in
+     */
     private suspend fun getAuthHeader(): String? {
         return preferences.token.firstOrNull()
     }
+
     /**
-     *  /POST
-     *  Request jwt token from the backend.
-     *  used for user authenticated data
-    * */
+     * Authenticates the user via Google OAuth.
+     *
+     * Sends the authorization code from Google Sign-In to the backend, which
+     * exchanges it for a JWT token and user profile. The backend creates or
+     * retrieves the user account and returns authentication credentials.
+     *
+     * @param code Authorization code from Google OAuth flow
+     * @return AuthResponse containing JWT token, user ID, and display name
+     */
     suspend fun loginWithGoogle(code: String): AuthResponse {
         return client.post("$baseUrl/auth/google") {
             contentType(ContentType.Application.Json)
@@ -94,6 +106,15 @@ class ApiService @Inject constructor(
         }.body()
     }
 
+    /**
+     * Fetches pre-defined example workout templates.
+     *
+     * Returns a curated set of example templates that users can explore and use
+     * as inspiration for their own workouts. These templates are public and don't
+     * require authentication.
+     *
+     * @return List of example template DTOs with nested exercise data
+     */
     suspend fun getExampleTemplates(): List<ExampleTemplateDto> {
         return client.get("$baseUrl/example-templates?include=exercises").body()
     }
@@ -224,6 +245,15 @@ class ApiService @Inject constructor(
     }
 
 
+    /**
+     * Deletes a completed workout from history.
+     *
+     * Permanently removes the workout session from the backend. This is called
+     * after local deletion. The workout is removed from workout history and
+     * statistics.
+     *
+     * @param historyWorkoutId UUID of the workout session to delete
+     */
     suspend fun deleteHistoryWorkout(historyWorkoutId: String) {
         val token = getAuthHeader()
         client.delete("$baseUrl/sessions/$historyWorkoutId") {
