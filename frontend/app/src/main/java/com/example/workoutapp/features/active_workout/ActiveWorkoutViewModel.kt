@@ -32,6 +32,7 @@ import javax.inject.Inject
  * UI state holder for the Active Workout screen
  *
  * @property isLoading Indicates if a network/database operation is in progress
+ * @property exercises Complete exercise library for adding exercises mid-workout
  * @property error Error message to display to the user, null if no error
  */
 data class ActiveWorkoutUiState(
@@ -57,17 +58,26 @@ class ActWorkViewModel @Inject constructor(
     private val getExercisesUseCase: GetExercisesUseCase
 ) : ViewModel() {
 
-    // Expose active session from ActiveWorkoutManager
+    /**
+     * Observable flow of the currently active workout session.
+     *
+     * Exposed directly from ActiveWorkoutManager. Null when no workout is in progress.
+     * The UI collects this to display the current exercise list, timer state, and completion status.
+     */
     val activeSession = activeWorkoutManager.activeSession
 
-    // The viewmodel can change this instance
     private val _uiState = MutableStateFlow(ActiveWorkoutUiState())
-    // This immutable instance is for the UI, read only
+
+    /**
+     * Observable UI state for the active workout screen.
+     *
+     * Contains the exercise library and loading/error states for save operations.
+     */
     val uiState: StateFlow<ActiveWorkoutUiState> = _uiState
 
     init {
         viewModelScope.launch {
-            // Collect from the StateFlow to get the List<Exercise>
+            // Load exercise library for mid-workout exercise additions
             getExercisesUseCase().collect { exerciseList ->
                 _uiState.update { it.copy(exercises = exerciseList) }
             }
@@ -309,6 +319,15 @@ class ActWorkViewModel @Inject constructor(
         return currentTime.format(formatter)
     }
 
+    /**
+     * Adds a new exercise to the active workout session.
+     *
+     * Creates a TemplateExercise with one default set (0 reps, 0 kg) and adds it
+     * to the end of the workout. Also initializes completion tracking for the new exercise.
+     * This allows users to add exercises mid-workout if they want to extend their session.
+     *
+     * @param exercise The exercise from the library to add to the active workout
+     */
     fun addExerciseToActiveSession(exercise: Exercise) {
         activeWorkoutManager.updateSession { session ->
             // Build the new exercise in the same type as modifiedExercises.exercises
