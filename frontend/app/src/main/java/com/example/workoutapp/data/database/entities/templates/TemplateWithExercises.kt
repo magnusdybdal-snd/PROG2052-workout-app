@@ -5,11 +5,18 @@ import androidx.room.Relation
 
 
 /**
- * Represents a full template with its nested exercises and sets.
+ * Room relationship model for a complete workout template with nested exercises and sets.
  *
- * Used for fetching the complete structure from the database in one go.
- * This is not an entity - It's a relationship model combining multiple tables.
+ * This is **not** a database entity - it's a data structure used by Room's @Relation
+ * annotation to fetch the complete template hierarchy in a single query.
  *
+ * **Structure**: TemplateEntity → List<TemplateExerciseWithSets> → List<TemplateSetEntity>
+ *
+ * Used by DAOs to efficiently load all related data with one database call instead
+ * of separate queries for template, exercises, and sets.
+ *
+ * @property template The root template entity
+ * @property exercises List of exercises in this template, each with their sets
  */
 data class TemplateWithExercises(
     @Embedded
@@ -23,6 +30,14 @@ data class TemplateWithExercises(
     val exercises: List<TemplateExerciseWithSets>
 )
 
+/**
+ * Intermediate relationship model for a template exercise with its planned sets.
+ *
+ * Part of the nested structure for loading complete templates from Room.
+ *
+ * @property exercise The exercise entity
+ * @property sets All planned sets for this exercise
+ */
 data class TemplateExerciseWithSets(
     @Embedded
     val exercise: TemplateExerciseEntity,

@@ -8,14 +8,20 @@ import com.example.workoutapp.data.database.Converters
 import java.util.UUID
 
 /**
- * Represents a single exercise within a template.
+ * Room entity representing a single exercise within a workout template.
  *
- * Each [TemplateExerciseEntity] belongs to one [TemplateEntity],
- * and may have multiple [TemplateSetEntity] attatched to it.
+ * Each [TemplateExerciseEntity] belongs to one [TemplateEntity] via the
+ * `templateId` foreign key, and may have multiple [TemplateSetEntity]
+ * records attached to it.
  *
+ * The foreign key is configured with CASCADE delete, meaning when a template
+ * is deleted, all its exercises are automatically removed from the database.
  *
+ * @property id Auto-generated unique identifier (UUID)
+ * @property templateId Foreign key linking to the parent TemplateEntity
+ * @property exerciseId Reference to the exercise in the exercise library
+ * @property name Display name of the exercise (denormalized for efficiency)
  */
-
 @Entity(
     tableName = "template_exercise",
     foreignKeys = [
@@ -27,14 +33,12 @@ import java.util.UUID
         )
     ]
 )
-
 data class TemplateExerciseEntity(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
 
-    val templateId: String, // FK to parent template
+    val templateId: String,
 
-    // Exercise metadata
     val exerciseId: String,
     val name: String,
 )
