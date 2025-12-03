@@ -71,6 +71,23 @@ interface TemplateDao {
     @Query("DELETE FROM templates")
     suspend fun clearAll()
 
+    /**
+     * Updates a template and replaces all its exercises and sets in one transaction.
+     *
+     * This method performs a complete replacement strategy:
+     * 1. Deletes all existing exercises (and their sets via CASCADE)
+     * 2. Inserts/updates the template entity
+     * 3. Inserts the new exercises
+     * 4. Inserts the new sets
+     *
+     * Used when editing a completed template to ensure the database state
+     * matches the edited version without orphaned data.
+     *
+     * @param templateId ID of the template to update
+     * @param template Updated template entity
+     * @param exercises New list of exercises to replace existing ones
+     * @param sets New list of sets for all exercises
+     */
     @Transaction
     suspend fun updateTemplateExercises(
         templateId: String,
