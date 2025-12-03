@@ -11,11 +11,19 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import javax.inject.Singleton
 
+/**
+ * Hilt module providing dependencies for user authentication.
+ *
+ * Wires together authentication-related dependencies including the
+ * repository and use case for Google OAuth login.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthModule {
 
-    // Provide the repository implementation
+    /**
+     * Provides the authentication repository implementation.
+     */
     @Provides
     @Singleton
     fun provideAuthRepository(
