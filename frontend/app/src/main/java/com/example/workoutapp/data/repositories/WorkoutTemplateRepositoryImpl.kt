@@ -21,15 +21,36 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * Repository that provides access to templates from both local Room DB and remote API.
- * Room acts as the single source of truth, while the API syncs data in and out.
+ * Implementation of [WorkoutTemplateRepository] that manages workout templates.
+ *
+ * Uses a local-first architecture where Room database serves as the single source of truth.
+ * Changes are persisted to Room first, then synchronized with the backend API for backup
+ * and cross-device access. Mapping between database entities ([TemplateEntity],
+ * [TemplateExerciseEntity], [TemplateSetEntity]) and domain models ([WorkoutTemplate])
+ * is handled internally.
+ *
+ * **Synchronization Strategy**:
+ * - Create: Save to Room → Post to API → Mark as synced
+ * - Update: Save to Room → Push to API → Mark as synced
+ * - Delete: Mark as deleted in Room → Delete from API → Remove from Room
+ * - Read: Room database is always authoritative
+ *
+ * @property api API service for remote synchronization
+ * @property dao Room DAO for local persistence
  */
 class WorkoutTemplateRepositoryImpl @Inject constructor(
     private val api: ApiService,
     private val dao: TemplateDao
 ): WorkoutTemplateRepository {
 
-
+    /**
+     * Observes all user templates from the local database as a reactive Flow.
+     *
+     * Automatically maps database entities to domain models and emits updates
+     * whenever templates change in Room.
+     *
+     * @return Flow emitting the list of all user templates
+     */
     override fun observeTemplates(): Flow<List<WorkoutTemplate>> {
 
         return dao.getAllTemplatesWithExercises().map { templates ->
@@ -56,8 +77,15 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Retrieves example workout templates as a reactive Flow.
+     *
+     * Example templates are pre-defined workouts provided by the app to help
+     * users get started. Returns immediately from Room without blocking on API.
+     *
+     * @return Flow emitting the list of example templates
+     */
     override suspend fun getExampleTemplates(): Flow<List<WorkoutTemplate>> {
-        // Return Flow from Room immediately (don't block on API)
         return dao.getExampleTemplates().map { templates ->
             templates.map { fullTemplate ->
                 WorkoutTemplate(
@@ -83,7 +111,11 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Sync example templates from API to Room in the background
+     * Synchronizes example templates from the backend API to local Room database.
+     *
+     * Fetches example templates from the API, maps them to database entities,
+     * and inserts them into Room marked as example templates. Runs on IO dispatcher
+     * to avoid blocking the main thread. Errors are logged but don't throw.
      */
     override suspend fun syncExampleTemplates() {
         withContext(Dispatchers.IO) {
@@ -141,9 +173,15 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
 
 
     /**
-     * Fetch templates from the API and update the local database with fresh API data
-     * 1. Push unsynced local templates to the API
-     * 2. Pull updated templates from the API and merge them locally
+     * Fetches and synchronizes user workout templates with the backend.
+     *
+     * Performs a full bidirectional sync:
+     * 1. Syncs deleted templates (retry failed API deletions)
+     * 2. Pushes unsynced local templates to the API
+     * 3. Pulls latest templates from the API
+     * 4. Merges remote templates into Room, respecting local deletions
+     *
+     * @return List of synchronized workout templates from Room database
      */
     override suspend fun getWorkoutTemplates(): List<WorkoutTemplate> {
 
@@ -254,6 +292,16 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    /**
+     * Creates a new workout template.
+     *
+     * Persists the template to Room database first (marked as unsynced), then
+     * attempts to post to the backend API. If API call succeeds, marks as synced.
+     * If it fails, the template remains queued for future sync.
+     *
+     * @param newTemplate The template to create
+     */
     override suspend fun postWorkoutTemplate(newTemplate: NewTemplate) {
 
         val templateEntity = TemplateEntity(
@@ -297,6 +345,18 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Deletes a workout template.
+     *
+     * Uses a two-phase delete strategy:
+     * 1. Soft delete: Mark as deleted in Room immediately
+     * 2. Hard delete: If API deletion succeeds, remove from Room entirely
+     *
+     * If API deletion fails, the template remains marked as deleted and
+     * will be retried on the next sync.
+     *
+     * @param workoutTemplate The template to delete
+     */
     override suspend fun deleteWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
         try {
             // Mark as deleted locally first ( soft delete )
@@ -316,7 +376,13 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
     }
 
-    // Add sync method for deleted items
+    /**
+     * Retries deletion of templates marked as deleted but still in Room.
+     *
+     * Called during sync to retry API deletion for templates that were
+     * soft-deleted locally but failed to delete from the backend. Successfully
+     * deleted templates are then hard-deleted from Room.
+     */
     override suspend fun syncDeletedTemplates() {
         val deletedTemplates = dao.getDeletedAndSyncedTemplates()
         deletedTemplates.forEach { template ->
@@ -330,6 +396,17 @@ class WorkoutTemplateRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Updates an existing workout template.
+     *
+     * Rebuilds the template entities from the updated domain model, marks as
+     * unsynced, and replaces the existing template in Room. The updated template
+     * will be pushed to the API on the next sync operation.
+     *
+     * If the template doesn't exist in Room, logs an error and returns early.
+     *
+     * @param workoutTemplate The template with updated values
+     */
     override suspend fun editWorkoutTemplate(workoutTemplate: WorkoutTemplate) {
         // Store the room object to be edited
         val existingTemplate = dao.getTemplateWithExercises(workoutTemplate.templateId)
