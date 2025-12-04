@@ -55,9 +55,21 @@ import com.example.workoutapp.domain.models.AuthState
 import com.example.workoutapp.features.auth.AuthViewModel
 
 /**
- * Main screen
- * @param modifier
- * @param navController
+ * Main screen with navigation, authentication, and app-wide UI components.
+ *
+ * This composable serves as the root of the app's UI hierarchy, managing:
+ * - **Authentication flow**: Shows login screen if unauthenticated
+ * - **Navigation**: NavHost with all app screens and routes
+ * - **Bottom navigation bar**: Shows on main screens (History, Workouts, Exercises)
+ * - **Floating action button**: Displays when user has an active workout session
+ *
+ * The FAB allows quick access to resume the active workout from any screen,
+ * displaying the workout name and rest timer if running.
+ *
+ * @param modifier Modifier for the root composable
+ * @param navController Navigation controller for screen navigation
+ * @param authViewModel ViewModel managing authentication state
+ * @param mainViewModel ViewModel providing access to active workout state
  */
 @Composable
 fun MainScreen(
@@ -68,10 +80,7 @@ fun MainScreen(
 ) {
     val authState by authViewModel.authState.collectAsState()
 
-    //
-    // Check authenticatoin state from viewmodel
-    //
-
+    // Gate all content behind authentication - show login if not authenticated
     when (authState) {
         is AuthState.Loading -> {
             LoadingStateView()
@@ -81,11 +90,12 @@ fun MainScreen(
             LoginPage(Modifier, navController)
             return
         }
-        // Authenticated, continue below
         is AuthState.Authenticated -> Unit
     }
 
     // Main content if authenticated below:
+
+    // Define bottom navigation items (main app sections)
     val navItemList = listOf(
         NavItem("History", Routes.HISTORY, Icons.Default.DateRange),
         NavItem("Workouts", Routes.WORKOUT, Icons.Default.PlayArrow),
@@ -95,11 +105,12 @@ fun MainScreen(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
-    // Show or hide the bottom-bar.
-    val showBottomBar = navItemList.any{ item ->
-        currentDestination.isOnRoute(item.route)}
+    // Show bottom bar only on main navigation screens
+    val showBottomBar = navItemList.any { item ->
+        currentDestination.isOnRoute(item.route)
+    }
 
-    // Check if there is an active workout going on
+    // Check for active workout to show FAB
     val activeSession by mainViewModel.activeWorkoutManager.activeSession.collectAsState()
     val hasActiveWorkout = activeSession != null
     val isOnWorkoutPage = currentDestination?.route == Routes.WORKTEMP
@@ -228,6 +239,16 @@ fun MainScreen(
     }
 }
 
+/**
+ * Extension function to check if a NavDestination matches a specific route.
+ *
+ * Checks the destination's entire hierarchy (including nested destinations)
+ * to determine if the current destination or any parent matches the given route.
+ * Used for highlighting the active bottom navigation item.
+ *
+ * @param route The route to check against
+ * @return True if this destination or any parent in the hierarchy matches the route
+ */
 private fun NavDestination?.isOnRoute(route: String): Boolean {
     if (this == null) return false
     return hierarchy.any { it.route == route }

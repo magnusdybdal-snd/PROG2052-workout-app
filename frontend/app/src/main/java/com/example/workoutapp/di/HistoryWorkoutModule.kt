@@ -11,6 +11,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Hilt module providing dependencies for the History Workout feature.
+ *
+ * Wires together history-related dependencies including the repository
+ * and use case for managing completed workouts.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object HistoryWorkoutModule {
@@ -22,8 +28,6 @@ object HistoryWorkoutModule {
         dao: HistoryWorkoutDao
     ): HistoryWorkoutRepository = HistoryWorkoutRepositoryImpl(api, dao)
 
-    // TODO: USECASES ARE NOT NEEDED IN MODUE. THEY HAVE THEYR OWN INJECT
-    // TODO: ONLY REPO LINKING FROM DOMAIN -> DATA IS NEEDED HERE
     @Provides
     @Singleton
     fun provideHistoryWorkoutUseCase(

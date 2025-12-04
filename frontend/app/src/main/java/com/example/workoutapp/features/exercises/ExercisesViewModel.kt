@@ -13,30 +13,50 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// UI state holder: represents what's shown on the "Exercises" screen.
+/**
+ * UI state for the exercises screen.
+ *
+ * @property isLoading Whether exercises are currently being loaded
+ * @property exercises List of exercises to display
+ * @property error Error message if loading failed
+ */
 data class ExercisesUiState(
     val isLoading: Boolean = false,
     val exercises: List<Exercise> = emptyList(),
     val error: String? = null
 )
 
-// @HiltViewModel: tells Hilt this ViewModel can have dependencies injected.
-// Hilt will generate all the factory code needed to create it.
+/**
+ * ViewModel for the exercises library screen.
+ *
+ * Manages the exercise list state by observing the exercise repository's
+ * pre-loaded cache. The exercises are fetched once and kept in memory for
+ * fast access throughout the app session.
+ *
+ * @property getExercisesUseCase Use case for retrieving exercises
+ */
 @HiltViewModel
-class ExercisesViewModel @Inject constructor(  // @Inject = Hilt can construct this
+class ExercisesViewModel @Inject constructor(
     private val getExercisesUseCase: GetExercisesUseCase
 ) : ViewModel() {
 
-    // The viewmodel can change this instance
     private val _uiState = MutableStateFlow(ExercisesUiState())
-    // This immutable instance is for the UI, read only
+
+    /**
+     * Observable UI state for the exercises screen.
+     */
     val uiState: StateFlow<ExercisesUiState> = _uiState.asStateFlow()
 
-    // Runs once when the class is instantiated
     init {
         loadExercises()
     }
 
+    /**
+     * Loads exercises from the use case and observes for updates.
+     *
+     * Sets the initial snapshot immediately, then collects updates as the
+     * repository finishes loading from Room database.
+     */
     fun loadExercises() {
         val flow = getExercisesUseCase()
 

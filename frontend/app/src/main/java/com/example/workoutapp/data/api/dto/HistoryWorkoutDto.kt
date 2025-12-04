@@ -11,8 +11,17 @@ import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
 /**
- * Data transfer object for a past workout / completed workout with
- * its data members
+ * Data transfer object for a completed workout session.
+ *
+ * Represents a past workout with all exercises performed and sets completed.
+ * Received from the backend and converted to domain HistoryWorkout model.
+ *
+ * @property historyWorkoutId Unique identifier for this workout session
+ * @property name Name of the workout (often based on the template used)
+ * @property exercises List of exercises performed with completed sets
+ * @property duration Total workout duration in HH:mm:ss format (e.g., "01:10:00")
+ * @property date Date when the workout was completed in ISO format (e.g., "2025-10-01")
+ * @property note Optional user notes about the workout session
  */
 @Serializable
 data class HistoryWorkoutDto(
@@ -20,15 +29,21 @@ data class HistoryWorkoutDto(
     val historyWorkoutId: String,
     val name: String,
     val exercises: List<WorkoutExerciseDto>,
-    val duration: String, //"01:10:00"
-    val date: String, //"2025-10-01"
+    val duration: String,
+    val date: String,
     val note: String? = ""
 )
 
 /**
- * Data transfer object for a workout exercise, containing exercise ID,
- * name, and a list of set(s)
- * Note: No longer includes full exercise details (removed ?include=exercises)
+ * Data transfer object for an exercise within a completed workout.
+ *
+ * Contains the exercise ID, name, and all sets that were completed.
+ * Uses a flat structure (ID + name only) rather than full exercise details
+ * for efficient serialization.
+ *
+ * @property exerciseId Unique identifier matching the exercise library
+ * @property name Display name of the exercise
+ * @property sets List of completed sets with reps and weight
  */
 @Serializable
 data class WorkoutExerciseDto(

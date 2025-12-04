@@ -73,6 +73,23 @@ interface HistoryWorkoutDao {
     @Query("SELECT * FROM history_workouts WHERE isDeleted = 0 ORDER BY date DESC")
     suspend fun getAllHistoryWorkoutsSnapshot(): List<HistoryWorkoutEntity>
 
+    /**
+     * Updates a workout and replaces all its exercises and sets in one transaction.
+     *
+     * This method performs a complete replacement strategy:
+     * 1. Deletes all existing exercises (and their sets via CASCADE)
+     * 2. Inserts/updates the workout entity
+     * 3. Inserts the new exercises
+     * 4. Inserts the new sets
+     *
+     * Used when editing a completed workout to ensure the database state
+     * matches the edited version without orphaned data.
+     *
+     * @param workoutId ID of the workout to update
+     * @param historyWorkout Updated workout entity
+     * @param exercises New list of exercises to replace existing ones
+     * @param sets New list of sets for all exercises
+     */
     @Transaction
     suspend fun updateHistoryWorkoutExercises(
         workoutId: String,

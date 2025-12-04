@@ -17,47 +17,75 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-// UI state holder: represents what's shown on the "New Template" screen.
+/**
+ * UI state for the new template screen.
+ *
+ * @property isLoading Whether data is currently being loaded
+ * @property templates List of available exercises
+ * @property error Error message if an operation failed
+ */
 data class NewTemplateUiState(
     val isLoading: Boolean = false,
-    val templates: List<Exercise> = emptyList(),
+    val exercises: List<Exercise> = emptyList(),
     val error: String? = null
 )
 
-// @HiltViewModel: tells Hilt this ViewModel can have dependencies injected.
-// Hilt will generate all the factory code needed to create it.
+/**
+ * ViewModel for creating new workout templates.
+ *
+ * Manages the exercise list for selection and handles template creation.
+ * Users select exercises from the library and configure sets to build a new template.
+ *
+ * @property getExercisesUseCase Use case for retrieving available exercises
+ * @property postWorkoutTemplateUseCase Use case for saving new templates
+ */
 @HiltViewModel
-class NewTempViewModel @Inject constructor(  // @Inject = Hilt can construct this
+class NewTempViewModel @Inject constructor(
     private val getExercisesUseCase: GetExercisesUseCase,
     private val postWorkoutTemplateUseCase: PostWorkoutTemplateUseCase
 ) : ViewModel() {
 
-    // The viewmodel can change this instance
-    private val _uiState = MutableStateFlow(ExercisesUiState())
-    // This immutable instance is for the UI, read only
-    val uiState: StateFlow<ExercisesUiState> = _uiState
+    private val _uiState = MutableStateFlow(NewTemplateUiState())
+
+    /**
+     * Observable UI state for the new template screen.
+     */
+    val uiState: StateFlow<NewTemplateUiState> = _uiState
 
     init {
         loadExercises()
     }
 
+    /**
+     * Loads the exercise library for exercise selection.
+     *
+     * Exercises are sorted alphabetically for easy browsing.
+     */
     fun loadExercises() {
         viewModelScope.launch {
-            _uiState.value = ExercisesUiState(isLoading = true)
+            _uiState.value = NewTemplateUiState(isLoading = true)
 
             try {
                 getExercisesUseCase().collect { exercises ->
                     // On success update the state with data in exercises
                     Log.d("ExercisesViewModel", "Fetched ${exercises.size} exercises")
-                    _uiState.value = ExercisesUiState(exercises = exercises.sortedBy { it.name.lowercase() })
+                    _uiState.value = NewTemplateUiState(exercises = exercises.sortedBy { it.name.lowercase() })
                 }
             // On failure update the state with an error message
             } catch (e: Exception) {
-                _uiState.value = ExercisesUiState(error = e.message ?: "Unknown error")
+                _uiState.value = NewTemplateUiState(error = e.message ?: "Unknown error")
             }
         }
     }
 
+    /**
+     * Saves a newly created workout template.
+     *
+     * Persists the template to Room database and syncs with the backend API.
+     * Updates UI state with error message if save fails.
+     *
+     * @param newTemplate The template to save
+     */
     fun postWorkout(newTemplate: NewTemplate) {
         viewModelScope.launch {
             try {
@@ -68,6 +96,11 @@ class NewTempViewModel @Inject constructor(  // @Inject = Hilt can construct thi
         }
     }
 
+    /**
+     * Returns the current time as a formatted string (HH:mm).
+     *
+     * @return Current time in 24-hour format
+     */
     fun getCurrentTimeString(): String {
         val currentTime = LocalTime.now() // current time
         val formatter = DateTimeFormatter.ofPattern("HH:mm") // 24-hour format

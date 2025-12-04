@@ -22,8 +22,21 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * Repository that provides access to workout history from both local Room DB and remote API.
- * Room acts as the single source of truth, while the API syncs data in and out.
+ * Implementation of [HistoryWorkoutRepository] that manages completed workout history.
+ *
+ * Uses a local-first architecture where Room database serves as the single source of truth.
+ * Completed workouts are persisted to Room first, then synchronized with the backend API
+ * for backup and cross-device access. Mapping between database entities ([HistoryWorkoutEntity],
+ * [WorkoutExerciseEntity], [SetEntity]) and domain models ([HistoryWorkout]) is handled internally.
+ *
+ * **Synchronization Strategy**:
+ * - Create: Save to Room → Post to API → Mark as synced
+ * - Delete: Mark as deleted in Room → Delete from API → Remove from Room
+ * - Read: Room database is always authoritative
+ * - Edit: Update in Room → Push to API
+ *
+ * @property api API service for remote synchronization
+ * @property dao Room DAO for local persistence
  */
 class HistoryWorkoutRepositoryImpl @Inject constructor(
     private val api: ApiService,
@@ -31,9 +44,13 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
 ): HistoryWorkoutRepository {
 
     /**
-     * Observers all local workouts (used by viewmodel) The Flow will automatically emit
-     * new changes when there are changes to the DB so view models that observes trough this
-     * function will be updated automatically and therefore update UI automatically
+     * Observes all completed workouts from the local database as a reactive Flow.
+     *
+     * Automatically maps database entities to domain models and emits updates
+     * whenever workout history changes in Room. ViewModels can collect this Flow
+     * for automatic UI updates.
+     *
+     * @return Flow emitting the list of all completed workouts
      */
     override fun observeHistoryWorkouts(): Flow<List<HistoryWorkout>> {
 
@@ -64,9 +81,14 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Fetch HistoryWorkouts from the API and update the local database with fresh API data
-     * 1. Push unsynced local workouts to the API
-     * 2. Pull updated workouts from the API and merge them locally
+     * Fetches and synchronizes workout history with the backend.
+     *
+     * Performs a full bidirectional sync:
+     * 1. Pushes unsynced local workouts to the API
+     * 2. Pulls latest workouts from the API
+     * 3. Merges remote workouts into Room, respecting local deletions
+     *
+     * @return List of synchronized completed workouts from Room database
      */
     override suspend fun getHistoryWorkouts(): List<HistoryWorkout> {
         // Step 1: Post unsynced workouts to API
@@ -180,6 +202,15 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Saves a completed workout session to history.
+     *
+     * Persists the session to Room database first (marked as unsynced), then
+     * attempts to post to the backend API. If API call succeeds, marks as synced.
+     * If it fails, the workout remains queued for future sync.
+     *
+     * @param session The completed workout session to save
+     */
     override suspend fun postHistoryWorkout(session: Session) {
         val workoutEntity = HistoryWorkoutEntity(
             id = session.sessionId,
@@ -229,6 +260,18 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Deletes a completed workout from history.
+     *
+     * Uses a two-phase delete strategy:
+     * 1. Soft delete: Mark as deleted in Room immediately
+     * 2. Hard delete: If API deletion succeeds, remove from Room entirely
+     *
+     * If API deletion fails, the workout remains marked as deleted and
+     * will be retried on the next sync.
+     *
+     * @param historyWorkout The workout to delete from history
+     */
     override suspend fun deleteHistoryWorkout(historyWorkout: HistoryWorkout) {
         try {
             // Mark as deleted first ( soft delete )
@@ -245,6 +288,13 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Retries deletion of workouts marked as deleted but still in Room.
+     *
+     * Called during sync to retry API deletion for workouts that were
+     * soft-deleted locally but failed to delete from the backend. Successfully
+     * deleted workouts are then hard-deleted from Room.
+     */
     override suspend fun syncDeleteTemplates() {
         val deletedHistoryWorkouts = dao.getDeletedAndSyncedHistoryWorkouts()
         deletedHistoryWorkouts.forEach { historyWorkoutEntity ->
@@ -258,6 +308,17 @@ class HistoryWorkoutRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * Updates an existing workout in history.
+     *
+     * Rebuilds the workout entities from the updated domain model, marks as
+     * unsynced, and replaces the existing workout in Room. The updated workout
+     * will be pushed to the API on the next sync operation.
+     *
+     * If the workout doesn't exist in Room, logs an error and returns early.
+     *
+     * @param historyWorkout The workout with updated values
+     */
     override suspend fun editHistoryWorkout(historyWorkout: HistoryWorkout) {
         // Store the room object to be edited
         val existingHistoryWorkout = dao.getWorkoutHistoryWithExercises(historyWorkout.id)

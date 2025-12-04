@@ -11,34 +11,57 @@ import io.ktor.client.HttpClient
 import javax.inject.Singleton
 
 
+/**
+ * Server IP address for the backend API.
+ * Update this to point to your deployed backend or use [emulatorHost] for local development.
+ */
 const val server: String = "10.212.168.186"
-// Special emulator localhost port
+
+/**
+ * Special localhost address for Android emulator to reach the host machine.
+ * Use this when running the backend locally on your development machine.
+ */
 const val emulatorHost = "10.0.2.2:8080"
 
-
-
-// Module: Marks this object as a collection of providers (a factory class that tells Hilt how to make things)
+/**
+ * Hilt module providing network-related dependencies.
+ *
+ * Provides singleton instances of:
+ * - [HttpClient] - Ktor HTTP client for API requests
+ * - [String] (base URL) - Backend API base URL
+ *
+ * The HttpClient is configured with JSON serialization, authentication interceptors,
+ * and other settings defined in [com.example.workoutapp.data.api.KtorClient].
+ */
 @Module
-// InstallIn(SingletonComponent::class) : "The objects provided here should live in the SingletonComponent.”
-// That means: one instance is shared across the whole app.
 @InstallIn(SingletonComponent::class)
 object KtorClient{
 
-    // Marks a function as a provider method.
-    // When something in the app asks for a HttpClient, Hilt calls this function to get it.
+    /**
+     * Provides the configured Ktor HTTP client instance.
+     *
+     * The client is created once and reused throughout the app lifecycle.
+     * Configuration includes JSON serialization, JWT token authentication,
+     * and logging.
+     *
+     * @param context Application context for accessing resources
+     * @return Configured HttpClient singleton
+     */
     @Provides
-    // Tells Hilt to reuse the same instance every time (not create a new one).
-    // Perfect for HttpClient because it’s expensive to create.
     @Singleton
-    // Actually builds the Ktor HttpClient. (see KtorClient.kt)
     fun provideKtorClient(
         @ApplicationContext context: Context
     ): HttpClient = KtorClient.create(context)
 
+    /**
+     * Provides the backend API base URL.
+     *
+     * Centralizes URL configuration so it only needs to be changed in one place.
+     *
+     * @return Base URL string for all API endpoints
+     */
     @Provides
     @Singleton
-    // Instead of hardcoding the URL everywhere, we provide it once.
-    // If you later change servers, only this provider changes.
     fun provideBaseUrl():String = "https://${server}/api/v1"
 
 }

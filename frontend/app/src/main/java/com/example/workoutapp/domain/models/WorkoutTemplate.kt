@@ -12,9 +12,15 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * Data class for a WorkoutTemplate.
- * Contains a list of TemplateExercise, not to be mixed with WorkoutExercise or Exercise
+ * Domain model representing a user-created workout template.
  *
+ * Templates serve as reusable workout plans that users can instantiate when
+ * starting a workout session.
+ *
+ * @property templateId Unique identifier for this template
+ * @property name User-defined name for the workout template
+ * @property createdAt Timestamp when the template was created
+ * @property exercises Mutable list of exercises included in this template
  * @see TemplateExercise
  */
 @Serializable
@@ -27,11 +33,17 @@ data class WorkoutTemplate(
 )
 
 /**
- * Data class for an exercise belonging to a template.
- * This is different from an exercise belonging to a workout (WorkoutExercise)
- * and different from an exercise in the library (Exercise)
+ * Domain model for an exercise within a workout template.
  *
+ * Represents the planned configuration of an exercise, including the target number
+ * of sets and reps. This differs from [WorkoutExercise] which contains actual
+ * performance data, and [Exercise] which is a library reference.
+ *
+ * @property exerciseId Reference to the exercise in the library
+ * @property name Display name of the exercise
+ * @property sets Mutable list of planned set configurations
  * @see Exercise
+ * @see WorkoutExercise
  */
 @Serializable
 data class TemplateExercise(
@@ -40,6 +52,12 @@ data class TemplateExercise(
     val sets: MutableList<Set>
 )
 
+/**
+ * Custom serializer for [LocalDateTime] using ISO-8601 format.
+ *
+ * Enables Kotlinx Serialization to serialize/deserialize LocalDateTime objects
+ * to and from JSON strings in ISO_LOCAL_DATE_TIME format.
+ */
 object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 

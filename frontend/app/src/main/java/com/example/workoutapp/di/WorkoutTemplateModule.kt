@@ -11,6 +11,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Hilt module providing dependencies for the Workout Template feature.
+ *
+ * Wires together template-related dependencies including the repository
+ * and use case for template CRUD operations.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object WorkoutTemplateModule {

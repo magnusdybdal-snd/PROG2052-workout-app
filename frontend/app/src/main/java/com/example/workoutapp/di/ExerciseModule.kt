@@ -14,24 +14,52 @@ import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import javax.inject.Singleton
 
-// This Hilt module provides all dependencies needed for the "Exercise" feature.
-// It tells Hilt how to create ApiService, ExerciseRepository, and GetExercisesUseCase.
+/**
+ * Hilt module providing dependencies for the Exercise feature.
+ *
+ * Wires together the exercise feature's dependencies:
+ * - [ApiService] - Backend API client
+ * - [ExercisesRepository] - Data access abstraction
+ * - [GetExercisesUseCase] - Business logic
+ *
+ * All dependencies are provided as singletons to ensure single instances
+ * across the app and efficient resource usage.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object ExerciseModule {
 
-    // Provides the ApiService, which talks to the backend.
-    // Hilt automatically injects HttpClient and baseUrl (from NetworkModule).
+    /**
+     * Provides the API service for backend communication.
+     *
+     * Dependencies ([HttpClient], base URL, [UserPreferences]) are automatically
+     * injected by Hilt from other modules.
+     *
+     * @param client HTTP client from [KtorClient] module
+     * @param baseUrl Base URL from [KtorClient] module
+     * @param preferences User preferences for JWT token storage
+     * @return Singleton ApiService instance
+     */
     @Provides
-    @Singleton  // Only one API service will be created over the app
+    @Singleton
     fun provideApiService(
         client: HttpClient,
         baseUrl: String,
         preferences: UserPreferences
     ): ApiService = ApiService(client, baseUrl,preferences)
 
-    // Provides the repository implementation, but exposes it as the interface type.
-    // This decouples the rest of the app from the concrete implementation.
+    /**
+     * Provides the exercises repository implementation.
+     *
+     * Exposes the implementation as the interface type to decouple consumers
+     * from the concrete implementation.
+     *
+     * @param api API service for remote data
+     * @param dao Room DAO for local data
+     * @param initializer Helper for pre-loading exercises
+     * @param userPreferences For tracking initialization state
+     * @return ExercisesRepository instance
+     */
     @Provides
     @Singleton
     fun provideExercisesRepository(
@@ -41,8 +69,15 @@ object ExerciseModule {
         userPreferences: UserPreferences
     ): ExercisesRepository = ExercisesRepositoryImpl(api, dao, initializer, userPreferences)
 
-    // Provides the use case, which is just a thin wrapper around the repository.
-    // Now any ViewModel can inject GetExercisesUseCase directly.
+    /**
+     * Provides the use case for retrieving exercises.
+     *
+     * ViewModels can inject this use case to access exercise data without
+     * depending directly on the repository.
+     *
+     * @param repo Exercises repository
+     * @return GetExercisesUseCase instance
+     */
     @Provides
     @Singleton
     fun provideExercisesUseCase(
