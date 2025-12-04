@@ -4,18 +4,16 @@
 
 - Android Studio
 - JDK 17+
-- Android SDK 34
+- Android SDK 36
 - Backend kjørende (se `../backend/README.md`)
 
 ## Oppsett
 
-1. Konfigurer backend-tilkobling i `app/src/main/java/com/example/workoutapp/di/NetworkModule.kt`.
+   Konfigurer backend-tilkobling i `app/src/main/java/com/example/workoutapp/di/NetworkModule.kt`.
    Endre `server` variabelen til:
    - Lokal backend på emulator: `"10.0.2.2:8080"`
    - Lokal backend på fysisk enhet: `"<maskin-IP>:8080"` (samme nettverk)
    - Deployed backend: Oppdater til produksjons-IP/domene
-
-2. Sync Gradle og bygg
 
 ## Kjøring
 
@@ -41,9 +39,11 @@ Synkroniserer med backend API når tilkoblet internett.
 
 ## Testing
 
-Enhetstester bruker mock repositories. Instrumenterte tester kjører mot ekte Room DB.
-
 ```bash
-# Spesifikk testklasse
-./gradlew test --tests "com.example.workoutapp.domain.usecases.HistoryWorkoutUseCaseTest"
+# Enhetstester
+./gradlew testDebugUnitTest
+
+# Integrasjonstester (krever emulator eller fysisk enhet)
+./gradlew connectedAndroidTest
 ```
+
