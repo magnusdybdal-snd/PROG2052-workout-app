@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -81,6 +82,12 @@ class ActiveWorkoutManager @Inject constructor() {
     private var timerJob: Job? = null
 
     /**
+     * Job handle for the observer coroutine that monitors timer state.
+     * Cancelled when workout completes to prevent memory leaks.
+     */
+    private var observerJob: Job? = null
+
+    /**
      * Checks if a workout is currently in progress.
      *
      * @return true if there is an active workout session, false otherwise
@@ -99,6 +106,7 @@ class ActiveWorkoutManager @Inject constructor() {
      * - Current timestamp as start time
      *
      * Also starts observing timer state changes to manage the countdown.
+     * Cancels any previous observer to prevent multiple concurrent observers.
      *
      * @param template The workout template to base this session on
      * @throws IllegalStateException if a workout is already in progress
@@ -123,7 +131,9 @@ class ActiveWorkoutManager @Inject constructor() {
             notes = ""
         )
 
-        observeTimer()
+        // Cancel previous observer before starting new one
+        observerJob?.cancel()
+        observerJob = observeTimer()
     }
 
     /**
@@ -131,9 +141,11 @@ class ActiveWorkoutManager @Inject constructor() {
      *
      * Launches a coroutine that collects activeSession changes and starts the timer
      * when `isTimerRunning` becomes true, or stops it when false.
+     *
+     * @return Job handle for the observer coroutine, allowing cancellation
      */
-    private fun observeTimer() {
-        scope.launch {
+    private fun observeTimer(): Job {
+        return scope.launch {
             activeSession.collect { session ->
                 if (session?.isTimerRunning == true && timerJob?.isActive != true) {
                     startTimer()
@@ -177,11 +189,14 @@ class ActiveWorkoutManager @Inject constructor() {
     }
 
     /**
-     * Updates the active workout session state.
+     * Updates the active workout session state in a thread-safe manner.
      *
      * Applies the provided updater function to the current session state to produce
      * a new session state. The updater receives the current session and should return
      * an updated copy using the `copy()` method.
+     *
+     * Uses [MutableStateFlow.update] for atomic compare-and-swap, preventing
+     * race conditions in multi-threaded scenarios.
      *
      * Example usage:
      * activeWorkoutManager.updateSession { it.copy(notes = "Felt strong today") }
@@ -189,27 +204,33 @@ class ActiveWorkoutManager @Inject constructor() {
      * @param updater Function that transforms the current session into an updated session
      */
     fun updateSession(updater: (ActiveWorkoutSession) -> ActiveWorkoutSession) {
-        _activeSession.value?.let { current ->
-            _activeSession.value = updater(current)
+        _activeSession.update { current ->
+            current?.let(updater)
         }
     }
 
     /**
      * Completes the current workout session.
      *
-     * Clears the active session state, which should be followed by saving
-     * the workout to history through [com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase].
+     * Clears the active session state and cancels the observer coroutine to prevent
+     * memory leaks. Should be followed by saving the workout to history through
+     * [com.example.workoutapp.domain.usecases.PostHistoryWorkoutUseCase].
      */
     fun completeWorkout() {
+        observerJob?.cancel()
+        observerJob = null
         _activeSession.value = null
     }
 
     /**
      * Cancels the current workout session without saving.
      *
-     * Discards all workout progress and clears the active session state.
+     * Discards all workout progress, clears the active session state, and cancels
+     * the observer coroutine to prevent memory leaks.
      */
     fun cancelWorkout() {
+        observerJob?.cancel()
+        observerJob = null
         _activeSession.value = null
     }
 }
